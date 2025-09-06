@@ -9,9 +9,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Auth helper functions for Host-only platform
 export const auth = {
-  // Host signup (WebApp) - creates host profile manually
+  // Host signup (WebApp) - database trigger creates host profile automatically
   signUpHost: async (email, password, fullName, phone, companyName, address = '') => {
-    // Step 1: Sign up user
+    // Sign up user - database trigger will automatically create host profile
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -31,68 +31,15 @@ export const auth = {
       return { data: null, error: authError }
     }
 
-    // Step 2: Manually insert into host_profiles table
-    if (authData.user) {
-      const { error: profileError } = await supabase
-        .from('host_profiles')
-        .insert({
-          id: authData.user.id,
-          email: authData.user.email,
-          full_name: fullName,
-          company_name: companyName,
-          phone: phone,
-          address: address,
-          services_offered: []
-        })
-
-      if (profileError) {
-        console.error("Host profile creation error:", profileError.message)
-        return { data: authData, error: profileError }
-      }
-    }
-
+    // Host profile will be created automatically by database trigger
     return { data: authData, error: null }
   },
 
-  // Regular user signup - creates profile manually
+  // Regular user signup - redirects to host signup since this is host-only platform
   signUpUser: async (email, password, fullName, phone) => {
-    // Step 1: Sign up user
-    const { data: authData, error: authError } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          role: "user",
-          full_name: fullName,
-          phone: phone,
-        },
-      },
-    })
-
-    if (authError) {
-      console.error("Auth signup error:", authError.message)
-      return { data: null, error: authError }
-    }
-
-    // Step 2: Manually insert into profiles table
-    if (authData.user) {
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .insert({
-          id: authData.user.id,
-          email: authData.user.email,
-          full_name: fullName,
-          phone: phone,
-          role: "user"
-        })
-
-      if (profileError) {
-        console.error("Profile creation error:", profileError.message)
-        return { data: authData, error: profileError }
-      }
-    }
-
-    return { data: authData, error: null }
+    // This platform is host-only, so redirect to host signup
+    console.warn("This platform is host-only. Redirecting to host signup.")
+    return await this.signUpHost(email, password, fullName, phone, '', '')
   },
 
   // Host login
