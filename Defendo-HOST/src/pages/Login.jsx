@@ -28,10 +28,17 @@ const Login = () => {
     e.preventDefault()
     setIsLoading(true)
 
+    console.log('Login form submitted with:', { email: formData.email, password: '***' })
+    
     const result = await signIn(formData.email, formData.password)
     
+    console.log('Login result:', result)
+    
     if (result.success) {
+      console.log('Login successful, navigating to:', from)
       navigate(from, { replace: true })
+    } else {
+      console.error('Login failed:', result.error)
     }
     
     setIsLoading(false)

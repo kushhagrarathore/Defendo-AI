@@ -44,6 +44,8 @@ export const auth = {
 
   // Host login
   loginHost: async (email, password) => {
+    console.log("Attempting login for:", email)
+    
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -54,6 +56,8 @@ export const auth = {
       return { data: null, error }
     }
 
+    console.log("Auth successful, fetching host profile for user:", data.user.id)
+
     // Fetch host profile
     const { data: host, error: hostError } = await supabase
       .from("host_profiles")
@@ -63,6 +67,9 @@ export const auth = {
 
     if (hostError) {
       console.error("Host profile fetch error:", hostError.message)
+      // Don't return error here, just log it - user can still login without profile
+    } else {
+      console.log("Host profile loaded successfully:", host)
     }
 
     return { data: { auth: data, host }, error: null }

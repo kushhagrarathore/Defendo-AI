@@ -121,18 +121,38 @@ export const AuthProvider = ({ children }) => {
   }
 
   const signIn = async (email, password) => {
+    console.log("AuthContext: Starting signIn process")
     setLoading(true)
     setError(null)
     
     try {
+      console.log("AuthContext: Calling auth.loginHost")
       const { data, error } = await auth.loginHost(email, password)
+      
+      console.log("AuthContext: loginHost response:", { data, error })
+      
       if (error) {
+        console.error("AuthContext: Login error:", error.message)
         setError(error.message)
         return { success: false, error: error.message }
       }
       
-      return { success: true, data }
+      // The loginHost function returns { data: { auth: data, host }, error: null }
+      // We need to extract the auth data and set the host profile
+      if (data && data.auth) {
+        console.log("AuthContext: Setting user and host profile")
+        setUser(data.auth.user)
+        if (data.host) {
+          setHostProfile(data.host)
+        }
+        console.log("AuthContext: Login successful")
+        return { success: true, data: data.auth }
+      }
+      
+      console.error("AuthContext: No auth data received")
+      return { success: false, error: 'Login failed' }
     } catch (err) {
+      console.error("AuthContext: Exception during login:", err)
       const errorMessage = err.message || 'An unexpected error occurred'
       setError(errorMessage)
       return { success: false, error: errorMessage }
