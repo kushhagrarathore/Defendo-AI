@@ -5,7 +5,16 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://grmutjpyqzupdoimrtcg.supabase.co'
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdybXV0anB5cXp1cGRvaW1ydGNnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE2MDg3NjQsImV4cCI6MjA2NzE4NDc2NH0.V_a4lnzTIQvWY2aT1et5u9AP7zvz_DFqSRg5LTiyJgw'
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Key present:', !!supabaseAnonKey)
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+})
 
 // Auth helper functions for Host-only platform
 export const auth = {
@@ -46,33 +55,43 @@ export const auth = {
   loginHost: async (email, password) => {
     console.log("Attempting login for:", email)
     
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    })
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
+      
+      if (error) {
+        console.error("Login error:", error.message)
+        return { data: null, error }
+      }
 
-    if (error) {
-      console.error("Login error:", error.message)
-      return { data: null, error }
+      console.log("Auth successful, user:", data.user)
+      console.log("Session:", data.session)
+
+      // Fetch host profile
+      console.log("Fetching host profile for user:", data.user.id)
+      const { data: host, error: hostError } = await supabase
+        .from("host_profiles")
+        .select("*")
+        .eq("id", data.user.id)
+        .single()
+
+      if (hostError) {
+        console.error("Host profile fetch error:", hostError.message)
+        console.log("Continuing without host profile...")
+        // Don't return error here, just log it - user can still login without profile
+      } else {
+        console.log("Host profile loaded successfully:", host)
+      }
+
+      const result = { data: { auth: data, host }, error: null }
+      console.log("Returning login result:", result)
+      return result
+    } catch (err) {
+      console.error("Exception in loginHost:", err)
+      return { data: null, error: { message: err.message } }
     }
-
-    console.log("Auth successful, fetching host profile for user:", data.user.id)
-
-    // Fetch host profile
-    const { data: host, error: hostError } = await supabase
-      .from("host_profiles")
-      .select("*")
-      .eq("id", data.user.id)
-      .single()
-
-    if (hostError) {
-      console.error("Host profile fetch error:", hostError.message)
-      // Don't return error here, just log it - user can still login without profile
-    } else {
-      console.log("Host profile loaded successfully:", host)
-    }
-
-    return { data: { auth: data, host }, error: null }
   },
 
   // User login
@@ -184,8 +203,8 @@ export const db = {
   getHostBookings: async (hostId) => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('*')
-      .eq('host_id', hostId)
+      .select('id, status, date, created_at, service_type, price, payment_status, user_id, provider_id, location')
+      .eq('provider_id', hostId)
       .order('created_at', { ascending: false })
     return { data, error }
   },
@@ -223,5 +242,310 @@ export const db = {
       })
       .select()
     return { data, error }
+  },
+
+  // Host Services CRUD operations
+  getHostServices: async (hostId) => {
+    const { data, error } = await supabase
+      .from('host_services')
+      .select('*')
+      .eq('host_id', hostId)
+      .order('created_at', { ascending: false })
+    return { data, error }
+  },
+
+  addHostService: async (hostId, serviceData) => {
+    const { data, error } = await supabase
+      .from('host_services')
+      .insert({
+        host_id: hostId,
+        ...serviceData
+      })
+      .select()
+    return { data, error }
+  },
+
+  updateHostService: async (serviceId, updates) => {
+    const { data, error } = await supabase
+      .from('host_services')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', serviceId)
+      .select()
+    return { data, error }
+  },
+
+  deleteHostService: async (serviceId) => {
+    const { data, error } = await supabase
+      .from('host_services')
+      .delete()
+      .eq('id', serviceId)
+    return { data, error }
+  },
+
+  getAllActiveServices: async () => {
+    const { data, error } = await supabase
+      .from('host_services')
+      .select(`
+        *,
+        host_profiles!inner(
+          id,
+          full_name,
+          company_name,
+          rating,
+          verified
+        )
+      `)
+      .eq('is_active', true)
+      .order('rating', { ascending: false })
+    return { data, error }
+  },
+
+  // ===== Dashboard Stats =====
+  getActiveServiceCount: async (hostId) => {
+    // Avoid head:true to ensure some backends/policies still return count
+    const { count, error, data } = await supabase
+      .from('host_services')
+      .select('id', { count: 'exact' })
+      .eq('host_id', hostId)
+      .eq('is_active', true)
+    if (error) return { count: 0, error }
+    // Fallback: if count is null/0 but data exists under RLS quirks
+    if ((count === null || count === 0) && Array.isArray(data) && data.length > 0) {
+      return { count: data.length, error: null }
+    }
+    // Secondary fallback: fetch rows and count client-side
+    if (!count) {
+      const { data: rows, error: e2 } = await supabase
+        .from('host_services')
+        .select('id')
+        .eq('host_id', hostId)
+        .eq('is_active', true)
+      return { count: (rows || []).length, error: e2 || null }
+    }
+    return { count: count || 0, error: null }
+  },
+
+  getAllServicesCount: async (hostId) => {
+    const { count, error, data } = await supabase
+      .from('host_services')
+      .select('id', { count: 'exact' })
+      .eq('host_id', hostId)
+    if (error) return { count: 0, error }
+    if ((count === null || count === 0) && Array.isArray(data) && data.length > 0) {
+      return { count: data.length, error: null }
+    }
+    if (!count) {
+      const { data: rows, error: e2 } = await supabase
+        .from('host_services')
+        .select('id')
+        .eq('host_id', hostId)
+      return { count: (rows || []).length, error: e2 || null }
+    }
+    return { count: count || 0, error: null }
+  },
+
+  getTotalBookingsCount: async (hostId) => {
+    const { count, error } = await supabase
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('provider_id', hostId)
+    return { count: count || 0, error }
+  },
+
+  getUpcomingBookingsCount: async (hostId) => {
+    const nowIso = new Date().toISOString()
+    const { count, error } = await supabase
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('provider_id', hostId)
+      .gte('date', nowIso)
+      .in('status', ['pending','confirmed'])
+    return { count: count || 0, error }
+  },
+
+  getCompletedBookingsCount: async (hostId) => {
+    const { count, error } = await supabase
+      .from('bookings')
+      .select('id', { count: 'exact', head: true })
+      .eq('provider_id', hostId)
+      .eq('status', 'completed')
+    return { count: count || 0, error }
+  },
+
+  getMonthlyRevenue: async (hostId) => {
+    const start = new Date()
+    start.setDate(1)
+    start.setHours(0, 0, 0, 0)
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('price, payment_status, date')
+      .eq('provider_id', hostId)
+      .gte('date', start.toISOString())
+    if (error) return { revenue: 0, error }
+    const revenue = (data || [])
+      .filter(b => (b.payment_status || '').toLowerCase() === 'paid')
+      .reduce((sum, b) => sum + (Number(b.price) || 0), 0)
+    return { revenue, error: null }
+  },
+
+  getTotalEarnings: async (hostId) => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('price, payment_status')
+      .eq('provider_id', hostId)
+    if (error) return { revenue: 0, error }
+    const revenue = (data || [])
+      .filter(b => (b.payment_status || '').toLowerCase() === 'paid')
+      .reduce((sum, b) => sum + (Number(b.price) || 0), 0)
+    return { revenue, error: null }
+  },
+
+  getHostRating: async (hostId) => {
+    const { data, error } = await supabase
+      .from('host_profiles')
+      .select('rating')
+      .eq('id', hostId)
+      .single()
+    return { rating: data?.rating || 0, error }
+  },
+
+  getRecentBookings: async (hostId, limit = 5) => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('id, service_type, status, created_at, price')
+      .eq('provider_id', hostId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    return { data: data || [], error }
+  },
+
+  // Upcoming bookings with customer name
+  getUpcomingBookingsDetailed: async (hostId, limit = 5) => {
+    const nowIso = new Date().toISOString()
+    // First pull upcoming bookings for this host
+    const { data: bookings, error } = await supabase
+      .from('bookings')
+      .select('id, service_type, status, date, start_time, end_time, location, user_id')
+      .eq('provider_id', hostId)
+      .gte('date', nowIso)
+      .in('status', ['pending','confirmed'])
+      .order('date', { ascending: true })
+      .limit(limit)
+    if (error) return { data: [], error }
+
+    const userIds = Array.from(new Set((bookings || []).map(b => b.user_id).filter(Boolean)))
+    let usersMap = new Map()
+    if (userIds.length) {
+      const { data: profiles, error: pErr } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds)
+      if (!pErr && profiles) {
+        usersMap = new Map(profiles.map(u => [u.id, u.full_name]))
+      }
+    }
+
+    const detailed = (bookings || []).map(b => ({
+      ...b,
+      customer_name: usersMap.get(b.user_id) || 'Customer'
+    }))
+    return { data: detailed, error: null }
+  },
+
+  // Create a booking as an end-user. user_id is inferred from session if not provided.
+  createBooking: async ({ providerId, serviceType, date, startTime, endTime, price, currency = 'INR', userNotes = '', location = null }) => {
+    const { data: sessionData } = await supabase.auth.getUser()
+    const currentUserId = sessionData?.user?.id
+    const insertPayload = {
+      user_id: currentUserId,
+      provider_id: providerId,
+      service_type: serviceType,
+      date,
+      start_time: startTime || null,
+      end_time: endTime || null,
+      price: price ?? 0,
+      currency,
+      user_notes: userNotes || '',
+      location: location || null,
+      status: 'pending'
+    }
+    const { data, error } = await supabase
+      .from('bookings')
+      .insert(insertPayload)
+      .select('id, user_id, provider_id, service_type, date, start_time, end_time, price, currency, status')
+      .single()
+    return { data, error }
+  },
+
+  // Host-visible summary: id, customer name, start/end, service type
+  getHostBookingSummaries: async (hostId, limit = 20) => {
+    // Use security-invoker view aligned with schema
+    const { data, error } = await supabase
+      .from('host_booking_summaries')
+      .select('id, service_type, date, start_time, end_time, user_name')
+      .order('start_time', { ascending: false })
+      .limit(limit)
+    return { data: data || [], error }
+  },
+
+  // User-visible summary: service_type, price, start/end/date
+  getUserBookingSummaries: async (userId, limit = 20) => {
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('id, service_type, price, currency, date, start_time, end_time, status')
+      .eq('user_id', userId)
+      .order('date', { ascending: false })
+      .limit(limit)
+    return { data: data || [], error }
+  },
+
+  getDailyBookingsStats: async (hostId, days = 7) => {
+    const start = new Date()
+    start.setDate(start.getDate() - (days - 1))
+    start.setHours(0, 0, 0, 0)
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('id, created_at')
+      .eq('provider_id', hostId)
+      .gte('created_at', start.toISOString())
+    if (error) return { data: [], error }
+    const map = new Map()
+    for (let i = 0; i < days; i++) {
+      const d = new Date(start)
+      d.setDate(start.getDate() + i)
+      const key = d.toISOString().slice(0, 10)
+      map.set(key, 0)
+    }
+    ;(data || []).forEach(b => {
+      const key = (b.created_at || '').slice(0, 10)
+      if (map.has(key)) map.set(key, (map.get(key) || 0) + 1)
+    })
+    const series = Array.from(map.entries()).map(([date, count]) => ({ date, count }))
+    return { data: series, error: null }
+  },
+
+  getHostStats: async (hostId) => {
+    const [a, totalServices, b, c, d, e, f] = await Promise.all([
+      db.getActiveServiceCount(hostId),
+      db.getAllServicesCount(hostId),
+      db.getTotalBookingsCount(hostId),
+      db.getMonthlyRevenue(hostId),
+      db.getHostRating(hostId),
+      db.getUpcomingBookingsCount(hostId),
+      db.getCompletedBookingsCount(hostId)
+    ])
+    return {
+      activeServices: a.count || 0,
+      allServices: totalServices.count || 0,
+      totalBookings: b.count || 0,
+      monthlyRevenue: c.revenue || 0,
+      rating: d.rating || 0,
+      upcomingBookings: e.count || 0,
+      completedBookings: f.count || 0,
+      error: a.error || b.error || c.error || d.error || null
+    }
   }
 }

@@ -1,11 +1,11 @@
 const Account = () => {
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Account Settings</h1>
+      <h1 className="text-4xl font-extrabold mb-8">Account Settings</h1>
       
       <div className="max-w-2xl space-y-8">
         {/* Company Profile */}
-        <div className="bg-[#1a241e] rounded-xl p-6 border border-[#29382f]">
+        <div className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
           <h2 className="text-xl font-bold mb-6">Company Profile</h2>
           
           <div className="space-y-6">
@@ -56,18 +56,18 @@ const Account = () => {
         </div>
 
         {/* Logo Upload */}
-        <div className="bg-[#1a241e] rounded-xl p-6 border border-[#29382f]">
+        <div className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
           <h2 className="text-xl font-bold mb-6">Company Logo</h2>
           
           <div className="flex items-center gap-6">
-            <div className="w-24 h-24 bg-[#111714] border-2 border-dashed border-[#29382f] rounded-lg flex items-center justify-center">
+            <div className="w-24 h-24 bg-white/5 backdrop-blur-md border-2 border-dashed border-white/10 rounded-lg flex items-center justify-center">
               <span className="material-symbols-outlined text-white/50 text-3xl">
                 image
               </span>
             </div>
             
             <div>
-              <button className="bg-[var(--primary-color)] text-[#111714] px-6 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-colors">
+              <button className="bg-gradient-to-r from-[var(--primary-color)] via-emerald-400 to-[#2a5a3a] text-[#111714] px-6 py-3 rounded-full font-bold shadow-[0_10px_30px_rgba(74,222,128,0.25)] hover:shadow-[0_18px_40px_rgba(74,222,128,0.35)] transition-all">
                 Upload Logo
               </button>
               <p className="text-white/70 text-sm mt-2">
@@ -78,7 +78,7 @@ const Account = () => {
         </div>
 
         {/* Security Settings */}
-        <div className="bg-[#1a241e] rounded-xl p-6 border border-[#29382f]">
+        <div className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
           <h2 className="text-xl font-bold mb-6">Security Settings</h2>
           
           <div className="space-y-4">
@@ -116,7 +116,7 @@ const Account = () => {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <button className="bg-[var(--primary-color)] text-[#111714] px-8 py-3 rounded-lg font-bold hover:bg-opacity-90 transition-colors">
+          <button className="bg-gradient-to-r from-[var(--primary-color)] via-emerald-400 to-[#2a5a3a] text-[#111714] px-8 py-3 rounded-full font-bold shadow-[0_10px_30px_rgba(74,222,128,0.25)] hover:shadow-[0_18px_40px_rgba(74,222,128,0.35)] transition-all">
             Save Changes
           </button>
         </div>

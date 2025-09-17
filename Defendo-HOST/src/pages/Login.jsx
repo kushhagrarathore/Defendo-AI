@@ -29,19 +29,30 @@ const Login = () => {
     setIsLoading(true)
 
     console.log('Login form submitted with:', { email: formData.email, password: '***' })
+    console.log('Target route:', from)
     
-    const result = await signIn(formData.email, formData.password)
-    
-    console.log('Login result:', result)
-    
-    if (result.success) {
-      console.log('Login successful, navigating to:', from)
-      navigate(from, { replace: true })
-    } else {
-      console.error('Login failed:', result.error)
+    try {
+      const result = await signIn(formData.email, formData.password)
+      
+      console.log('Login result:', result)
+      
+      if (result.success) {
+        console.log('Login successful, navigating to:', from)
+        console.log('User object:', result.data?.user)
+        
+        // Add a small delay to ensure state is updated
+        setTimeout(() => {
+          console.log('Attempting navigation...')
+          navigate(from, { replace: true })
+        }, 100)
+      } else {
+        console.error('Login failed:', result.error)
+      }
+    } catch (error) {
+      console.error('Exception during login:', error)
+    } finally {
+      setIsLoading(false)
     }
-    
-    setIsLoading(false)
   }
 
   return (
@@ -104,7 +115,21 @@ const Login = () => {
               <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-red-400">error</span>
-                  <p className="text-red-400 text-sm">{error}</p>
+                  <div>
+                    <p className="text-red-400 text-sm font-medium">
+                      {error === 'Invalid login credentials' 
+                        ? 'Invalid email or password. Please check your credentials and try again.'
+                        : error === 'Login timeout after 5 seconds'
+                        ? 'Login request timed out. Please check your internet connection and try again.'
+                        : error
+                      }
+                    </p>
+                    {error === 'Invalid login credentials' && (
+                      <p className="text-red-300 text-xs mt-1">
+                        Don't have an account? <Link to="/signup" className="underline hover:text-red-200">Sign up here</Link>
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
             )}

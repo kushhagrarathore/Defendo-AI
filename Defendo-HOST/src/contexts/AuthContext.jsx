@@ -1,11 +1,11 @@
-import { createContext, useContext, useEffect, useState } from 'react'
-import { supabase, auth, db } from '../lib/supabase'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase, auth } from '../lib/supabase'
 
 const AuthContext = createContext({})
 
 export const useAuth = () => {
   const context = useContext(AuthContext)
-  if (!context) {
+  if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider')
   }
   return context
@@ -17,41 +17,30 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  // Load host profile when user changes
-  const loadHostProfile = async (hostId) => {
-    if (!hostId) {
-      setHostProfile(null)
-      return
-    }
-
-    try {
-      // Load host profile (all users are hosts in this platform)
-      const { data: hostProfileData, error: hostError } = await db.getHostProfile(hostId)
-      if (hostError) {
-        console.error('Error loading host profile:', hostError)
-        setHostProfile(null)
-      } else {
-        setHostProfile(hostProfileData)
-      }
-    } catch (err) {
-      console.error('Error loading host profile:', err)
-      setHostProfile(null)
-    }
-  }
-
+  // Initialize auth state
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session }, error } = await supabase.auth.getSession()
-      if (error) {
-        setError(error.message)
-      } else {
-        setUser(session?.user ?? null)
-        if (session?.user) {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession()
+        console.log('Initial session check:', { session, error })
+        
+        if (error) {
+          console.error('Session error:', error)
+          setError(error.message)
+        } else if (session?.user) {
+          console.log('Found existing session for user:', session.user.id)
+          setUser(session.user)
+          
+          // Fetch host profile
           await loadHostProfile(session.user.id)
         }
+      } catch (err) {
+        console.error('Auth initialization error:', err)
+        setError('Failed to initialize authentication')
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     getInitialSession()
@@ -59,148 +48,145 @@ export const AuthProvider = ({ children }) => {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        setUser(session?.user ?? null)
+        console.log('Auth state changed:', event, session?.user?.id)
         
-        if (session?.user) {
+        if (event === 'SIGNED_IN' && session?.user) {
+          setUser(session.user)
           await loadHostProfile(session.user.id)
-        } else {
+          setError(null)
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null)
           setHostProfile(null)
+          setError(null)
+        } else if (event === 'TOKEN_REFRESHED' && session?.user) {
+          console.log('Token refreshed for user:', session.user.id)
+          setUser(session.user)
         }
         
         setLoading(false)
-        
-        if (event === 'SIGNED_OUT') {
-          setError(null)
-        }
       }
     )
 
     return () => subscription.unsubscribe()
   }, [])
 
-  const signUp = async (email, password, userData = {}) => {
-    setLoading(true)
-    setError(null)
-    
+  // Load host profile
+  const loadHostProfile = async (userId) => {
     try {
-      let result
+      console.log('Loading host profile for user:', userId)
       
-      if (userData.role === "host") {
-        // Sign up as host
-        result = await auth.signUpHost(
-          email, 
-          password, 
-          userData.full_name || '', 
-          userData.phone || '', 
-          userData.company_name || '',
-          userData.address || ''
-        )
-      } else {
-        // Sign up as regular user
-        result = await auth.signUpUser(
-          email, 
-          password, 
-          userData.full_name || '', 
-          userData.phone || ''
-        )
+      const { data: profile, error } = await supabase
+        .from('host_profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
+      
+      if (error) {
+        console.error('Host profile fetch error:', error)
+        setError('Failed to load profile')
+        return
       }
       
-      if (result.error) {
-        setError(result.error.message)
-        return { success: false, error: result.error.message }
-      }
-      
-      return { success: true, data: result.data }
+      console.log('Host profile loaded:', profile)
+      setHostProfile(profile)
     } catch (err) {
-      const errorMessage = err.message || 'An unexpected error occurred'
-      setError(errorMessage)
-      return { success: false, error: errorMessage }
-    } finally {
-      setLoading(false)
+      console.error('Profile loading error:', err)
+      setError('Failed to load profile')
     }
   }
 
+  // Sign in function
   const signIn = async (email, password) => {
-    console.log("AuthContext: Starting signIn process")
-    setLoading(true)
-    setError(null)
-    
     try {
-      console.log("AuthContext: Calling auth.loginHost")
-      const { data, error } = await auth.loginHost(email, password)
+      setLoading(true)
+      setError(null)
       
-      console.log("AuthContext: loginHost response:", { data, error })
+      console.log('Attempting sign in for:', email)
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      })
       
       if (error) {
-        console.error("AuthContext: Login error:", error.message)
+        console.error('Sign in error:', error)
         setError(error.message)
         return { success: false, error: error.message }
       }
       
-      // The loginHost function returns { data: { auth: data, host }, error: null }
-      // We need to extract the auth data and set the host profile
-      if (data && data.auth) {
-        console.log("AuthContext: Setting user and host profile")
-        setUser(data.auth.user)
-        if (data.host) {
-          setHostProfile(data.host)
-        }
-        console.log("AuthContext: Login successful")
-        return { success: true, data: data.auth }
+      if (!data.user) {
+        setError('No user returned from sign in')
+        return { success: false, error: 'No user returned' }
       }
       
-      console.error("AuthContext: No auth data received")
-      return { success: false, error: 'Login failed' }
+      console.log('Sign in successful, user:', data.user.id)
+      
+      // The auth state change listener will handle setting user and loading profile
+      return { success: true, user: data.user }
+      
     } catch (err) {
-      console.error("AuthContext: Exception during login:", err)
-      const errorMessage = err.message || 'An unexpected error occurred'
-      setError(errorMessage)
-      return { success: false, error: errorMessage }
+      console.error('Sign in catch error:', err)
+      setError('Sign in failed')
+      return { success: false, error: 'Sign in failed' }
     } finally {
       setLoading(false)
     }
   }
 
+  // Sign out function
   const signOut = async () => {
-    setLoading(true)
-    setError(null)
-    
     try {
-      const { error } = await auth.signOut()
+      setLoading(true)
+      const { error } = await supabase.auth.signOut()
+      
       if (error) {
-        setError(error.message)
+        console.error('Sign out error:', error)
         return { success: false, error: error.message }
       }
+      
+      // Clear local state
+      setUser(null)
+      setHostProfile(null)
+      setError(null)
       
       return { success: true }
     } catch (err) {
-      const errorMessage = err.message || 'An unexpected error occurred'
-      setError(errorMessage)
-      return { success: false, error: errorMessage }
+      console.error('Sign out catch error:', err)
+      return { success: false, error: 'Sign out failed' }
     } finally {
       setLoading(false)
     }
   }
 
-  const clearError = () => setError(null)
+  // Clear error function
+  const clearError = () => {
+    setError(null)
+  }
+
+  // Debug function to check current auth state
+  const debugAuth = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    console.log('=== Auth Debug ===')
+    console.log('Session:', session)
+    console.log('User:', user)
+    console.log('Context user:', user)
+    console.log('Context hostProfile:', hostProfile)
+    
+    return { session, user, contextUser: user, hostProfile }
+  }
 
   const value = {
     user,
     hostProfile,
     loading,
     error,
-    signUp,
     signIn,
     signOut,
     clearError,
-    isAuthenticated: !!user,
-    loadHostProfile: () => user && loadHostProfile(user.id)
+    debugAuth
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
-
