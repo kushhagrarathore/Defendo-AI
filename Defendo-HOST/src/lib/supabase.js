@@ -8,13 +8,24 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIU
 console.log('Supabase URL:', supabaseUrl)
 console.log('Supabase Key present:', !!supabaseAnonKey)
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true
+// Reuse a single client across HMR to avoid losing session/state
+let client
+if (typeof window !== 'undefined' && window.__SUPABASE__) {
+  client = window.__SUPABASE__
+} else {
+  client = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  })
+  if (typeof window !== 'undefined') {
+    window.__SUPABASE__ = client
   }
-})
+}
+
+export const supabase = client
 
 // Auth helper functions for Host-only platform
 export const auth = {

@@ -39,6 +39,7 @@ export const AuthProvider = ({ children }) => {
         console.error('Auth initialization error:', err)
         setError('Failed to initialize authentication')
       } finally {
+        // Safety: ensure loading stops even if HMR interrupts
         setLoading(false)
       }
     }
@@ -63,6 +64,7 @@ export const AuthProvider = ({ children }) => {
           setUser(session.user)
         }
         
+        // Stop loading on any auth event to recover UI during HMR
         setLoading(false)
       }
     )
@@ -92,6 +94,40 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       console.error('Profile loading error:', err)
       setError('Failed to load profile')
+    }
+  }
+
+  // Sign up function
+  const signUp = async (email, password, userData = {}) => {
+    try {
+      setLoading(true)
+      setError(null)
+
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: userData }
+      })
+
+      if (error) {
+        console.error('Sign up error:', error)
+        setError(error.message)
+        return { success: false, error: error.message }
+      }
+
+      // If the user is immediately created and signed in (email confirmations disabled), set state
+      if (data?.user) {
+        setUser(data.user)
+        await loadHostProfile(data.user.id)
+      }
+
+      return { success: true, data }
+    } catch (err) {
+      console.error('Sign up catch error:', err)
+      setError('Sign up failed')
+      return { success: false, error: 'Sign up failed' }
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -182,6 +218,7 @@ export const AuthProvider = ({ children }) => {
     hostProfile,
     loading,
     error,
+    signUp,
     signIn,
     signOut,
     clearError,

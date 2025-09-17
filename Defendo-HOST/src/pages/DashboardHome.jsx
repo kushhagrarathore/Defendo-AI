@@ -64,7 +64,7 @@ const DashboardHome = () => {
           supabase.from('bookings').select('id').eq('provider_id', user.id),
           supabase.from('bookings').select('id').eq('provider_id', user.id).in('status', ['pending','confirmed']),
           supabase.from('bookings').select('id').eq('provider_id', user.id).eq('status','completed'),
-          supabase.from('bookings').select('price, payment_status')
+          supabase.from('bookings').select('price, payment_status, service_type, status, date, created_at')
             .eq('provider_id', user.id)
             .gte('created_at', startOfMonth.toISOString())
             .eq('status','completed')
@@ -85,13 +85,15 @@ const DashboardHome = () => {
         const activeBookings = activeBookingsData?.length || 0
         const completedBookings = completedBookingsData?.length || 0
         const monthlyRevenue = revenueData?.reduce((sum, booking) => sum + Number(booking.price || 0), 0) || 0
+        const monthlyPaidBookings = Array.isArray(revenueData) ? revenueData : []
 
         setDashboardData({
           totalBookings,
           activeBookings,
           completedBookings,
           monthlyRevenue,
-          recentBookings: recentBookingsData || []
+          recentBookings: recentBookingsData || [],
+          monthlyPaidBookings
         })
 
         console.log('Dashboard data loaded:', {
@@ -338,9 +340,39 @@ const DashboardHome = () => {
           <BookingTimeline bookings={dashboardData.recentBookings} />
         </div>
 
-        {/* Guard Tracker */}
-        <div>
+        {/* Right Column: Guard + Monthly Details */}
+        <div className="space-y-6">
           <GuardTracker />
+
+          {/* Monthly Bookings & Revenue Details */}
+          <div className="bg-[#111714] border border-white/10 rounded-2xl p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-lg font-semibold">This Month</h3>
+              <span className="text-white/60 text-sm">{new Date().toLocaleString('en-US', { month: 'long', year: 'numeric' })}</span>
+            </div>
+            <div className="flex items-center justify-between py-3 border-b border-white/10">
+              <div className="text-white/70 text-sm">Paid bookings</div>
+              <div className="font-semibold">{(dashboardData.monthlyPaidBookings || []).length}</div>
+            </div>
+            <div className="flex items-center justify-between py-3">
+              <div className="text-white/70 text-sm">Revenue</div>
+              <div className="font-semibold">{new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', minimumFractionDigits: 0 }).format(dashboardData.monthlyRevenue || 0)}</div>
+            </div>
+            <div className="mt-4 max-h-64 overflow-auto divide-y divide-white/5">
+              {(dashboardData.monthlyPaidBookings || []).slice(0, 10).map((b) => (
+                <div key={b.id} className="py-3 flex items-center justify-between">
+                  <div>
+                    <div className="text-sm font-medium capitalize">{b.service_type || 'service'}</div>
+                    <div className="text-xs text-white/50">{b.date ? new Date(b.date).toLocaleDateString() : (b.created_at || '').slice(0,10)}</div>
+                  </div>
+                  <div className="text-sm font-semibold">₹{Number(b.price || 0).toLocaleString('en-IN')}</div>
+                </div>
+              ))}
+              {(dashboardData.monthlyPaidBookings || []).length === 0 && (
+                <div className="py-8 text-center text-white/50 text-sm">No paid bookings yet this month.</div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 

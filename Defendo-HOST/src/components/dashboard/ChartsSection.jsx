@@ -60,7 +60,7 @@ const ChartsSection = ({ data = [] }) => {
         <h3 className="text-xl font-bold mb-4 text-white">Monthly Bookings</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData}>
+            <BarChart data={chartData} barSize={12}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
               <XAxis 
                 dataKey="name" 
@@ -72,11 +72,7 @@ const ChartsSection = ({ data = [] }) => {
                 fontSize={12}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Bar 
-                dataKey="bookings" 
-                fill="url(#bookingsGradient)"
-                radius={[4, 4, 0, 0]}
-              />
+              <Bar dataKey="bookings" fill="url(#bookingsGradient)" radius={[6, 6, 0, 0]} />
               <defs>
                 <linearGradient id="bookingsGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--primary-color)" />
@@ -109,13 +105,7 @@ const ChartsSection = ({ data = [] }) => {
                 fontSize={12}
               />
               <Tooltip content={<CustomTooltip />} />
-              <Area
-                type="monotone"
-                dataKey="revenue"
-                stroke="var(--primary-color)"
-                fill="url(#revenueGradient)"
-                strokeWidth={2}
-              />
+              <Area type="monotone" dataKey="revenue" stroke="var(--primary-color)" fill="url(#revenueGradient)" strokeWidth={2} />
               <defs>
                 <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="var(--primary-color)" stopOpacity={0.8} />
