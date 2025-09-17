@@ -203,7 +203,7 @@ export const db = {
   getHostBookings: async (hostId) => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('id, status, date, created_at, service_type, price, payment_status, user_id, provider_id, location')
+      .select('id, status, date, created_at, service_type, price, payment_status, user_id, host_id:provider_id, start_time, end_time, location, user_notes')
       .eq('provider_id', hostId)
       .order('created_at', { ascending: false })
     return { data, error }
@@ -227,7 +227,7 @@ export const db = {
     const { data, error } = await supabase
       .from('emergency_contacts')
       .select('*')
-      .eq('host_id', hostId)
+      .eq('user_id', hostId)
       .order('is_primary', { ascending: false })
     return { data, error }
   },
@@ -237,7 +237,7 @@ export const db = {
     const { data, error } = await supabase
       .from('emergency_contacts')
       .insert({
-        host_id: hostId,
+        user_id: hostId,
         ...contactData
       })
       .select()
@@ -249,7 +249,7 @@ export const db = {
     const { data, error } = await supabase
       .from('host_services')
       .select('*')
-      .eq('host_id', hostId)
+      .eq('provider_id', hostId)
       .order('created_at', { ascending: false })
     return { data, error }
   },
@@ -258,7 +258,7 @@ export const db = {
     const { data, error } = await supabase
       .from('host_services')
       .insert({
-        host_id: hostId,
+        provider_id: hostId,
         ...serviceData
       })
       .select()
@@ -309,7 +309,7 @@ export const db = {
     const { count, error, data } = await supabase
       .from('host_services')
       .select('id', { count: 'exact' })
-      .eq('host_id', hostId)
+      .eq('provider_id', hostId)
       .eq('is_active', true)
     if (error) return { count: 0, error }
     // Fallback: if count is null/0 but data exists under RLS quirks
@@ -321,7 +321,7 @@ export const db = {
       const { data: rows, error: e2 } = await supabase
         .from('host_services')
         .select('id')
-        .eq('host_id', hostId)
+        .eq('provider_id', hostId)
         .eq('is_active', true)
       return { count: (rows || []).length, error: e2 || null }
     }
@@ -332,7 +332,7 @@ export const db = {
     const { count, error, data } = await supabase
       .from('host_services')
       .select('id', { count: 'exact' })
-      .eq('host_id', hostId)
+      .eq('provider_id', hostId)
     if (error) return { count: 0, error }
     if ((count === null || count === 0) && Array.isArray(data) && data.length > 0) {
       return { count: data.length, error: null }
@@ -341,7 +341,7 @@ export const db = {
       const { data: rows, error: e2 } = await supabase
         .from('host_services')
         .select('id')
-        .eq('host_id', hostId)
+        .eq('provider_id', hostId)
       return { count: (rows || []).length, error: e2 || null }
     }
     return { count: count || 0, error: null }
@@ -415,7 +415,7 @@ export const db = {
   getRecentBookings: async (hostId, limit = 5) => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('id, service_type, status, created_at, price')
+      .select('id, service_type, status, created_at, price, host_id:provider_id')
       .eq('provider_id', hostId)
       .order('created_at', { ascending: false })
       .limit(limit)

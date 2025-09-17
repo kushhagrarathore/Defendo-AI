@@ -2,32 +2,20 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const NotificationsPanel = ({ isOpen, onClose }) => {
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      type: 'booking',
-      title: 'New Booking Received',
-      message: 'Security Guard service booked for tomorrow 2:00 PM',
-      time: '2 minutes ago',
-      unread: true
-    },
-    {
-      id: 2,
-      type: 'cancellation',
-      title: 'Service Cancelled',
-      message: 'Drone Patrol booking cancelled by customer',
-      time: '1 hour ago',
-      unread: true
-    },
-    {
-      id: 3,
-      type: 'payment',
-      title: 'Payment Received',
-      message: '₹15,000 payment received for completed service',
-      time: '3 hours ago',
-      unread: false
+  const [notifications, setNotifications] = useState([])
+
+  // Listen for dashboard push events
+  useEffect(() => {
+    const handler = (e) => {
+      const notif = e.detail
+      setNotifications(prev => [
+        { id: notif.id || Date.now(), ...notif },
+        ...prev
+      ])
     }
-  ])
+    window.addEventListener('dashboard:new-notification', handler)
+    return () => window.removeEventListener('dashboard:new-notification', handler)
+  }, [])
 
   const getNotificationIcon = (type) => {
     switch (type) {
@@ -189,4 +177,6 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
 }
 
 export default NotificationsPanel
+
+
 

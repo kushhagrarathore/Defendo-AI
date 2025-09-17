@@ -69,7 +69,7 @@ const DashboardHome = () => {
             .gte('created_at', startOfMonth.toISOString())
             .eq('status','completed')
             .eq('payment_status','paid'),
-          supabase.from('bookings').select('id, service_type, status, created_at, price')
+          supabase.from('bookings').select('id, service_type, status, created_at, price, host_id:provider_id')
             .eq('provider_id', user.id)
             .order('created_at', { ascending: false })
             .limit(5)
@@ -111,6 +111,44 @@ const DashboardHome = () => {
 
     fetchDashboardData()
   }, [user, authLoading])
+
+  // Realtime: listen for new bookings for this host and push a notification
+  useEffect(() => {
+    if (!user?.id) return
+
+    const channel = supabase
+      .channel(`bookings_inserts_${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'bookings',
+          filter: `provider_id=eq.${user.id}`
+        },
+        (payload) => {
+          const b = payload.new || {}
+          const when = b.date ? new Date(b.date).toLocaleString() : 'upcoming'
+          const message = `${(b.service_type || 'Service')} booked for ${when}`
+          window.dispatchEvent(new CustomEvent('dashboard:new-notification', {
+            detail: {
+              id: b.id,
+              type: 'booking',
+              title: 'New Booking Received',
+              message,
+              time: 'Just now',
+              unread: true
+            }
+          }))
+          setNotificationsOpen(true)
+        }
+      )
+      .subscribe()
+
+    return () => {
+      try { supabase.removeChannel(channel) } catch (_) {}
+    }
+  }, [user?.id])
 
   const getHostDisplayName = () => {
     if (hostProfile?.company_name) {
@@ -259,7 +297,7 @@ const DashboardHome = () => {
                 }}
                 className="px-3 py-2 rounded-md bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-200"
               >
-                Run RLS test for host_id = {user?.id?.slice(0,8)}…
+                Run RLS test for provider_id = {user?.id?.slice(0,8)}…
               </button>
               {rlsCount !== null && (
                 <span className="ml-3">Visible bookings: {rlsCount}</span>

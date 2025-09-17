@@ -31,7 +31,12 @@ const BookingDetailModal = ({ booking, onClose }) => {
             </div>
             <div>
               <p className="text-white/60 text-sm">Location</p>
-              <p className="font-medium">{[booking.city, booking.state].filter(Boolean).join(', ') || '—'}</p>
+              <p className="font-medium">{(() => {
+                if (!booking.location) return '—'
+                if (typeof booking.location === 'string') return booking.location || '—'
+                const obj = booking.location || {}
+                return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+              })()}</p>
             </div>
             <div>
               <p className="text-white/60 text-sm">Price</p>
@@ -44,7 +49,7 @@ const BookingDetailModal = ({ booking, onClose }) => {
           </div>
           <div>
             <p className="text-white/60 text-sm mb-1">Notes</p>
-            <p className="whitespace-pre-wrap bg-[#0b100e] border border-[#29382f] rounded-xl p-4">{booking.notes || '—'}</p>
+            <p className="whitespace-pre-wrap bg-[#0b100e] border border-[#29382f] rounded-xl p-4">{booking.user_notes || '—'}</p>
           </div>
         </div>
       </div>
@@ -76,8 +81,13 @@ const Bookings = () => {
 
   const filtered = useMemo(() => {
     return (bookings || []).filter(b => {
+      const locationText = typeof b.location === 'string'
+        ? b.location
+        : (b.location && (b.location.address || [b.location.city, b.location.state].filter(Boolean).join(', '))) || ''
       const matchesQuery = query
-        ? String(b.id).includes(query) || (b.service_type || '').toLowerCase().includes(query.toLowerCase()) || (b.city || '').toLowerCase().includes(query.toLowerCase())
+        ? String(b.id).includes(query)
+          || (b.service_type || '').toLowerCase().includes(query.toLowerCase())
+          || locationText.toLowerCase().includes(query.toLowerCase())
         : true
       const matchesStatus = statusFilter === 'all' ? true : (b.status || '').toLowerCase() === statusFilter
       return matchesQuery && matchesStatus
@@ -131,7 +141,12 @@ const Bookings = () => {
                 <div>#{b.id}</div>
                 <div className="capitalize">{b.service_type || '—'}</div>
                 <div>{b.date ? new Date(b.date).toLocaleString() : '—'}</div>
-                <div>{[b.city, b.state].filter(Boolean).join(', ') || '—'}</div>
+                <div>{(() => {
+                  if (!b.location) return '—'
+                  if (typeof b.location === 'string') return b.location || '—'
+                  const obj = b.location || {}
+                  return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+                })()}</div>
                 <div className="capitalize">{b.status || '—'}</div>
                 <div className="capitalize">{b.payment_status || '—'}</div>
                 <div>₹{Number(b.price || 0).toLocaleString('en-IN')}</div>

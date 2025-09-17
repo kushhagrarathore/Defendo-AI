@@ -57,11 +57,16 @@ export const testSchemaUpdate = async () => {
       const { data: bookingData, error: bookingError } = await supabase
         .from('bookings')
         .insert({
-          host_id: signupData.user.id,
+          provider_id: signupData.user.id,
+          user_id: signupData.user.id,
           service_type: 'securityGuard',
           date: new Date().toISOString(),
-          duration: 8,
+          duration_hours: 2,
+          start_time: '10:00',
+          end_time: '12:00',
           location: 'Test Location',
+          status: 'pending',
+          payment_status: 'pending',
           price: 1000
         })
         .select()
@@ -103,7 +108,7 @@ export const checkTableStructure = async () => {
     // Check if bookings table has correct structure
     const { data: bookings, error: bookingsError } = await supabase
       .from('bookings')
-      .select('id, host_id, service_type, status')
+      .select('id, provider_id, service_type, status')
       .limit(3)
     
     if (bookingsError) {
