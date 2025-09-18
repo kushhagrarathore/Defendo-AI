@@ -73,7 +73,20 @@ const Bookings = () => {
       setError(null)
       const { data, error } = await db.getHostBookings(user.id)
       if (error) setError(error.message)
-      setBookings(data || [])
+      let rows = data || []
+      // Enrich with user full_name from profiles
+      const userIds = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)))
+      if (userIds.length) {
+        const { data: profiles, error: pErr } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds)
+        if (!pErr && profiles) {
+          const map = new Map(profiles.map(p => [p.id, p.full_name]))
+          rows = rows.map(r => ({ ...r, user_name: map.get(r.user_id) || 'Customer' }))
+        }
+      }
+      setBookings(rows)
       setLoading(false)
     }
     load()
@@ -87,6 +100,7 @@ const Bookings = () => {
       const matchesQuery = query
         ? String(b.id).includes(query)
           || (b.service_type || '').toLowerCase().includes(query.toLowerCase())
+          || (b.user_name || '').toLowerCase().includes(query.toLowerCase())
           || locationText.toLowerCase().includes(query.toLowerCase())
         : true
       const matchesStatus = statusFilter === 'all' ? true : (b.status || '').toLowerCase() === statusFilter
@@ -136,9 +150,10 @@ const Bookings = () => {
       </div>
 
       <GlassCard className="overflow-hidden">
-        <div className="grid grid-cols-8 px-4 py-3 text-white/60 text-sm border-b border-[#29382f] bg-white/5">
+        <div className="grid grid-cols-9 px-4 py-3 text-white/60 text-sm border-b border-[#29382f] bg-white/5">
           <div>ID</div>
           <div>Service</div>
+          <div>Customer</div>
           <div>Date/Time</div>
           <div>Location</div>
           <div>Status</div>
@@ -153,9 +168,10 @@ const Bookings = () => {
         ) : (
           <div className="divide-y divide-[#29382f]">
             {filtered.map((b, i) => (
-              <div key={b.id} className={`grid grid-cols-8 px-4 py-3 items-center hover:bg-[#1a241e] ${i % 2 === 0 ? 'bg-white/0' : 'bg-white/5'}`}>
+              <div key={b.id} className={`grid grid-cols-9 px-4 py-3 items-center hover:bg-[#1a241e] ${i % 2 === 0 ? 'bg-white/0' : 'bg-white/5'}`}>
                 <div>#{b.id}</div>
                 <div className="capitalize">{b.service_type || '—'}</div>
+                <div className="truncate max-w-[12rem]" title={b.user_name || ''}>{b.user_name || 'Customer'}</div>
                 <div>{b.date ? new Date(b.date).toLocaleString() : '—'}</div>
                 <div>{(() => {
                   if (!b.location) return '—'

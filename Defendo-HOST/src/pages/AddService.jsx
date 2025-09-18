@@ -205,7 +205,7 @@ const AddService = () => {
     <div className="space-y-8 animate-fade-in-up">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+    <div>
           <h1 className="text-4xl font-bold gradient-text animate-slide-in-left">Add New Service</h1>
           <p className="text-white/70 mt-2 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
             Create a new security service offering

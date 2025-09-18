@@ -98,11 +98,11 @@ const Dashboard = () => {
   return (
     <div className="bg-[#111714] text-white min-h-screen flex animate-fade-in-up">
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-[#1a241e] border-r border-[#29382f] ${sidebarCollapsed ? 'p-4' : 'p-6'} flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden`}>
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-[#0f1512] border-r border-[#1f2a24] ${sidebarCollapsed ? 'p-4' : 'p-6'} flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden`}> 
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5">
           <div className={`absolute ${sidebarCollapsed ? 'top-8 left-4' : 'top-10 left-10'} w-32 h-32 bg-[var(--primary-color)] rounded-full blur-3xl animate-pulse`}></div>
-          <div className={`absolute ${sidebarCollapsed ? 'bottom-16 right-4' : 'bottom-20 right-8'} w-24 h-24 bg-blue-500 rounded-full blur-2xl animate-pulse`} style={{animationDelay: '1s'}}></div>
+          <div className={`absolute ${sidebarCollapsed ? 'bottom-16 right-4' : 'bottom-20 right-8'} w-24 h-24 bg-emerald-500 rounded-full blur-2xl animate-pulse`} style={{animationDelay: '1s'}}></div>
         </div>
         
         {/* Collapsed Sidebar Accent */}
@@ -128,13 +128,14 @@ const Dashboard = () => {
           )}
         </div>
         
-        {/* Toggle Button */}
+        {/* Toggle Button - edge mounted, vertically centered */}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className={`absolute ${sidebarCollapsed ? 'top-4 right-2' : 'top-6 right-4'} p-2 rounded-full bg-[#29382f] hover:bg-[#3a4a3f] transition-all duration-200 ripple z-20 group`}
+          className="absolute top-1/2 -translate-y-1/2 -right-3 w-9 h-9 flex items-center justify-center rounded-full bg-[#29382f] hover:bg-[#3a4a3f] border border-white/10 shadow-lg transition-all duration-200 z-20 group"
           title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className="material-symbols-outlined text-lg text-white group-hover:scale-110 transition-transform">
+          <span className="material-symbols-outlined text-base text-white group-hover:scale-110 transition-transform">
             {sidebarCollapsed ? 'chevron_right' : 'chevron_left'}
           </span>
         </button>
@@ -151,17 +152,17 @@ const Dashboard = () => {
             >
               <Link
                 to={item.path}
-                className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'} rounded-lg transition-all duration-300 ease-out card-animate ripple stagger-item relative ${
+                className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 ease-out card-animate ripple stagger-item relative ${
                   location.pathname === item.path
-                    ? "bg-gradient-to-r from-[var(--primary-color)] to-[#2a5a3a] text-[#111714] shadow-lg shadow-[var(--primary-color)]/25"
-                    : "text-white/70 hover:text-white hover:bg-[#29382f] hover:shadow-lg"
+                    ? "bg-white/10 ring-1 ring-[var(--primary-color)]/40 shadow-[0_6px_20px_rgba(74,222,128,0.18)] text-white"
+                    : "text-white/70 hover:text-white hover:bg-white/5 hover:ring-1 hover:ring-white/10"
                 }`}
                 title={sidebarCollapsed ? item.label : ''}
               >
                 {/* Sliding hover bar */}
                 <motion.span
                   layoutId={location.pathname === item.path ? 'sidebar-active' : undefined}
-                  className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary-color)] rounded-r"
+                  className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary-color)]/80 rounded-r"
                   initial={false}
                   animate={{ opacity: location.pathname === item.path ? 1 : 0 }}
                   transition={{ type: 'spring', stiffness: 300, damping: 30 }}

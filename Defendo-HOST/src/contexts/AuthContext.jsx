@@ -31,9 +31,9 @@ export const AuthProvider = ({ children }) => {
         } else if (session?.user) {
           console.log('Found existing session for user:', session.user.id)
           setUser(session.user)
-          
-          // Fetch host profile
-          await loadHostProfile(session.user.id)
+          try {
+            await loadHostProfile(session.user.id)
+          } catch (_) {}
         }
       } catch (err) {
         console.error('Auth initialization error:', err)
@@ -46,14 +46,19 @@ export const AuthProvider = ({ children }) => {
 
     getInitialSession()
 
+    // Absolute fail-safe: never let loading hang >5s
+    const timeout = setTimeout(() => setLoading(false), 5000)
+
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.id)
         
-        if (event === 'SIGNED_IN' && session?.user) {
+        if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'USER_UPDATED') && session?.user) {
           setUser(session.user)
-          await loadHostProfile(session.user.id)
+          try {
+            await loadHostProfile(session.user.id)
+          } catch (_) { /* non-blocking */ }
           setError(null)
         } else if (event === 'SIGNED_OUT') {
           setUser(null)
@@ -69,7 +74,7 @@ export const AuthProvider = ({ children }) => {
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => { subscription.unsubscribe(); clearTimeout(timeout) }
   }, [])
 
   // Load host profile
