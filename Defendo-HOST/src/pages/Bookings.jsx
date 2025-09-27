@@ -65,6 +65,25 @@ const Bookings = () => {
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [selected, setSelected] = useState(null)
+  const [copiedId, setCopiedId] = useState(null)
+
+  // Accent badge styles
+  const getStatusBadgeClass = (status) => {
+    const s = (status || '').toLowerCase()
+    if (s === 'confirmed') return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+    if (s === 'completed') return 'bg-sky-500/15 text-sky-400 border-sky-500/30'
+    if (s === 'pending') return 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+    if (s === 'cancelled') return 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+    return 'bg-white/5 text-white/70 border-white/10'
+  }
+
+  const getPaymentBadgeClass = (payment) => {
+    const p = (payment || '').toLowerCase()
+    if (p === 'paid') return 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+    if (p === 'pending') return 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+    if (p === 'failed') return 'bg-rose-500/15 text-rose-400 border-rose-500/30'
+    return 'bg-white/5 text-white/70 border-white/10'
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -108,6 +127,16 @@ const Bookings = () => {
     })
   }, [bookings, query, statusFilter])
 
+  const shortId = (id) => id ? `#${String(id).slice(-6)}` : '—'
+
+  const copyId = async (id) => {
+    try {
+      await navigator.clipboard.writeText(String(id))
+      setCopiedId(id)
+      setTimeout(() => setCopiedId(null), 1200)
+    } catch (_) {}
+  }
+
   return (
     <div className="space-y-6 animate-fade-in-up">
       <div className="flex items-center justify-between">
@@ -149,67 +178,98 @@ const Bookings = () => {
         </div>
       </div>
 
-      <GlassCard className="overflow-hidden">
-        <div className="grid grid-cols-9 px-4 py-3 text-white/60 text-sm border-b border-[#29382f] bg-white/5">
-          <div>ID</div>
-          <div>Service</div>
-          <div>Customer</div>
-          <div>Date/Time</div>
-          <div>Location</div>
-          <div>Status</div>
-          <div>Payment</div>
-          <div>Price</div>
-          <div></div>
-        </div>
+      <GlassCard className="overflow-visible">
         {loading ? (
           <div className="p-6 text-white/60">Loading...</div>
         ) : filtered.length === 0 ? (
           <div className="p-6 text-white/60">No bookings found.</div>
         ) : (
-          <div className="divide-y divide-[#29382f]">
-            {filtered.map((b, i) => (
-              <div key={b.id} className={`grid grid-cols-9 px-4 py-3 items-center hover:bg-[#1a241e] ${i % 2 === 0 ? 'bg-white/0' : 'bg-white/5'}`}>
-                <div>#{b.id}</div>
-                <div className="capitalize">{b.service_type || '—'}</div>
-                <div className="truncate max-w-[12rem]" title={b.user_name || ''}>{b.user_name || 'Customer'}</div>
-                <div>{b.date ? new Date(b.date).toLocaleString() : '—'}</div>
-                <div>{(() => {
-                  if (!b.location) return '—'
-                  if (typeof b.location === 'string') return b.location || '—'
-                  const obj = b.location || {}
-                  return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
-                })()}</div>
-                <div className="capitalize flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm">
-                    {(() => {
-                      const s = (b.status || '').toLowerCase()
-                      if (s === 'pending') return 'hourglass_top'
-                      if (s === 'confirmed') return 'event_available'
-                      if (s === 'completed') return 'check_circle'
-                      if (s === 'cancelled') return 'cancel'
-                      return 'info'
-                    })()}
-                  </span>
-                  {b.status || '—'}
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
+            {filtered.map((b) => (
+              <div key={b.id} className="rounded-2xl bg-[#0b100e] border border-[#29382f] shadow-[0_6px_30px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_40px_rgba(0,0,0,0.35)] transition-all">
+                {/* Card header */}
+                <div className="flex items-start justify-between p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[var(--primary-color)]">shield_person</span>
+                    <div>
+                      <div className="font-semibold capitalize leading-tight">{b.service_type || '—'}</div>
+                      <button
+                        className="text-xs text-white/50 hover:text-white/80 transition-colors"
+                        title="Click to copy full ID"
+                        onClick={() => copyId(b.id)}
+                      >
+                        {shortId(b.id)}{copiedId === b.id ? ' • Copied' : ''}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-white/60">Price</div>
+                    <div className="text-lg font-bold">₹{Number(b.price || 0).toLocaleString('en-IN')}</div>
+                  </div>
                 </div>
-                <div className="capitalize flex items-center gap-2">
-                  <span className="material-symbols-outlined text-sm">
-                    {(() => {
-                      const p = (b.payment_status || '').toLowerCase()
-                      if (p === 'paid') return 'verified'
-                      if (p === 'pending') return 'schedule'
-                      if (p === 'failed') return 'error'
-                      return 'payments'
-                    })()}
-                  </span>
-                  {b.payment_status || '—'}
-                </div>
-                <div>₹{Number(b.price || 0).toLocaleString('en-IN')}</div>
-                <div className="text-right">
-                  <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--primary-color)]/15 border border-[var(--primary-color)]/30 text-[var(--primary-color)] hover:bg-[var(--primary-color)]/25 transition-colors text-sm" onClick={() => setSelected(b)}>
-                    <span className="material-symbols-outlined text-sm">visibility</span>
-                    View
-                  </button>
+
+                {/* Card body */}
+                <div className="px-4 pb-4 space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="material-symbols-outlined text-white/50 text-base">person</span>
+                      <span className="truncate" title={b.user_name || ''}>{b.user_name || 'Customer'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="material-symbols-outlined text-white/50 text-base">schedule</span>
+                      <span>{b.date ? new Date(b.date).toLocaleString() : '—'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 sm:col-span-2 min-w-0">
+                      <span className="material-symbols-outlined text-white/50 text-base">location_on</span>
+                      <span className="truncate" title={(() => {
+                        if (!b.location) return '—'
+                        if (typeof b.location === 'string') return b.location || '—'
+                        const obj = b.location || {}
+                        return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+                      })()}>{(() => {
+                        if (!b.location) return '—'
+                        if (typeof b.location === 'string') return b.location || '—'
+                        const obj = b.location || {}
+                        return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+                      })()}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs capitalize ${getStatusBadgeClass(b.status)}`}>
+                      <span className="material-symbols-outlined text-sm">
+                        {(() => {
+                          const s = (b.status || '').toLowerCase()
+                          if (s === 'pending') return 'hourglass_top'
+                          if (s === 'confirmed') return 'event_available'
+                          if (s === 'completed') return 'check_circle'
+                          if (s === 'cancelled') return 'cancel'
+                          return 'info'
+                        })()}
+                      </span>
+                      {b.status || '—'}
+                    </span>
+
+                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs capitalize ${getPaymentBadgeClass(b.payment_status)}`}>
+                      <span className="material-symbols-outlined text-sm">
+                        {(() => {
+                          const p = (b.payment_status || '').toLowerCase()
+                          if (p === 'paid') return 'verified'
+                          if (p === 'pending') return 'schedule'
+                          if (p === 'failed') return 'error'
+                          return 'payments'
+                        })()}
+                      </span>
+                      {b.payment_status || '—'}
+                    </span>
+
+                    <div className="ml-auto">
+                      <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--primary-color)]/15 border border-[var(--primary-color)]/30 text-[var(--primary-color)] hover:bg-[var(--primary-color)]/25 transition-colors text-sm" onClick={() => setSelected(b)}>
+                        <span className="material-symbols-outlined text-sm">visibility</span>
+                        View
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
