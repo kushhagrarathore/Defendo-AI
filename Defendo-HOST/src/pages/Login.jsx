@@ -28,21 +28,29 @@ const Login = () => {
     e.preventDefault()
     setIsLoading(true)
 
-    console.log('Login form submitted with:', { email: formData.email, password: '***' })
-    console.log('Target route:', from)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Login form submitted with:', { email: formData.email, password: '***' })
+      console.log('Target route:', from)
+    }
     
     try {
       const result = await signIn(formData.email, formData.password)
       
-      console.log('Login result:', result)
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Login result:', result)
+      }
       
       if (result.success) {
-        console.log('Login successful, navigating to:', from)
-        console.log('User object:', result.data?.user)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Login successful, navigating to:', from)
+          console.log('User object:', result.data?.user)
+        }
         
         // Add a small delay to ensure state is updated
         setTimeout(() => {
-          console.log('Attempting navigation...')
+          if (process.env.NODE_ENV === 'development') {
+            console.log('Attempting navigation...')
+          }
           navigate(from, { replace: true })
         }, 100)
       } else {

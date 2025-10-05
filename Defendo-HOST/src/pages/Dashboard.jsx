@@ -4,9 +4,11 @@ import { useAuth } from "../contexts/AuthContext"
 import { useState, useEffect } from "react"
 import DashboardHome from "./DashboardHome"
 import MyServices from "./MyServices"
+import EditService from "./EditService"
 import Bookings from "./Bookings"
 import AddService from "./AddService"
 import Account from "./Account"
+import KYCUpload from "./KYCUpload"
 
 const Dashboard = () => {
   const location = useLocation()
@@ -20,6 +22,7 @@ const Dashboard = () => {
     { path: "/dashboard/bookings", label: "Bookings", icon: "event", color: "from-teal-500 to-cyan-600" },
     { path: "/dashboard/services", label: "My Services", icon: "security", color: "from-green-500 to-emerald-500" },
     { path: "/dashboard/add-service", label: "Add Service", icon: "add", color: "from-purple-500 to-pink-500" },
+    { path: "/dashboard/kyc", label: "KYC Verification", icon: "verified_user", color: "from-yellow-500 to-orange-500" },
     { path: "/dashboard/account", label: "Account", icon: "person", color: "from-orange-500 to-red-500" }
   ]
 
@@ -255,7 +258,9 @@ const Dashboard = () => {
             <Route index element={<DashboardHome />} />
             <Route path="bookings" element={<Bookings />} />
             <Route path="services" element={<MyServices />} />
+            <Route path="services/:id/edit" element={<EditService />} />
             <Route path="add-service" element={<AddService />} />
+            <Route path="kyc" element={<KYCUpload />} />
             <Route path="account" element={<Account />} />
           </Routes>
         </div>

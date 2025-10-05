@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "powershell -Command \"$env:CHOKIDAR_USEPOLLING=1; vite\"",
     "build": "vite build",
     "preview": "vite preview"
   },

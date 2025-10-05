@@ -288,7 +288,7 @@ const LandingPage = () => {
   const [activeSection, setActiveSection] = useState('features')
 
   useEffect(() => {
-    const sections = ['features','services','testimonials']
+    const sections = ['about us','features','services','testimonials']
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -322,9 +322,12 @@ const LandingPage = () => {
             <span className="font-bold">Defendo Host</span>
           </div>
           <div className="flex items-center gap-6">
-            {['Features','Services','Testimonials'].map((label, i) => {
+            {['About Us','Features','Services','Testimonials'].map((label, i) => {
               const id = label.toLowerCase()
               const isActive = activeSection === id
+              
+              // All navigation items now scroll to sections
+              
               return (
               <motion.a 
                 key={label}
@@ -355,10 +358,17 @@ const LandingPage = () => {
                   transition={{ duration: 0.3, ease: 'easeOut' }}
                 />
               </motion.a>
-            )})}
+              )
+            })}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link to="/login" className="text-white/80 hover:text-white px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
                 Login
+              </Link>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Link to="/admin-login" className="flex items-center gap-2 text-white/60 hover:text-white px-4 py-2 rounded-lg hover:bg-white/5 transition-colors border border-white/10 hover:border-white/20">
+                <span className="material-symbols-outlined text-sm">admin_panel_settings</span>
+                <span className="text-sm">Admin</span>
               </Link>
             </motion.div>
           </div>
@@ -503,7 +513,6 @@ const LandingPage = () => {
           {[
             { label: 'Guards', icon: 'security', color: 'from-green-500 to-emerald-600' },
             { label: 'Drones', icon: 'flight', color: 'from-blue-500 to-cyan-600' },
-            { label: 'Studios', icon: 'videocam', color: 'from-purple-500 to-pink-600' },
             { label: 'Agencies', icon: 'business', color: 'from-orange-500 to-red-600' }
           ].map((service, i) => (
             <motion.div 
@@ -560,6 +569,147 @@ const LandingPage = () => {
               </div>
             </motion.div>
           ))}
+        </motion.div>
+      </motion.section>
+
+      {/* About Us */}
+      <motion.section
+        id="about us"
+        className="max-w-7xl mx-auto px-6 py-20"
+        variants={containerStagger}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-100px' }}
+      >
+        <motion.div 
+          className="text-center mb-16"
+          variants={fadeUpVariants}
+        >
+          <h2 className="text-4xl font-bold mb-4">About Defendo</h2>
+          <p className="text-white/70 text-xl max-w-3xl mx-auto">
+            Revolutionizing security services through innovation, technology, and unwavering commitment to safety
+          </p>
+        </motion.div>
+
+        {/* Mission & Vision */}
+        <motion.div 
+          className="grid md:grid-cols-2 gap-8 mb-16"
+          variants={containerStagger}
+        >
+          <motion.div
+            variants={fadeUpVariants}
+            className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10"
+          >
+            <div className="w-16 h-16 bg-[var(--primary-color)]/20 rounded-full flex items-center justify-center mb-6">
+              <span className="material-symbols-outlined text-[var(--primary-color)] text-2xl">
+                flag
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
+            <p className="text-white/80 leading-relaxed">
+              To provide comprehensive, technology-driven security solutions that ensure peace of mind for businesses and individuals. We strive to make professional security services accessible, reliable, and efficient through our innovative platform.
+            </p>
+          </motion.div>
+
+          <motion.div
+            variants={fadeUpVariants}
+            className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10"
+          >
+            <div className="w-16 h-16 bg-[var(--primary-color)]/20 rounded-full flex items-center justify-center mb-6">
+              <span className="material-symbols-outlined text-[var(--primary-color)] text-2xl">
+                visibility
+              </span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
+            <p className="text-white/80 leading-relaxed">
+              To become the leading security services platform in India, setting new standards for safety, reliability, and customer satisfaction. We envision a future where security solutions are seamlessly integrated with cutting-edge technology.
+            </p>
+          </motion.div>
+        </motion.div>
+
+        {/* Founders Section */}
+        <motion.div 
+          className="text-center mb-12"
+          variants={fadeUpVariants}
+        >
+          <h3 className="text-3xl font-bold mb-4">Meet Our Founders</h3>
+          <p className="text-white/70 text-lg max-w-2xl mx-auto">
+            Two aspiring entrepreneurs from Indore, Madhya Pradesh, India, united by a shared vision to transform the security industry
+          </p>
+        </motion.div>
+
+        <motion.div 
+          className="grid md:grid-cols-2 gap-8 mb-12"
+          variants={containerStagger}
+        >
+          {[
+            {
+              name: "Kushagra Rathore",
+              role: "Co-Founder & CEO",
+              bio: "Aspiring entrepreneur with a vision to revolutionize security services through technology. Passionate about creating innovative solutions that bridge the gap between traditional security and modern digital platforms.",
+              expertise: ["Strategic Planning", "Business Development", "Technology Innovation", "Team Leadership"]
+            },
+            {
+              name: "Atharva Gour",
+              role: "Co-Founder & CTO",
+              bio: "Tech-savvy entrepreneur dedicated to building scalable and secure platforms. Combines technical expertise with business acumen to deliver cutting-edge solutions in the security industry.",
+              expertise: ["Full-Stack Development", "System Architecture", "Cloud Infrastructure", "Product Engineering"]
+            }
+          ].map((founder, index) => (
+            <motion.div
+              key={founder.name}
+              variants={scaleInVariants}
+              whileHover={{ scale: 1.02 }}
+              className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10"
+            >
+              <div className="text-center mb-6">
+                <div className="w-24 h-24 bg-gradient-to-br from-[var(--primary-color)]/30 to-white/10 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <span className="material-symbols-outlined text-[var(--primary-color)] text-3xl">
+                    person
+                  </span>
+                </div>
+                <h4 className="text-xl font-bold mb-2">{founder.name}</h4>
+                <p className="text-[var(--primary-color)] font-medium">{founder.role}</p>
+              </div>
+
+              <p className="text-white/80 text-center mb-6 leading-relaxed">
+                {founder.bio}
+              </p>
+
+              <div className="mb-6">
+                <h5 className="text-lg font-semibold mb-3 text-center">Expertise</h5>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {founder.expertise.map((skill, skillIndex) => (
+                    <span
+                      key={skillIndex}
+                      className="px-3 py-1 bg-[var(--primary-color)]/20 text-[var(--primary-color)] rounded-full text-sm"
+                    >
+                      {skill}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Location Info */}
+        <motion.div
+          variants={fadeUpVariants}
+          className="bg-gradient-to-r from-[var(--primary-color)]/10 to-white/5 rounded-2xl p-8 text-center border border-white/10"
+        >
+          <div className="w-16 h-16 bg-[var(--primary-color)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="material-symbols-outlined text-[var(--primary-color)] text-2xl">
+              location_on
+            </span>
+          </div>
+          <h4 className="text-2xl font-bold mb-2">Based in Indore</h4>
+          <p className="text-white/80 text-lg">
+            Proudly operating from the heart of Madhya Pradesh, India
+          </p>
+          <p className="text-white/60 mt-2">
+            Bringing innovative security solutions to businesses across the region and beyond
+          </p>
         </motion.div>
       </motion.section>
 

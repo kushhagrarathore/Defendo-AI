@@ -3,6 +3,7 @@ const Footer = () => {
     <footer className="border-t border-solid border-[#29382f] bg-[#111714] py-10">
       <div className="container mx-auto flex flex-col items-center gap-6 px-4 text-center">
         <div className="flex flex-wrap justify-center gap-6">
+          <a className="text-base font-normal text-[#9eb7a8] transition-colors hover:text-white hover:drop-shadow-[0_0_6px_rgba(56,224,123,0.6)]" href="/about">About Us</a>
           <a className="text-base font-normal text-[#9eb7a8] transition-colors hover:text-white hover:drop-shadow-[0_0_6px_rgba(56,224,123,0.6)]" href="#">Contact</a>
           <a className="text-base font-normal text-[#9eb7a8] transition-colors hover:text-white hover:drop-shadow-[0_0_6px_rgba(56,224,123,0.6)]" href="#">Privacy Policy</a>
         </div>

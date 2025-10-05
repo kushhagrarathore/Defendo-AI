@@ -33,35 +33,7 @@ const BookingTimeline = ({ bookings = [] }) => {
     return date.toLocaleDateString()
   }
 
-  const sampleBookings = bookings.length > 0 ? bookings : [
-    {
-      id: 1,
-      service_type: 'guards',
-      status: 'confirmed',
-      date: new Date(Date.now() + 86400000).toISOString(), // Tomorrow
-      time: '14:00',
-      location: 'Indore, MP',
-      price: 2500
-    },
-    {
-      id: 2,
-      service_type: 'drones',
-      status: 'pending',
-      date: new Date(Date.now() + 172800000).toISOString(), // Day after tomorrow
-      time: '10:00',
-      location: 'Bhopal, MP',
-      price: 5000
-    },
-    {
-      id: 3,
-      service_type: 'studios',
-      status: 'completed',
-      date: new Date(Date.now() - 86400000).toISOString(), // Yesterday
-      time: '16:00',
-      location: 'Gwalior, MP',
-      price: 8000
-    }
-  ]
+  const timelineBookings = Array.isArray(bookings) ? bookings : []
 
   return (
     <motion.div
@@ -82,7 +54,7 @@ const BookingTimeline = ({ bookings = [] }) => {
 
       <div className="space-y-4 max-h-96 overflow-y-auto">
         <AnimatePresence>
-          {sampleBookings.map((booking, index) => (
+          {timelineBookings.map((booking, index) => (
             <motion.div
               key={booking.id}
               initial={{ opacity: 0, x: -20 }}
@@ -97,7 +69,7 @@ const BookingTimeline = ({ bookings = [] }) => {
               className="relative"
             >
               {/* Timeline line */}
-              {index < sampleBookings.length - 1 && (
+              {index < timelineBookings.length - 1 && (
                 <div className="absolute left-6 top-12 w-0.5 h-16 bg-white/10" />
               )}
               
@@ -151,7 +123,7 @@ const BookingTimeline = ({ bookings = [] }) => {
           ))}
         </AnimatePresence>
 
-        {sampleBookings.length === 0 && (
+        {timelineBookings.length === 0 && (
           <motion.div
             className="text-center py-12"
             initial={{ opacity: 0 }}
@@ -174,6 +146,11 @@ const BookingTimeline = ({ bookings = [] }) => {
 }
 
 export default BookingTimeline
+
+
+
+
+
 
 
 

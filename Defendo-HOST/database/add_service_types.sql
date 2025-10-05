@@ -57,7 +57,7 @@ END $$;
 
 -- 6) Optional: backfill/normalize existing values if they used legacy codes
 -- Example mapping from old values to new codes (adjust as needed):
--- UPDATE public.host_services SET service_type = 'securityGuard' WHERE service_type IN ('guards','studios','agencies');
+-- UPDATE public.host_services SET service_type = 'securityGuard' WHERE service_type IN ('guards','agencies');
 -- UPDATE public.host_services SET service_type = 'dronePatrol' WHERE service_type IN ('drones');
 
 -- 7) Index for faster filtering

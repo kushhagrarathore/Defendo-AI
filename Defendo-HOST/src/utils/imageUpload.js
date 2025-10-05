@@ -109,6 +109,75 @@ export const updateServiceImages = async (serviceId, imageUrls) => {
   }
 }
 
+// Upload images for a specific guard subcategory to 'guard_services' bucket
+export const uploadGuardTypeImages = async (serviceId, hostId, subcategoryKey, files) => {
+  console.log(`🔍 uploadGuardTypeImages called with:`, { serviceId, hostId, subcategoryKey, filesCount: files?.length })
+  
+  try {
+    if (!files || files.length === 0) {
+      console.log('⚠️ No files provided to uploadGuardTypeImages')
+      return []
+    }
+
+    // Skip bucket existence check - we know it exists from direct access test
+    console.log('🚀 Proceeding with upload to guard_services bucket...')
+
+    const uploadedUrls = []
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i]
+      console.log(`📸 Processing file ${i + 1}/${files.length}:`, file.name, file.type, file.size)
+      
+      if (!file.type.startsWith('image/')) {
+        throw new Error(`File ${file.name} is not an image`)
+      }
+      if (file.size > 5 * 1024 * 1024) {
+        throw new Error(`File ${file.name} is too large. Maximum size is 5MB`)
+      }
+      
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
+      const filePath = `${hostId}/${serviceId}/${subcategoryKey}/${fileName}`
+      
+      console.log(`📁 Upload path: ${filePath}`)
+
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('guard_services')
+        .upload(filePath, file, { cacheControl: '3600', upsert: false })
+        
+      if (uploadError) {
+        console.error('❌ Upload error for', file.name, ':', uploadError)
+        throw new Error(`Failed to upload ${file.name}: ${uploadError.message}`)
+      }
+      
+      console.log(`✅ Upload successful for ${file.name}:`, uploadData)
+
+      // For private buckets, we need to generate signed URLs
+      const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+        .from('guard_services')
+        .createSignedUrl(filePath, 60 * 60 * 24 * 365) // 1 year expiry
+        
+      if (signedUrlError) {
+        console.error('❌ Error creating signed URL for', file.name, ':', signedUrlError)
+        throw new Error(`Failed to create signed URL for ${file.name}: ${signedUrlError.message}`)
+      }
+        
+      console.log(`🔗 Signed URL for ${file.name}:`, signedUrlData.signedUrl)
+      
+      // Store the file path for later signed URL generation, not the URL itself
+      // This way we can generate fresh signed URLs when needed
+      uploadedUrls.push(filePath)
+    }
+
+    console.log(`🎉 Successfully uploaded ${uploadedUrls.length} images to guard_services`)
+    return uploadedUrls
+  } catch (err) {
+    console.error('❌ Error uploading guard type images:', err)
+    console.error('❌ Error details:', JSON.stringify(err, null, 2))
+    throw err
+  }
+}
+
 // Validate image files
 export const validateImageFiles = (files) => {
   const errors = []

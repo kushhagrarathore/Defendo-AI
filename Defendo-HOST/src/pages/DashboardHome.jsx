@@ -1,12 +1,15 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo, useCallback } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useAuth } from "../contexts/AuthContext"
-import { supabase } from "../lib/supabase"
+import { supabase, db } from "../lib/supabase"
 import StatsCard from "../components/dashboard/StatsCard"
 import ChartsSection from "../components/dashboard/ChartsSection"
 import NotificationsPanel from "../components/dashboard/NotificationsPanel"
 import BookingTimeline from "../components/dashboard/BookingTimeline"
 import GuardTracker from "../components/dashboard/GuardTracker"
+import KycStatusCard from "../components/KycStatusCard"
+import VerificationBanner from "../components/VerificationBanner"
+import { DashboardSkeleton } from "../components/LoadingSkeleton"
 
 const DashboardHome = () => {
   const { user, hostProfile, loading: authLoading } = useAuth()
@@ -17,37 +20,38 @@ const DashboardHome = () => {
     monthlyRevenue: 0,
     recentBookings: []
   })
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [rlsIssue, setRlsIssue] = useState(false)
   const [rlsCount, setRlsCount] = useState(null)
   const [notificationsOpen, setNotificationsOpen] = useState(false)
 
   // Debug current auth state
+  // Reduced logging for performance
   useEffect(() => {
-    if (user) {
-      console.log('DashboardHome - Current user:', user.id)
-      console.log('DashboardHome - Host profile:', hostProfile)
+    if (user && process.env.NODE_ENV === 'development') {
+      console.log('Dashboard - User:', user.id, 'Profile loaded:', !!hostProfile)
     }
   }, [user, hostProfile])
 
-  // Fetch dashboard data
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      if (!user || authLoading) {
-        console.log('DashboardHome - Waiting for auth...', { user: !!user, authLoading })
-        return
+  // Memoized fetch function to prevent recreating on every render
+  const fetchDashboardData = useCallback(async () => {
+    if (!user || authLoading) {
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Dashboard - Waiting for auth...', { user: !!user, authLoading })
       }
+      // Avoid getting stuck showing skeleton when auth is still resolving
+      setLoading(false)
+      return
+    }
 
       try {
         setLoading(true)
         setError(null)
         
-        console.log('DashboardHome - Fetching data for user:', user.id)
-
-        // Test auth state first
-        const { data: { session } } = await supabase.auth.getSession()
-        console.log('DashboardHome - Current session:', !!session)
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Dashboard - Fetching data for user:', user.id)
+        }
 
         // Fetch metrics in parallel
         const startOfMonth = new Date()
@@ -59,7 +63,8 @@ const DashboardHome = () => {
           { data: activeBookingsData, error: activeBookingsError },
           { data: completedBookingsData, error: completedBookingsError },
           { data: revenueData, error: revenueError },
-          { data: recentBookingsData, error: recentBookingsError }
+          { data: recentBookingsData, error: recentBookingsError },
+          analyticsRes
         ] = await Promise.all([
           supabase.from('bookings').select('id').eq('provider_id', user.id),
           supabase.from('bookings').select('id').eq('provider_id', user.id).in('status', ['pending','confirmed']),
@@ -72,7 +77,9 @@ const DashboardHome = () => {
           supabase.from('bookings').select('id, service_type, status, created_at, price, host_id:provider_id')
             .eq('provider_id', user.id)
             .order('created_at', { ascending: false })
-            .limit(5)
+            .limit(5),
+          // monthly analytics
+          db.getMonthlyAnalytics(user.id)
         ])
 
         if (totalBookingsError || activeBookingsError || completedBookingsError || revenueError || recentBookingsError) {
@@ -87,13 +94,20 @@ const DashboardHome = () => {
         const monthlyRevenue = revenueData?.reduce((sum, booking) => sum + Number(booking.price || 0), 0) || 0
         const monthlyPaidBookings = Array.isArray(revenueData) ? revenueData : []
 
+        // monthly analytics result
+        const monthlyAnalytics = (analyticsRes && analyticsRes.data) ? analyticsRes.data : []
+        if (process.env.NODE_ENV === 'development') {
+          console.log('Analytics points:', monthlyAnalytics)
+        }
+
         setDashboardData({
           totalBookings,
           activeBookings,
           completedBookings,
           monthlyRevenue,
           recentBookings: recentBookingsData || [],
-          monthlyPaidBookings
+          monthlyPaidBookings,
+          analytics: monthlyAnalytics
         })
 
         console.log('Dashboard data loaded:', {
@@ -103,16 +117,18 @@ const DashboardHome = () => {
           monthlyRevenue
         })
 
-      } catch (err) {
-        console.error('Dashboard load error:', err)
-        setError('Failed to load dashboard data')
-      } finally {
-        setLoading(false)
-      }
+    } catch (err) {
+      console.error('Dashboard load error:', err)
+      setError('Failed to load dashboard data')
+    } finally {
+      setLoading(false)
     }
-
-    fetchDashboardData()
   }, [user, authLoading])
+
+  // Fetch dashboard data effect
+  useEffect(() => {
+    fetchDashboardData()
+  }, [fetchDashboardData])
 
   // Realtime: listen for new bookings for this host and push a notification
   useEffect(() => {
@@ -171,14 +187,7 @@ const DashboardHome = () => {
   }
 
   if (authLoading || loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="flex items-center gap-3">
-          <div className="w-6 h-6 border-2 border-[var(--primary-color)] border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-white/70">Loading dashboard...</span>
-        </div>
-      </div>
-    )
+    return <DashboardSkeleton />
   }
 
   if (error) {
@@ -330,8 +339,16 @@ const DashboardHome = () => {
         ))}
       </motion.div>
 
-      {/* Charts Section */}
-      <ChartsSection data={dashboardData.recentBookings} />
+      {/* Verification Banner (replaces manual KYC approval UI) */}
+      {user && (
+        <VerificationBanner />
+      )}
+
+      {/* Analytics */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-white mb-4">Analytics</h2>
+        <ChartsSection data={dashboardData.analytics || []} />
+      </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">

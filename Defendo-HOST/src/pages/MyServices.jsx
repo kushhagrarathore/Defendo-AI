@@ -1,23 +1,38 @@
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
+import { motion } from "framer-motion"
 import { useAuth } from "../contexts/AuthContext"
 import { db } from "../lib/supabase"
 import ServiceImageCarousel from "../components/ServiceImageCarousel"
+import ServiceDetailView from "../components/ServiceDetailView"
 
 const MyServices = () => {
-  const { user } = useAuth()
+  const navigate = useNavigate()
+  const { user, hostProfile } = useAuth()
   const [services, setServices] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedService, setSelectedService] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [togglingId, setTogglingId] = useState(null)
+  const [viewingService, setViewingService] = useState(null)
+  
+  const parseSubcategories = (subCategoryText) => {
+    if (!subCategoryText) return {}
+    try {
+      const parsed = typeof subCategoryText === 'string' 
+        ? JSON.parse(subCategoryText) 
+        : subCategoryText
+      return parsed && typeof parsed === 'object' ? parsed : {}
+    } catch (_) {
+      return {}
+    }
+  }
 
   // Service type configurations
   const serviceTypeConfig = {
     guards: { label: "Guards", icon: "security", color: "from-blue-500 to-cyan-500" },
     drones: { label: "Drones", icon: "drone", color: "from-orange-500 to-red-500" },
-    studios: { label: "Studios", icon: "video_camera_front", color: "from-purple-500 to-pink-500" },
     agencies: { label: "Agencies", icon: "business", color: "from-green-500 to-emerald-500" },
     other: { label: "Other", icon: "more_horiz", color: "from-gray-500 to-gray-600" }
   }
@@ -109,6 +124,14 @@ const MyServices = () => {
     }
   }
 
+  const handleServiceClick = (service) => {
+    setViewingService(service)
+  }
+
+  const handleBackToServices = () => {
+    setViewingService(null)
+  }
+
   // Calculate stats
   const totalServices = services.length
   const activeServices = services.filter(s => s.is_active).length
@@ -116,6 +139,18 @@ const MyServices = () => {
   const avgRating = services.length > 0 
     ? (services.reduce((sum, s) => sum + (s.rating || 0), 0) / services.length).toFixed(1)
     : 0
+
+  // Show detailed service view if a service is selected
+  if (viewingService) {
+    return (
+      <ServiceDetailView
+        service={viewingService}
+        onBack={handleBackToServices}
+        onEdit={(serviceId) => navigate(`/dashboard/services/${serviceId}/edit`)}
+        onDelete={handleDelete}
+      />
+    )
+  }
 
   return (
     <div className="space-y-8 animate-fade-in-up">
@@ -231,14 +266,25 @@ const MyServices = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {services.map((service, index) => {
                 const config = serviceTypeConfig[service.service_type] || serviceTypeConfig.other
-                const price = `${service.currency} ${service.price_per_hour}/hr`
                 const performance = Math.min((service.total_bookings / 20) * 100, 100)
+                const subcategories = parseSubcategories(service.sub_category)
+                const hasSubcategories = subcategories && Object.keys(subcategories).length > 0
                 
+                const companyName = hostProfile?.company_name || hostProfile?.full_name || (user?.email ? user.email.split('@')[0] : 'Host')
+
                 return (
-                  <div 
+                  <motion.div 
                     key={service.id} 
-                    className="group relative overflow-hidden rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md card-animate stagger-item hover:shadow-2xl hover:shadow-[var(--primary-color)]/15 hover:scale-[1.01] transition-all duration-300"
+                    className="group relative overflow-hidden rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md card-animate stagger-item hover:shadow-2xl hover:shadow-[var(--primary-color)]/15 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
                     style={{animationDelay: `${index * 0.1}s`}}
+                    onClick={(e) => {
+                      // Don't trigger on button clicks
+                      if (!e.target.closest('button')) {
+                        handleServiceClick(service)
+                      }
+                    }}
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
                   >
                     {/* Background Pattern */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${config.color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
@@ -293,8 +339,8 @@ const MyServices = () => {
                           <span className="text-white font-medium">{config.label}</span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-white/70 text-sm">Price:</span>
-                          <span className="text-[var(--primary-color)] font-bold text-lg">{price}</span>
+                          <span className="text-white/70 text-sm">Company:</span>
+                          <span className="text-white font-medium">{companyName}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-white/70 text-sm">Bookings:</span>
@@ -327,6 +373,26 @@ const MyServices = () => {
                         </div>
                       )}
                       
+                      {/* Subcategories (from sub_category JSON string) */}
+                      {(() => {
+                        const subObj = parseSubcategories(service.sub_category)
+                        return subObj && Object.keys(subObj).length > 0
+                      })() && (
+                        <div className="mb-4">
+                          <p className="text-white/70 text-sm mb-2">Subcategories & Pricing:</p>
+                          <div className="space-y-2">
+                            {Object.entries(parseSubcategories(service.sub_category)).map(([key, subcat]) => (
+                              <div key={key} className="flex justify-between items-center bg-white/5 rounded-lg px-3 py-2">
+                                <span className="text-white text-sm font-medium">{subcat.label}</span>
+                                <span className="text-[var(--primary-color)] font-bold text-sm">
+                                  {subcat.currency} {subcat.price_per_hour}/hr
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
                       {/* Progress Bar */}
                       <div className="mb-6">
                         <div className="flex justify-between text-sm text-white/70 mb-2">
@@ -342,21 +408,47 @@ const MyServices = () => {
             </div>
             
                       {/* Actions */}
-            <div className="flex gap-2">
-                        <button className="flex-1 bg-gradient-to-r from-[var(--primary-color)] to-[#2a5a3a] text-[#111714] py-2 px-4 rounded-lg font-medium hover:shadow-lg hover:shadow-[var(--primary-color)]/25 transition-all duration-300 ripple group">
-                          <span className="material-symbols-outlined text-sm mr-1 group-hover:rotate-12 transition-transform">edit</span>
-                Edit
-              </button>
+                      <div className="flex gap-2">
                         <button 
-                          onClick={() => setSelectedService(service)}
+                          onClick={() => handleServiceClick(service)}
+                          className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-300 ripple group ${
+                            hasSubcategories 
+                              ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:shadow-lg hover:shadow-blue-500/25' 
+                              : 'bg-gradient-to-r from-[var(--primary-color)] to-[#2a5a3a] text-[#111714] hover:shadow-lg hover:shadow-[var(--primary-color)]/25'
+                          }`}
+                        >
+                          <span className={`material-symbols-outlined text-sm mr-1 group-hover:scale-110 transition-transform ${
+                            hasSubcategories ? 'text-white' : ''
+                          }`}>
+                            {hasSubcategories ? 'visibility' : 'add'}
+                          </span>
+                          {hasSubcategories ? 'View Details' : 'View Service'}
+                        </button>
+                        
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            navigate(`/dashboard/services/${service.id}/edit`)
+                          }} 
+                          className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-2 px-4 rounded-lg font-medium hover:shadow-lg hover:shadow-yellow-500/25 transition-all duration-300 ripple group"
+                        >
+                          <span className="material-symbols-outlined text-sm mr-1 group-hover:rotate-12 transition-transform">edit</span>
+                          Edit
+                        </button>
+                        
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            setSelectedService(service)
+                          }}
                           className="flex-1 bg-red-500/20 text-red-400 py-2 px-4 rounded-lg font-medium hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 ripple group"
                         >
                           <span className="material-symbols-outlined text-sm mr-1 group-hover:scale-110 transition-transform">delete</span>
-                Delete
-              </button>
+                          Delete
+                        </button>
                       </div>
                     </div>
-                  </div>
+                  </motion.div>
                 )
               })}
             </div>

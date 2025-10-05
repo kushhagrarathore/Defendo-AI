@@ -27,6 +27,32 @@ if (typeof window !== 'undefined' && window.__SUPABASE__) {
 
 export const supabase = client
 
+// Ensure this module stays hot-acceptable to avoid full reloads
+if (import.meta.hot) {
+  import.meta.hot.accept()
+}
+
+// Global error handler for Supabase errors
+export const handleSupabaseError = (error, context = '') => {
+  console.error(`Supabase error in ${context}:`, error)
+  
+  if (error?.message?.includes('Invalid Refresh Token') || 
+      error?.message?.includes('Refresh Token Not Found') ||
+      error?.message?.includes('JWT')) {
+    console.log('Refresh token error detected, clearing session')
+    // Clear the session and redirect to login
+    supabase.auth.signOut()
+    return { shouldRetry: false, shouldSignOut: true }
+  }
+  
+  if (error?.code === 'PGRST116' || error?.message?.includes('406')) {
+    console.log('Resource not found or access denied')
+    return { shouldRetry: false, shouldSignOut: false }
+  }
+  
+  return { shouldRetry: true, shouldSignOut: false }
+}
+
 // Auth helper functions for Host-only platform
 export const auth = {
   // Host signup (WebApp) - database trigger creates host profile automatically
@@ -86,7 +112,7 @@ export const auth = {
         .from("host_profiles")
         .select("*")
         .eq("id", data.user.id)
-        .single()
+        .maybeSingle()
 
       if (hostError) {
         console.error("Host profile fetch error:", hostError.message)
@@ -265,6 +291,15 @@ export const db = {
     return { data, error }
   },
 
+  getHostServiceById: async (serviceId) => {
+    const { data, error } = await supabase
+      .from('host_services')
+      .select('*')
+      .eq('id', serviceId)
+      .single()
+    return { data, error }
+  },
+
   addHostService: async (hostId, serviceData) => {
     const { data, error } = await supabase
       .from('host_services')
@@ -400,6 +435,48 @@ export const db = {
       .filter(b => (b.payment_status || '').toLowerCase() === 'paid')
       .reduce((sum, b) => sum + (Number(b.price) || 0), 0)
     return { revenue, error: null }
+  },
+
+  // Monthly analytics for charts (last 6 months)
+  getMonthlyAnalytics: async (hostId, months = 6) => {
+    const end = new Date()
+    const start = new Date()
+    start.setMonth(end.getMonth() - (months - 1))
+    start.setDate(1)
+    start.setHours(0, 0, 0, 0)
+
+    // Fetch bookings within range
+    const { data, error } = await supabase
+      .from('bookings')
+      .select('price, payment_status, date')
+      .eq('provider_id', hostId)
+      .gte('date', start.toISOString().slice(0, 10))
+      .lte('date', end.toISOString().slice(0, 10))
+
+    if (error) return { data: [], error }
+
+    // Prepare month buckets
+    const buckets = new Map()
+    for (let i = 0; i < months; i++) {
+      const d = new Date(start)
+      d.setMonth(start.getMonth() + i)
+      const key = d.toISOString().slice(0, 7) // YYYY-MM
+      buckets.set(key, { name: d.toLocaleString('en-US', { month: 'short' }), bookings: 0, revenue: 0 })
+    }
+
+    // Aggregate
+    ;(data || []).forEach(b => {
+      const key = (b.date || '').slice(0, 7)
+      if (buckets.has(key)) {
+        const row = buckets.get(key)
+        row.bookings += 1
+        if ((b.payment_status || '').toLowerCase() === 'paid') {
+          row.revenue += Number(b.price) || 0
+        }
+      }
+    })
+
+    return { data: Array.from(buckets.values()), error: null }
   },
 
   getTotalEarnings: async (hostId) => {

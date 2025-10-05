@@ -1,16 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase, db } from '../lib/supabase'
 
 const Account = () => {
-  const { user, hostProfile } = useAuth()
+  const { user, hostProfile, refreshProfile } = useAuth()
   const [form, setForm] = useState({})
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [passwords, setPasswords] = useState({ current: '', next: '', confirm: '' })
-  const [uploading, setUploading] = useState(false)
-  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (hostProfile) {
@@ -30,7 +28,7 @@ const Account = () => {
     setMessage('')
     setError('')
     try {
-      const candidateKeys = ['full_name','company_name','phone','address','logo_url','company_description','bio']
+      const candidateKeys = ['full_name','company_name','phone','address','company_description','bio']
       const updates = {}
       candidateKeys.forEach(k => { if (canEditKeys.has(k) && form[k] !== undefined) updates[k] = form[k] })
       if (Object.keys(updates).length === 0) {
@@ -38,6 +36,8 @@ const Account = () => {
       } else {
         const { error: updErr } = await db.updateHostProfile(user.id, updates)
         if (updErr) throw updErr
+        // Refresh local profile so UI (e.g., service cards) picks up new company name immediately
+        try { await refreshProfile() } catch (_) {}
         setMessage('Saved successfully')
       }
     } catch (e) {
@@ -48,28 +48,6 @@ const Account = () => {
     }
   }
 
-  const onUploadLogo = async (file) => {
-    if (!file || !user) return
-    setUploading(true)
-    setError('')
-    try {
-      const ext = file.name.split('.').pop()
-      const path = `${user.id}/${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('host-logos').upload(path, file, { upsert: true })
-      if (upErr) throw upErr
-      const { data: pub } = supabase.storage.from('host-logos').getPublicUrl(path)
-      const url = pub?.publicUrl
-      if (url) {
-        updateField('logo_url', url)
-      }
-      setMessage('Logo uploaded')
-    } catch (e) {
-      setError(e.message || 'Upload failed. Ensure bucket "host-logos" exists and is public.')
-    } finally {
-      setUploading(false)
-      setTimeout(() => { setMessage(''); setError('') }, 3000)
-    }
-  }
 
   const onChangePassword = async () => {
     setError(''); setMessage('')
@@ -158,29 +136,6 @@ const Account = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
-          <h2 className="text-xl font-bold mb-6">Company Logo</h2>
-          <div className="flex items-center gap-6">
-            <div className="w-24 h-24 bg-white/5 backdrop-blur-md border-2 border-dashed border-white/10 rounded-lg flex items-center justify-center overflow-hidden">
-              {form.logo_url ? (
-                <img src={form.logo_url} alt="logo" className="w-full h-full object-cover" />
-              ) : (
-                <span className="material-symbols-outlined text-white/50 text-3xl">image</span>
-              )}
-            </div>
-            <div>
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="bg-gradient-to-r from-[var(--primary-color)] via-emerald-400 to-[#2a5a3a] text-[#111714] px-6 py-3 rounded-full font-bold shadow-[0_10px_30px_rgba(74,222,128,0.25)] hover:shadow-[0_18px_40px_rgba(74,222,128,0.35)] transition-all disabled:opacity-60"
-              >
-                {uploading ? 'Uploading…' : 'Upload Logo'}
-              </button>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={e => onUploadLogo(e.target.files?.[0])} />
-              <p className="text-white/70 text-sm mt-2">Recommended size: 200x200px</p>
-            </div>
-          </div>
-        </div>
 
         <div className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]">
           <h2 className="text-xl font-bold mb-6">Security Settings</h2>
