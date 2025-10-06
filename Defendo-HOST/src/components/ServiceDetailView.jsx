@@ -233,10 +233,10 @@ const ServiceDetailView = ({ service, onBack, onEdit, onDelete }) => {
                 <p className="text-white/70 text-sm">Total Bookings</p>
               </div>
               <div className="text-center">
-                <p className="text-2xl font-bold text-white">
-                  {service.currency} {service.price_per_hour}/hr
+                <p className="text-2xl font-bold text-white truncate max-w-[16rem] mx-auto">
+                  {service.company_name || '—'}
                 </p>
-                <p className="text-white/70 text-sm">Base Price</p>
+                <p className="text-white/70 text-sm">Company</p>
               </div>
               <div className="text-center">
                 <p className="text-2xl font-bold text-white">{service.rating || 0}</p>

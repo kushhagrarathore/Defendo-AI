@@ -17,7 +17,21 @@ if (typeof window !== 'undefined' && window.__SUPABASE__) {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      detectSessionInUrl: true
+      detectSessionInUrl: true,
+      flowType: 'pkce'
+    },
+    global: {
+      headers: {
+        'X-Client-Info': 'defendo-host@1.0.0'
+      }
+    },
+    db: {
+      schema: 'public'
+    },
+    realtime: {
+      params: {
+        eventsPerSecond: 10
+      }
     }
   })
   if (typeof window !== 'undefined') {
