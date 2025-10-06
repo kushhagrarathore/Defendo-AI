@@ -14,7 +14,8 @@ export const AuthProvider = ({ children }) => {
     if (error) console.error('Session fetch error:', error);
     if (session?.user) {
       setUser(session.user);
-      await fetchHostProfile(session.user.id);
+      // Fire-and-forget profile fetch to avoid blocking initial render
+      fetchHostProfile(session.user.id);
     } else {
       setUser(null);
       setProfile(null);
@@ -77,7 +78,8 @@ export const AuthProvider = ({ children }) => {
       console.log('Auth state changed:', event, session?.user?.id);
       if (session?.user) {
         setUser(session.user);
-        await fetchHostProfile(session.user.id);
+        // Do not block UI on profile fetch during auth change
+        fetchHostProfile(session.user.id);
       } else {
         setUser(null);
         setProfile(null);

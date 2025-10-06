@@ -199,6 +199,33 @@ const Dashboard = () => {
               </Link>
             </motion.div>
           ))}
+
+          {/* Logout just under Account */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+            whileHover={{ scale: 1.03 }}
+          >
+            <button
+              onClick={handleLogout}
+              className={`w-full group flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 ease-out card-animate ripple stagger-item relative text-white/70 hover:text-white hover:bg-white/5 hover:ring-1 hover:ring-white/10`}
+              title={sidebarCollapsed ? 'Logout' : ''}
+            >
+              <div className={`${sidebarCollapsed ? 'p-2' : 'p-1'} rounded-lg transition-all duration-300 group-hover:bg-white/10`}>
+                <span className={`material-symbols-outlined ${sidebarCollapsed ? 'text-xl' : 'text-lg'}`}>logout</span>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="font-medium transition-all duration-300 whitespace-nowrap">Logout</span>
+              )}
+              {sidebarCollapsed && (
+                <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#1a241e] text-white px-3 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-[#29382f] shadow-lg">
+                  Logout
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#1a241e] border-l border-t border-[#29382f] rotate-45"></div>
+                </div>
+              )}
+            </button>
+          </motion.div>
         </nav>
 
         {/* User Profile Section */}

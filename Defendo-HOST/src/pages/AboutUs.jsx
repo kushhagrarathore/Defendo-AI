@@ -19,8 +19,8 @@ const AboutUs = () => {
     },
     {
       name: "Atharva Gour",
-      role: "Co-Founder & CTO",
-      image: "/api/placeholder/300/300", // Replace with actual image path
+      role: "Co-Founder",
+      image: "/atharva-gour.jpg", // Place this image in public/atharva-gour.jpg
       bio: "Tech-savvy entrepreneur dedicated to building scalable and secure platforms. Combines technical expertise with business acumen to deliver cutting-edge solutions in the security industry.",
       expertise: ["Full-Stack Development", "System Architecture", "Cloud Infrastructure", "Product Engineering"],
       social: {
@@ -160,10 +160,12 @@ const AboutUs = () => {
                 whileHover={{ scale: 1.02 }}
               >
                 <div className="text-center mb-6">
-                  <div className="w-32 h-32 bg-gradient-to-br from-[var(--primary-color)]/30 to-white/10 rounded-full mx-auto mb-4 flex items-center justify-center">
-                    <span className="material-symbols-outlined text-[var(--primary-color)] text-4xl">
-                      person
-                    </span>
+                  <div className="w-32 h-32 bg-gradient-to-br from-[var(--primary-color)]/30 to-white/10 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                    {founder.image ? (
+                      <img loading="lazy" src={founder.image} alt={founder.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="material-symbols-outlined text-[var(--primary-color)] text-4xl">person</span>
+                    )}
                   </div>
                   <h3 className="text-2xl font-bold mb-2">{founder.name}</h3>
                   <p className="text-[var(--primary-color)] font-medium">{founder.role}</p>
@@ -334,6 +336,7 @@ const AboutUs = () => {
 }
 
 export default AboutUs
+
 
 
 
