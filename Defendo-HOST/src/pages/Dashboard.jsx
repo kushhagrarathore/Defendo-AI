@@ -1,17 +1,14 @@
 import { Routes, Route, Link, useLocation, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { useAuth } from "../contexts/AuthContext"
-import { useState, useEffect, lazy, Suspense } from "react"
-import LoadingSpinner from "../components/LoadingSpinner"
-
-// Lazy load dashboard components
-const DashboardHome = lazy(() => import("./DashboardHome"))
-const MyServices = lazy(() => import("./MyServices"))
-const EditService = lazy(() => import("./EditService"))
-const Bookings = lazy(() => import("./Bookings"))
-const AddService = lazy(() => import("./AddService"))
-const Account = lazy(() => import("./Account"))
-const KYCUpload = lazy(() => import("./KYCUpload"))
+import { useState, useEffect } from "react"
+import DashboardHome from "./DashboardHome"
+import MyServices from "./MyServices"
+import EditService from "./EditService"
+import Bookings from "./Bookings"
+import AddService from "./AddService"
+import Account from "./Account"
+import KYCUpload from "./KYCUpload"
 
 const Dashboard = () => {
   const location = useLocation()
@@ -257,17 +254,15 @@ const Dashboard = () => {
         sidebarCollapsed ? 'ml-0' : ''
       }`}>
         <div className="max-w-7xl mx-auto">
-          <Suspense fallback={<LoadingSpinner />}>
-            <Routes>
-              <Route index element={<DashboardHome />} />
-              <Route path="bookings" element={<Bookings />} />
-              <Route path="services" element={<MyServices />} />
-              <Route path="services/:id/edit" element={<EditService />} />
-              <Route path="add-service" element={<AddService />} />
-              <Route path="kyc" element={<KYCUpload />} />
-              <Route path="account" element={<Account />} />
-            </Routes>
-          </Suspense>
+          <Routes>
+            <Route index element={<DashboardHome />} />
+            <Route path="bookings" element={<Bookings />} />
+            <Route path="services" element={<MyServices />} />
+            <Route path="services/:id/edit" element={<EditService />} />
+            <Route path="add-service" element={<AddService />} />
+            <Route path="kyc" element={<KYCUpload />} />
+            <Route path="account" element={<Account />} />
+          </Routes>
         </div>
       </div>
     </div>
