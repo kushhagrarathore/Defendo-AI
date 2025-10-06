@@ -8,7 +8,8 @@ const Login = () => {
     password: ""
   })
   const [isLoading, setIsLoading] = useState(false)
-  const { signIn, error, clearError } = useAuth()
+  const [loginError, setLoginError] = useState(null)
+  const { signIn } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -20,8 +21,8 @@ const Login = () => {
       ...prev,
       [name]: value
     }))
-    // Clear error when user starts typing
-    if (error) clearError()
+    // Clear local error when user starts typing
+    if (loginError) setLoginError(null)
   }
 
   const handleSubmit = async (e) => {
@@ -55,6 +56,7 @@ const Login = () => {
         }, 100)
       } else {
         console.error('Login failed:', result.error)
+        setLoginError(result.error || 'Invalid login credentials')
       }
     } catch (error) {
       console.error('Exception during login:', error)
@@ -119,20 +121,20 @@ const Login = () => {
               </p>
             </div>
 
-            {error && (
+            {loginError && (
               <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm">
                 <div className="flex items-center gap-3">
                   <span className="material-symbols-outlined text-red-400">error</span>
                   <div>
                     <p className="text-red-400 text-sm font-medium">
-                      {error === 'Invalid login credentials' 
+                      {loginError === 'Invalid login credentials' 
                         ? 'Invalid email or password. Please check your credentials and try again.'
-                        : error === 'Login timeout after 5 seconds'
+                        : loginError === 'Login timeout after 5 seconds'
                         ? 'Login request timed out. Please check your internet connection and try again.'
-                        : error
+                        : loginError
                       }
                     </p>
-                    {error === 'Invalid login credentials' && (
+                    {loginError === 'Invalid login credentials' && (
                       <p className="text-red-300 text-xs mt-1">
                         Don't have an account? <Link to="/signup" className="underline hover:text-red-200">Sign up here</Link>
                       </p>
