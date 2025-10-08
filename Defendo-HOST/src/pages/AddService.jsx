@@ -656,7 +656,7 @@ const AddService = () => {
           {/* Image Upload */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-white">
-              Service Images
+              Upload the logo of the company
             </label>
             <ImageUpload
               images={selectedImages}

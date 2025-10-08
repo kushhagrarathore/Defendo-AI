@@ -55,3 +55,6 @@ for each row execute function public.notify_on_verified_change();
 
 
 
+
+
+

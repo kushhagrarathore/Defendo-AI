@@ -153,117 +153,133 @@ const MyServices = () => {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div>
-          <h1 className="text-4xl font-bold gradient-text animate-slide-in-left">My Services</h1>
-          <p className="text-white/70 mt-2 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
-            Manage your security service offerings
-          </p>
+    <div className="min-h-screen bg-[#0D1117] text-white">
+      <div className="max-w-7xl mx-auto p-8">
+        {/* Header */}
+        <div className="mb-12">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-[#00FF88] bg-clip-text text-transparent mb-4">
+            My Services
+          </h1>
+          <p className="text-gray-400 text-lg">Manage your security service offerings</p>
         </div>
-        <Link 
-          to="/dashboard/add-service"
-          className="group bg-gradient-to-r from-[var(--primary-color)] via-emerald-400 to-[#2a5a3a] text-[#111714] px-7 py-3.5 rounded-full font-bold shadow-[0_10px_30px_rgba(74,222,128,0.25)] hover:shadow-[0_18px_40px_rgba(74,222,128,0.35)] transition-all duration-300 ripple animate-slide-in-right"
-        >
-          <span className="material-symbols-outlined mr-2 group-hover:rotate-90 transition-transform duration-300">add</span>
-          Add New Service
-        </Link>
-      </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm animate-slide-in-top">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-red-400">error</span>
-            <p className="text-red-400 text-sm">{error}</p>
-          </div>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {isLoading && (
-        <div className="flex items-center justify-center py-12">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 border-2 border-[var(--primary-color)] border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-white/70">Loading services...</p>
-          </div>
-        </div>
-      )}
-
-      {/* Stats Overview */}
-      {!isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="rounded-2xl p-4 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)] card-animate hover:shadow-[0_12px_40px_rgba(0,0,0,0.25)] transition">
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm mb-8">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-lg">
-                <span className="material-symbols-outlined text-white">security</span>
-              </div>
-              <div>
-                <p className="text-white/70 text-sm">Total Services</p>
-                <p className="text-2xl font-bold text-white">{totalServices}</p>
-              </div>
+              <span className="material-symbols-outlined text-red-400">error</span>
+              <p className="text-red-400 text-sm">{error}</p>
             </div>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="flex items-center justify-center py-20">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 border-2 border-[#00FF88] border-t-transparent rounded-full animate-spin"></div>
+              <p className="text-gray-400">Loading services...</p>
             </div>
+          </div>
+        )}
+
+        {/* Stats Overview */}
+        {!isLoading && (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+            {/* Total Services */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="rounded-2xl p-6 bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-gray-700/30 shadow-xl hover:shadow-2xl hover:shadow-gray-800/20 transition-all duration-300 hover:scale-105"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-4 bg-gradient-to-br from-slate-600 to-slate-700 rounded-2xl shadow-lg border border-slate-500/20">
+                  <span className="material-symbols-outlined text-slate-200 text-2xl">security</span>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm font-medium">Total Services</p>
+                  <p className="text-3xl font-bold text-white">{totalServices}</p>
+                </div>
+              </div>
+            </motion.div>
             
-          <div className="rounded-2xl p-4 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)] card-animate hover:shadow-[0_12px_40px_rgba(0,0,0,0.25)] transition">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
-                <span className="material-symbols-outlined text-white">check_circle</span>
+            {/* Active Services */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="rounded-2xl p-6 bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-gray-700/30 shadow-xl hover:shadow-2xl hover:shadow-gray-800/20 transition-all duration-300 hover:scale-105"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-4 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-2xl shadow-lg border border-emerald-500/20">
+                  <span className="material-symbols-outlined text-emerald-100 text-2xl">check_circle</span>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm font-medium">Active</p>
+                  <p className="text-3xl font-bold text-white">{activeServices}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-white/70 text-sm">Active</p>
-                <p className="text-2xl font-bold text-white">{activeServices}</p>
+            </motion.div>
+            
+            {/* Total Bookings */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="rounded-2xl p-6 bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-gray-700/30 shadow-xl hover:shadow-2xl hover:shadow-gray-800/20 transition-all duration-300 hover:scale-105"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-4 bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl shadow-lg border border-blue-500/20">
+                  <span className="material-symbols-outlined text-blue-100 text-2xl">event</span>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm font-medium">Total Bookings</p>
+                  <p className="text-3xl font-bold text-white">{totalBookings}</p>
+                </div>
               </div>
-            </div>
+            </motion.div>
+            
+            {/* Average Rating */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="rounded-2xl p-6 bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-gray-700/30 shadow-xl hover:shadow-2xl hover:shadow-gray-800/20 transition-all duration-300 hover:scale-105"
+            >
+              <div className="flex items-center gap-4">
+                <div className="p-4 bg-gradient-to-br from-amber-600 to-amber-700 rounded-2xl shadow-lg border border-amber-500/20">
+                  <span className="material-symbols-outlined text-amber-100 text-2xl">star</span>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-sm font-medium">Avg Rating</p>
+                  <p className="text-3xl font-bold text-white">{avgRating}</p>
+                </div>
+              </div>
+            </motion.div>
           </div>
-          
-          <div className="rounded-2xl p-4 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)] card-animate hover:shadow-[0_12px_40px_rgba(0,0,0,0.25)] transition">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg">
-                <span className="material-symbols-outlined text-white">event</span>
-              </div>
-              <div>
-                <p className="text-white/70 text-sm">Total Bookings</p>
-                <p className="text-2xl font-bold text-white">{totalBookings}</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="rounded-2xl p-4 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)] card-animate hover:shadow-[0_12px_40px_rgba(0,0,0,0.25)] transition">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
-                <span className="material-symbols-outlined text-white">star</span>
-              </div>
-              <div>
-                <p className="text-white/70 text-sm">Avg Rating</p>
-                <p className="text-2xl font-bold text-white">{avgRating}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        )}
 
-      {/* Services Grid */}
-      {!isLoading && (
-        <>
-          {services.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-24 h-24 bg-gradient-to-br from-[var(--primary-color)] to-[#2a5a3a] rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="material-symbols-outlined text-[#111714] text-4xl">security</span>
+        {/* Services Grid */}
+        {!isLoading && (
+          <>
+            {services.length === 0 ? (
+              <div className="text-center py-20">
+                <div className="w-32 h-32 bg-gradient-to-br from-[#00FF88] to-[#00D4FF] rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-[#00FF88]/25">
+                  <span className="material-symbols-outlined text-black text-5xl">security</span>
+                </div>
+                <h3 className="text-3xl font-bold text-white mb-4">No Services Yet</h3>
+                <p className="text-gray-400 mb-8 text-lg">Start by adding your first security service offering</p>
+                <Link 
+                  to="/dashboard/add-service"
+                  className="inline-flex items-center gap-3 bg-gradient-to-r from-[#00FF88] to-[#00D4FF] text-black px-8 py-4 rounded-2xl font-bold shadow-xl hover:shadow-2xl hover:shadow-[#00FF88]/25 transition-all duration-300 hover:scale-105"
+                >
+                  <span className="material-symbols-outlined text-xl">add</span>
+                  Add Your First Service
+                </Link>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-2">No Services Yet</h3>
-              <p className="text-white/70 mb-6">Start by adding your first security service offering</p>
-              <Link 
-                to="/dashboard/add-service"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-[var(--primary-color)] to-[#2a5a3a] text-[#111714] px-6 py-3 rounded-full font-bold hover:shadow-lg hover:shadow-[var(--primary-color)]/25 transition-all duration-300 ripple"
-              >
-                <span className="material-symbols-outlined">add</span>
-                Add Your First Service
-              </Link>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
               {services.map((service, index) => {
                 const config = serviceTypeConfig[service.service_type] || serviceTypeConfig.other
                 const performance = Math.min((service.total_bookings / 20) * 100, 100)
@@ -275,97 +291,82 @@ const MyServices = () => {
                 return (
                   <motion.div 
                     key={service.id} 
-                    className="group relative overflow-hidden rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md card-animate stagger-item hover:shadow-2xl hover:shadow-[var(--primary-color)]/15 hover:scale-[1.02] transition-all duration-300 cursor-pointer"
-                    style={{animationDelay: `${index * 0.1}s`}}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] border border-[#00FF88]/20 shadow-xl hover:shadow-2xl hover:shadow-[#00FF88]/10 transition-all duration-300 cursor-pointer"
                     onClick={(e) => {
                       // Don't trigger on button clicks
                       if (!e.target.closest('button')) {
                         handleServiceClick(service)
                       }
                     }}
-                    whileHover={{ y: -2 }}
+                    whileHover={{ y: -4, scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    {/* Background Pattern */}
-                    <div className={`absolute inset-0 bg-gradient-to-br ${config.color} opacity-5 group-hover:opacity-10 transition-opacity duration-300`}></div>
+                    {/* Active Badge */}
+                    <div className="absolute top-4 right-4 z-20">
+                      <div className={`px-3 py-1 rounded-full text-xs font-bold ${
+                        service.is_active 
+                          ? 'bg-[#00FF88] text-black shadow-lg shadow-[#00FF88]/25' 
+                          : 'bg-gray-500/20 text-gray-400'
+                      }`}>
+                        {service.is_active ? 'Active' : 'Inactive'}
+                      </div>
+                    </div>
                     
                     {/* Content */}
-                    <div className="relative z-10">
-                      {/* Image Carousel */}
-                      <div className="mb-4 rounded-xl overflow-hidden shadow-lg">
+                    <div className="p-6">
+                      {/* Service Image */}
+                      <div className="mb-6 rounded-xl overflow-hidden shadow-lg">
                         <ServiceImageCarousel 
                           images={service.images || []} 
-                          className="w-full"
+                          className="w-full h-48 object-cover"
                         />
                       </div>
 
-                      {/* Header */}
-                      <div className="flex justify-between items-start mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className={`p-2 rounded-xl bg-gradient-to-br ${config.color} shadow-lg`}>
-                            <span className="material-symbols-outlined text-white text-xl">{config.icon}</span>
-                          </div>
-                          <h3 className="text-xl font-bold text-white group-hover:text-[var(--primary-color)] transition-colors">
-                            {service.name}
-                          </h3>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => handleToggleActive(service)}
-                            disabled={togglingId === service.id}
-                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                              service.is_active 
-                                ? 'bg-green-500/20 text-green-400 hover:bg-green-500/30' 
-                                : 'bg-gray-500/20 text-gray-400 hover:bg-gray-500/30'
-                            } ${togglingId === service.id ? 'opacity-60 cursor-not-allowed' : ''}`}
-                            title={service.is_active ? 'Click to deactivate' : 'Click to activate'}
-                          >
-                            {togglingId === service.id ? 'Updating...' : (service.is_active ? 'Active' : 'Inactive')}
-                          </button>
-                          <div className="flex items-center gap-1">
-                            <span className="material-symbols-outlined text-yellow-400 text-sm">star</span>
-                            <span className="text-white text-sm font-medium">{service.rating || 0}</span>
-                          </div>
-                        </div>
+                      {/* Service Header */}
+                      <div className="mb-4">
+                        <h3 className="text-2xl font-bold text-white mb-2 group-hover:text-[#00FF88] transition-colors">
+                          {service.name}
+                        </h3>
+                        <p className="text-gray-400 text-sm leading-relaxed">{service.description}</p>
                       </div>
                       
-                      {/* Description */}
-                      <p className="text-white/70 mb-6 leading-relaxed">{service.description}</p>
-                      
-                      {/* Details */}
-                      <div className="space-y-3 mb-6">
-                        <div className="flex justify-between items-center">
-                          <span className="text-white/70 text-sm">Type:</span>
-                          <span className="text-white font-medium">{config.label}</span>
+                      {/* Information Blocks */}
+                      <div className="space-y-4 mb-6">
+                        <div className="flex justify-between items-center py-2 border-b border-gray-700/30">
+                          <span className="text-gray-400 text-sm font-medium">Type:</span>
+                          <span className="text-white font-semibold">{config.label}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-white/70 text-sm">Company:</span>
-                          <span className="text-white font-medium">{companyName}</span>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-700/30">
+                          <span className="text-gray-400 text-sm font-medium">Company:</span>
+                          <span className="text-white font-semibold">{companyName}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-white/70 text-sm">Bookings:</span>
-                          <span className="text-white font-medium">{service.total_bookings || 0}</span>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-700/30">
+                          <span className="text-gray-400 text-sm font-medium">Bookings:</span>
+                          <span className="text-white font-semibold">{service.total_bookings || 0}</span>
                         </div>
                         {(service.city && service.state) && (
-                          <div className="flex justify-between items-center">
-                            <span className="text-white/70 text-sm">Location:</span>
-                            <span className="text-white font-medium">{service.city}, {service.state}</span>
+                          <div className="flex justify-between items-center py-2 border-b border-gray-700/30">
+                            <span className="text-gray-400 text-sm font-medium">Location:</span>
+                            <span className="text-white font-semibold">{service.city}, {service.state}</span>
                           </div>
                         )}
                       </div>
                       
                       {/* Specializations */}
                       {service.specializations && service.specializations.length > 0 && (
-                        <div className="mb-4">
-                          <p className="text-white/70 text-sm mb-2">Specializations:</p>
-                          <div className="flex flex-wrap gap-1">
+                        <div className="mb-6">
+                          <p className="text-gray-400 text-sm mb-3 font-medium">Specializations:</p>
+                          <div className="flex flex-wrap gap-2">
                             {service.specializations.slice(0, 3).map((spec, idx) => (
-                              <span key={idx} className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/80">
+                              <span key={idx} className="px-3 py-1 bg-gradient-to-r from-[#00FF88]/20 to-[#00D4FF]/20 border border-[#00FF88]/30 rounded-full text-xs text-[#00FF88] font-medium">
                                 {spec}
                               </span>
                             ))}
                             {service.specializations.length > 3 && (
-                              <span className="px-2 py-1 bg-white/10 rounded-full text-xs text-white/80">
+                              <span className="px-3 py-1 bg-gradient-to-r from-[#00FF88]/20 to-[#00D4FF]/20 border border-[#00FF88]/30 rounded-full text-xs text-[#00FF88] font-medium">
                                 +{service.specializations.length - 3} more
                               </span>
                             )}
@@ -373,18 +374,18 @@ const MyServices = () => {
                         </div>
                       )}
                       
-                      {/* Subcategories (from sub_category JSON string) */}
+                      {/* Subcategories & Pricing */}
                       {(() => {
                         const subObj = parseSubcategories(service.sub_category)
                         return subObj && Object.keys(subObj).length > 0
                       })() && (
-                        <div className="mb-4">
-                          <p className="text-white/70 text-sm mb-2">Subcategories & Pricing:</p>
+                        <div className="mb-6">
+                          <p className="text-gray-400 text-sm mb-3 font-medium">Subcategories & Pricing:</p>
                           <div className="space-y-2">
                             {Object.entries(parseSubcategories(service.sub_category)).map(([key, subcat]) => (
-                              <div key={key} className="flex justify-between items-center bg-white/5 rounded-lg px-3 py-2">
-                                <span className="text-white text-sm font-medium">{subcat.label}</span>
-                                <span className="text-[var(--primary-color)] font-bold text-sm">
+                              <div key={key} className="flex justify-between items-center bg-gradient-to-r from-[#00FF88]/10 to-[#00D4FF]/10 border border-[#00FF88]/20 rounded-xl px-4 py-3">
+                                <span className="text-white text-sm font-semibold">{subcat.label}</span>
+                                <span className="text-[#00FF88] font-bold text-sm">
                                   {subcat.currency} {subcat.price_per_hour}/hr
                                 </span>
                               </div>
@@ -393,36 +394,30 @@ const MyServices = () => {
                         </div>
                       )}
                       
-                      {/* Progress Bar */}
-                      <div className="mb-6">
-                        <div className="flex justify-between text-sm text-white/70 mb-2">
-                          <span>Performance</span>
-                          <span>{Math.round(performance)}%</span>
+                      {/* Performance Bar */}
+                      <div className="mb-8">
+                        <div className="flex justify-between text-sm text-gray-400 mb-3">
+                          <span className="font-medium">Performance</span>
+                          <span className="font-bold text-[#00FF88]">{Math.round(performance)}%</span>
                         </div>
-                        <div className="w-full bg-white/10 rounded-full h-2">
-                          <div 
-                            className={`h-2 bg-gradient-to-r ${config.color} rounded-full transition-all duration-1000 ease-out`}
-                            style={{ width: `${performance}%` }}
-                          ></div>
-              </div>
-            </div>
+                        <div className="w-full bg-gray-700/30 rounded-full h-3 overflow-hidden">
+                          <motion.div 
+                            className="h-3 bg-gradient-to-r from-[#00FF88] to-[#00D4FF] rounded-full shadow-lg shadow-[#00FF88]/25"
+                            initial={{ width: 0 }}
+                            animate={{ width: `${performance}%` }}
+                            transition={{ duration: 1.5, ease: "easeOut" }}
+                          />
+                        </div>
+                      </div>
             
-                      {/* Actions */}
-                      <div className="flex gap-2">
+                      {/* Action Buttons */}
+                      <div className="flex gap-3">
                         <button 
                           onClick={() => handleServiceClick(service)}
-                          className={`flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-300 ripple group ${
-                            hasSubcategories 
-                              ? 'bg-gradient-to-r from-blue-500 to-indigo-500 text-white hover:shadow-lg hover:shadow-blue-500/25' 
-                              : 'bg-gradient-to-r from-[var(--primary-color)] to-[#2a5a3a] text-[#111714] hover:shadow-lg hover:shadow-[var(--primary-color)]/25'
-                          }`}
+                          className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300 hover:scale-105 group border border-blue-500/20"
                         >
-                          <span className={`material-symbols-outlined text-sm mr-1 group-hover:scale-110 transition-transform ${
-                            hasSubcategories ? 'text-white' : ''
-                          }`}>
-                            {hasSubcategories ? 'visibility' : 'add'}
-                          </span>
-                          {hasSubcategories ? 'View Details' : 'View Service'}
+                          <span className="material-symbols-outlined text-sm mr-2 group-hover:scale-110 transition-transform">visibility</span>
+                          View Details
                         </button>
                         
                         <button 
@@ -430,9 +425,9 @@ const MyServices = () => {
                             e.stopPropagation()
                             navigate(`/dashboard/services/${service.id}/edit`)
                           }} 
-                          className="flex-1 bg-gradient-to-r from-yellow-500 to-orange-500 text-white py-2 px-4 rounded-lg font-medium hover:shadow-lg hover:shadow-yellow-500/25 transition-all duration-300 ripple group"
+                          className="flex-1 bg-gradient-to-r from-amber-600 to-amber-700 text-white py-3 px-4 rounded-xl font-semibold hover:from-amber-700 hover:to-amber-800 hover:shadow-xl hover:shadow-amber-500/20 transition-all duration-300 hover:scale-105 group border border-amber-500/20"
                         >
-                          <span className="material-symbols-outlined text-sm mr-1 group-hover:rotate-12 transition-transform">edit</span>
+                          <span className="material-symbols-outlined text-sm mr-2 group-hover:rotate-12 transition-transform">edit</span>
                           Edit
                         </button>
                         
@@ -441,9 +436,9 @@ const MyServices = () => {
                             e.stopPropagation()
                             setSelectedService(service)
                           }}
-                          className="flex-1 bg-red-500/20 text-red-400 py-2 px-4 rounded-lg font-medium hover:bg-red-500/30 hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 ripple group"
+                          className="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white py-3 px-4 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 hover:shadow-xl hover:shadow-red-500/20 transition-all duration-300 hover:scale-105 group border border-red-500/20"
                         >
-                          <span className="material-symbols-outlined text-sm mr-1 group-hover:scale-110 transition-transform">delete</span>
+                          <span className="material-symbols-outlined text-sm mr-2 group-hover:scale-110 transition-transform">delete</span>
                           Delete
                         </button>
                       </div>
@@ -451,49 +446,70 @@ const MyServices = () => {
                   </motion.div>
                 )
               })}
-            </div>
-          )}
-        </>
-      )}
+              </div>
+            )}
+          </>
+        )}
 
-      {/* Delete Confirmation Modal */}
-      {selectedService && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in-up">
-          <div className="bg-gradient-to-br from-[#1a241e] to-[#29382f] rounded-2xl p-6 border border-[#29382f] max-w-md w-full mx-4 animate-scale-in">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="material-symbols-outlined text-red-400 text-2xl">warning</span>
+        {/* Floating Add Button */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.5 }}
+          className="fixed bottom-8 right-8 z-50"
+        >
+          <Link 
+            to="/dashboard/add-service"
+            className="group bg-gradient-to-r from-[#00FF88] to-[#00D4FF] text-black px-6 py-4 rounded-2xl font-bold shadow-2xl hover:shadow-3xl hover:shadow-[#00FF88]/25 transition-all duration-300 hover:scale-110 flex items-center gap-3"
+          >
+            <span className="material-symbols-outlined text-xl group-hover:rotate-90 transition-transform duration-300">add</span>
+            <span className="hidden sm:block">Add New Service</span>
+          </Link>
+        </motion.div>
+
+        {/* Delete Confirmation Modal */}
+        {selectedService && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="bg-gradient-to-br from-[#1a1a1a] to-[#0f0f0f] rounded-2xl p-8 border border-red-500/20 max-w-md w-full mx-4 shadow-2xl"
+            >
+              <div className="text-center">
+                <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <span className="material-symbols-outlined text-red-400 text-3xl">warning</span>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4">Delete Service</h3>
+                <p className="text-gray-400 mb-8 text-lg">
+                  Are you sure you want to delete "{selectedService.name}"? This action cannot be undone.
+                </p>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setSelectedService(null)}
+                    className="flex-1 bg-gray-600 text-white py-3 px-6 rounded-xl font-semibold hover:bg-gray-700 transition-all duration-300"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => handleDelete(selectedService.id)}
+                    disabled={isDeleting}
+                    className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300 disabled:opacity-50"
+                  >
+                    {isDeleting ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Deleting...
+                      </div>
+                    ) : (
+                      'Delete'
+                    )}
+                  </button>
+                </div>
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Delete Service</h3>
-              <p className="text-white/70 mb-6">
-                Are you sure you want to delete "{selectedService.name}"? This action cannot be undone.
-              </p>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setSelectedService(null)}
-                  className="flex-1 bg-[#29382f] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#3a4a3f] transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => handleDelete(selectedService.id)}
-                  disabled={isDeleting}
-                  className="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg font-medium hover:bg-red-600 transition-colors disabled:opacity-50 ripple"
-                >
-                  {isDeleting ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                      Deleting...
-                    </div>
-                  ) : (
-                    'Delete'
-                  )}
-                </button>
-              </div>
-            </div>
+            </motion.div>
           </div>
+        )}
       </div>
-      )}
     </div>
   )
 }

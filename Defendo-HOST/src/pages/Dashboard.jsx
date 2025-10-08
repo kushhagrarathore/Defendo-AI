@@ -101,48 +101,83 @@ const Dashboard = () => {
   return (
     <div className="bg-[#111714] text-white min-h-screen flex animate-fade-in-up">
       {/* Sidebar */}
-      <div className={`${sidebarCollapsed ? 'w-16' : 'w-64'} bg-[#0f1512] border-r border-[#1f2a24] ${sidebarCollapsed ? 'p-4' : 'p-6'} flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden`}> 
+      <div className={`${sidebarCollapsed ? 'w-16' : 'w-72'} bg-[#0a0a0a] border-r border-[#1a1a1a] ${sidebarCollapsed ? 'p-3' : 'p-6'} flex flex-col transition-all duration-300 ease-in-out relative overflow-hidden backdrop-blur-xl`}> 
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className={`absolute ${sidebarCollapsed ? 'top-8 left-4' : 'top-10 left-10'} w-32 h-32 bg-[var(--primary-color)] rounded-full blur-3xl animate-pulse`}></div>
-          <div className={`absolute ${sidebarCollapsed ? 'bottom-16 right-4' : 'bottom-20 right-8'} w-24 h-24 bg-emerald-500 rounded-full blur-2xl animate-pulse`} style={{animationDelay: '1s'}}></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className={`absolute ${sidebarCollapsed ? 'top-6 left-3' : 'top-8 left-8'} w-40 h-40 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full blur-3xl animate-pulse`}></div>
+          <div className={`absolute ${sidebarCollapsed ? 'bottom-12 right-3' : 'bottom-16 right-8'} w-32 h-32 bg-emerald-300 rounded-full blur-2xl animate-pulse`} style={{animationDelay: '2s'}}></div>
         </div>
         
         {/* Collapsed Sidebar Accent */}
         {sidebarCollapsed && (
-          <div className="absolute right-0 top-0 bottom-0 w-1 bg-gradient-to-b from-[var(--primary-color)] to-blue-500 opacity-30"></div>
+          <div className="absolute right-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-400 via-green-500 to-emerald-400 opacity-60"></div>
         )}
         
         {/* Header */}
         <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'} mb-8 relative z-10`}>
           <div className="relative group">
-            <svg className={`${sidebarCollapsed ? 'h-6 w-6' : 'h-8 w-8'} text-[var(--primary-color)] animate-bounce group-hover:scale-110 transition-transform`} fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
-            </svg>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-10 h-10'} bg-gradient-to-br from-emerald-400 to-green-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 transition-all duration-300`}>
+              <span className="material-symbols-outlined text-black text-lg font-bold">security</span>
+            </div>
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse shadow-lg shadow-emerald-400/50"></div>
             {sidebarCollapsed && (
-              <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 bg-[#1a241e] text-white px-2 py-1 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-[#29382f]">
-                Defendo Host
+              <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#0a0a0a] text-white px-3 py-2 rounded-xl text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-emerald-500/20 shadow-xl">
+                Defendo
+                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#0a0a0a] border-l border-t border-emerald-500/20 rotate-45"></div>
               </div>
             )}
           </div>
           {!sidebarCollapsed && (
-            <h2 className="text-xl font-bold gradient-text animate-slide-in-left">Defendo Host</h2>
+            <div>
+              <h2 className="text-xl font-bold bg-gradient-to-r from-white to-emerald-200 bg-clip-text text-transparent">Defendo</h2>
+              <p className="text-xs text-white/60 font-medium">Security Platform</p>
+            </div>
           )}
         </div>
         
-        {/* Toggle Button - edge mounted, vertically centered */}
+        {/* Toggle Button */}
         <button
           onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="absolute top-1/2 -translate-y-1/2 -right-3 w-9 h-9 flex items-center justify-center rounded-full bg-[#29382f] hover:bg-[#3a4a3f] border border-white/10 shadow-lg transition-all duration-200 z-20 group"
+          className="absolute top-1/2 -translate-y-1/2 -right-3 w-8 h-8 flex items-center justify-center rounded-full bg-[#1a1a1a] hover:bg-[#2a2a2a] border border-emerald-500/20 shadow-lg transition-all duration-200 z-20 group backdrop-blur-sm"
           title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
         >
-          <span className="material-symbols-outlined text-base text-white group-hover:scale-110 transition-transform">
+          <span className="material-symbols-outlined text-emerald-400 text-sm group-hover:scale-110 transition-transform">
             {sidebarCollapsed ? 'chevron_right' : 'chevron_left'}
           </span>
         </button>
         
+        {/* Add Service Button */}
+        <div className="mb-6 relative z-10">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <Link
+              to="/dashboard/add-service"
+              className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-3 py-3' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 relative overflow-hidden bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/30 hover:border-emerald-400/50 hover:shadow-lg hover:shadow-emerald-500/20`}
+              title={sidebarCollapsed ? 'Add Service' : ''}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 to-green-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className={`${sidebarCollapsed ? 'p-2' : 'p-2'} rounded-lg bg-gradient-to-br from-emerald-400 to-green-500 shadow-lg group-hover:shadow-emerald-500/30 transition-all duration-300`}>
+                <span className="material-symbols-outlined text-black text-lg font-bold">add</span>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="font-semibold text-emerald-200 group-hover:text-white transition-colors">Add Service</span>
+              )}
+              {sidebarCollapsed && (
+                <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#0a0a0a] text-white px-3 py-2 rounded-xl text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-emerald-500/20 shadow-xl">
+                  Add Service
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#0a0a0a] border-l border-t border-emerald-500/20 rotate-45"></div>
+                </div>
+              )}
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* Section Divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent mb-6"></div>
+
         {/* Navigation */}
         <nav className={`${sidebarCollapsed ? 'space-y-3' : 'space-y-2'} flex-1 relative z-10`}>
           {sidebarItems.map((item, index) => (
@@ -151,128 +186,126 @@ const Dashboard = () => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.06, type: 'spring', stiffness: 300, damping: 24 }}
-              whileHover={{ scale: 1.03 }}
+              whileHover={{ scale: 1.02 }}
             >
               <Link
                 to={item.path}
-                className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 ease-out card-animate ripple stagger-item relative ${
+                className={`group flex items-center ${sidebarCollapsed ? 'justify-center px-3 py-3' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 ease-out relative ${
                   location.pathname === item.path
-                    ? "bg-white/10 ring-1 ring-[var(--primary-color)]/40 shadow-[0_6px_20px_rgba(74,222,128,0.18)] text-white"
-                    : "text-white/70 hover:text-white hover:bg-white/5 hover:ring-1 hover:ring-white/10"
+                    ? "bg-emerald-500/10 border border-emerald-500/30 shadow-lg shadow-emerald-500/10 text-emerald-200"
+                    : "text-white/70 hover:text-white hover:bg-white/5 hover:border hover:border-emerald-500/20"
                 }`}
                 title={sidebarCollapsed ? item.label : ''}
               >
-                {/* Sliding hover bar */}
-                <motion.span
-                  layoutId={location.pathname === item.path ? 'sidebar-active' : undefined}
-                  className="absolute left-0 top-0 bottom-0 w-1 bg-[var(--primary-color)]/80 rounded-r"
-                  initial={false}
-                  animate={{ opacity: location.pathname === item.path ? 1 : 0 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-                />
-                <div className={`${sidebarCollapsed ? 'p-2' : 'p-1'} rounded-lg transition-all duration-300 ${
+                {/* Active indicator */}
+                {location.pathname === item.path && (
+                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-400 to-green-500 rounded-r"></div>
+                )}
+                
+                <div className={`${sidebarCollapsed ? 'p-2' : 'p-2'} rounded-lg transition-all duration-300 ${
                   location.pathname === item.path 
-                    ? 'bg-white/20' 
-                    : 'group-hover:bg-white/10'
+                    ? 'bg-emerald-500/20 shadow-lg shadow-emerald-500/20' 
+                    : 'group-hover:bg-emerald-500/10'
                 }`}>
-                  <span className={`material-symbols-outlined ${sidebarCollapsed ? 'text-xl' : 'text-lg'}`}>{item.icon}</span>
+                  <span className={`material-symbols-outlined ${sidebarCollapsed ? 'text-xl' : 'text-lg'} ${
+                    location.pathname === item.path ? 'text-emerald-300' : 'text-white/80 group-hover:text-emerald-300'
+                  }`}>{item.icon}</span>
                 </div>
+                
                 {!sidebarCollapsed && (
                   <span className="font-medium transition-all duration-300 whitespace-nowrap">{item.label}</span>
                 )}
+                
                 {location.pathname === item.path && !sidebarCollapsed && (
                   <motion.div
-                    className="ml-auto w-2 h-2 bg-white rounded-full"
+                    className="ml-auto w-2 h-2 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"
                     animate={{ scale: [1, 1.3, 1] }}
                     transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
                   />
                 )}
+                
                 {sidebarCollapsed && location.pathname === item.path && (
-                  <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-white rounded-full"></div>
+                  <div className="absolute -right-1 top-1/2 transform -translate-y-1/2 w-1 h-6 bg-emerald-400 rounded-full shadow-lg shadow-emerald-400/50"></div>
                 )}
+                
                 {sidebarCollapsed && (
-                  <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#1a241e] text-white px-3 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-[#29382f] shadow-lg">
+                  <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#0a0a0a] text-white px-3 py-2 rounded-xl text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-emerald-500/20 shadow-xl">
                     {item.label}
-                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#1a241e] border-l border-t border-[#29382f] rotate-45"></div>
+                    <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#0a0a0a] border-l border-t border-emerald-500/20 rotate-45"></div>
                   </div>
                 )}
               </Link>
             </motion.div>
           ))}
 
-          {/* Logout just under Account */}
+          {/* Logout */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 24 }}
-            whileHover={{ scale: 1.03 }}
+            transition={{ delay: 0.3 }}
+            whileHover={{ scale: 1.02 }}
           >
             <button
               onClick={handleLogout}
-              className={`w-full group flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 ease-out card-animate ripple stagger-item relative text-white/70 hover:text-white hover:bg-white/5 hover:ring-1 hover:ring-white/10`}
+              className={`w-full group flex items-center ${sidebarCollapsed ? 'justify-center px-3 py-3' : 'gap-3 px-4 py-3'} rounded-xl transition-all duration-300 ease-out relative text-white/70 hover:text-white hover:bg-red-500/10 hover:border hover:border-red-500/20`}
               title={sidebarCollapsed ? 'Logout' : ''}
             >
-              <div className={`${sidebarCollapsed ? 'p-2' : 'p-1'} rounded-lg transition-all duration-300 group-hover:bg-white/10`}>
-                <span className={`material-symbols-outlined ${sidebarCollapsed ? 'text-xl' : 'text-lg'}`}>logout</span>
+              <div className={`${sidebarCollapsed ? 'p-2' : 'p-2'} rounded-lg transition-all duration-300 group-hover:bg-red-500/20`}>
+                <span className={`material-symbols-outlined ${sidebarCollapsed ? 'text-xl' : 'text-lg'} text-white/80 group-hover:text-red-300`}>logout</span>
               </div>
               {!sidebarCollapsed && (
                 <span className="font-medium transition-all duration-300 whitespace-nowrap">Logout</span>
               )}
               {sidebarCollapsed && (
-                <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#1a241e] text-white px-3 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-[#29382f] shadow-lg">
+                <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#0a0a0a] text-white px-3 py-2 rounded-xl text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-red-500/20 shadow-xl">
                   Logout
-                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#1a241e] border-l border-t border-[#29382f] rotate-45"></div>
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#0a0a0a] border-l border-t border-red-500/20 rotate-45"></div>
                 </div>
               )}
             </button>
           </motion.div>
         </nav>
 
-        {/* User Profile Section */}
-        <div className={`mt-auto ${sidebarCollapsed ? 'pt-4' : 'pt-6'} border-t border-[#29382f] relative z-10`}>
-          <div 
-            className={`flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 p-3'} rounded-lg hover:bg-[#29382f] transition-all duration-300 card-animate group cursor-pointer relative`}
-            title={sidebarCollapsed ? `${getHostDisplayName()} - Security Provider` : ''}
+        {/* Section Divider */}
+        <div className="h-px bg-gradient-to-r from-transparent via-emerald-500/20 to-transparent mb-6"></div>
+
+        {/* Company Card */}
+        <div className={`mt-auto ${sidebarCollapsed ? 'pt-4' : 'pt-6'} relative z-10`}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className={`${sidebarCollapsed ? 'p-3' : 'p-4'} rounded-xl bg-gradient-to-br from-[#0f0f0f] to-[#1a1a1a] border border-emerald-500/20 shadow-lg shadow-emerald-500/5 hover:shadow-emerald-500/10 transition-all duration-300 group cursor-pointer`}
+            title={sidebarCollapsed ? 'KADFORCE SERVICES - Security Provider' : ''}
           >
-            <div className="relative">
-              <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-10 h-10'} rounded-full bg-gradient-to-br from-[var(--primary-color)] to-[#2a5a3a] flex items-center justify-center text-white font-bold ${sidebarCollapsed ? 'text-xs' : 'text-sm'} animate-scale-in`}>
-                {getHostInitials()}
+            <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-3'}`}>
+              <div className="relative">
+                <div className={`${sidebarCollapsed ? 'w-10 h-10' : 'w-12 h-12'} rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-black font-bold ${sidebarCollapsed ? 'text-sm' : 'text-base'} shadow-lg shadow-emerald-500/25`}>
+                  KS
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-400 rounded-full border-2 border-[#0a0a0a] animate-pulse shadow-lg shadow-emerald-400/50"></div>
               </div>
-              <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-[#1a241e] animate-pulse"></div>
+              
+              {!sidebarCollapsed && (
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-semibold truncate group-hover:text-emerald-300 transition-colors">
+                    KADFORCE SERVICES
+                  </p>
+                  <p className="text-white/60 text-sm truncate font-medium">
+                    Security Provider
+                  </p>
+                </div>
+              )}
+              
+              {sidebarCollapsed && (
+                <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#0a0a0a] text-white px-3 py-2 rounded-xl text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-emerald-500/20 shadow-xl">
+                  <div className="font-semibold">KADFORCE SERVICES</div>
+                  <div className="text-xs text-white/60">Security Provider</div>
+                  <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#0a0a0a] border-l border-t border-emerald-500/20 rotate-45"></div>
+                </div>
+              )}
             </div>
-            {!sidebarCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-white font-medium truncate group-hover:text-[var(--primary-color)] transition-colors">
-                  {getHostDisplayName()}
-                </p>
-                <p className="text-white/60 text-sm truncate">
-                  Security Provider
-                </p>
-              </div>
-            )}
-            {sidebarCollapsed && (
-              <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#1a241e] text-white px-3 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-[#29382f] shadow-lg">
-                <div className="font-medium">{getHostDisplayName()}</div>
-                <div className="text-xs text-white/60">Security Provider</div>
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#1a241e] border-l border-t border-[#29382f] rotate-45"></div>
-              </div>
-            )}
-          </div>
-          
-          <button
-            onClick={handleLogout}
-            className={`w-full flex items-center ${sidebarCollapsed ? 'justify-center px-2 py-3' : 'gap-3 px-4 py-3'} rounded-lg text-white/70 hover:text-white hover:bg-[#29382f] transition-all duration-300 card-animate ripple group relative`}
-            title={sidebarCollapsed ? 'Logout' : ''}
-          >
-            <span className={`material-symbols-outlined ${sidebarCollapsed ? 'text-xl' : 'text-lg'} group-hover:animate-bounce`}>logout</span>
-            {!sidebarCollapsed && <span>Logout</span>}
-            {sidebarCollapsed && (
-              <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-[#1a241e] text-white px-3 py-2 rounded-lg text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 border border-[#29382f] shadow-lg">
-                Logout
-                <div className="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-1 w-2 h-2 bg-[#1a241e] border-l border-t border-[#29382f] rotate-45"></div>
-              </div>
-            )}
-          </button>
+          </motion.div>
         </div>
       </div>
 
