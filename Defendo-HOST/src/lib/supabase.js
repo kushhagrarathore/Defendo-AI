@@ -213,6 +213,8 @@ export const auth = {
 
 // Database helper functions (Host-only platform)
 export const db = {
+  // Utility: generate a 6-digit OTP as a string
+  generateOtp: () => Math.floor(100000 + Math.random() * 900000).toString(),
   // Get host profile
   getHostProfile: async (hostId) => {
     const { data, error } = await supabase
@@ -544,9 +546,11 @@ export const db = {
   },
 
   // Create a booking as an end-user. user_id is inferred from session if not provided.
+  // Includes optional OTP and service_status fields when present in schema.
   createBooking: async ({ providerId, serviceType, date, startTime, endTime, price, currency = 'INR', userNotes = '', location = null }) => {
     const { data: sessionData } = await supabase.auth.getUser()
     const currentUserId = sessionData?.user?.id
+    const otp = db.generateOtp()
     const insertPayload = {
       user_id: currentUserId,
       provider_id: providerId,
@@ -558,13 +562,41 @@ export const db = {
       currency,
       user_notes: userNotes || '',
       location: location || null,
-      status: 'pending'
+      status: 'pending',
+      // Best-effort optional columns (ignore if not in schema)
+      otp_code: otp,
+      service_status: 'pending'
     }
-    const { data, error } = await supabase
+    // Try insert with optional columns first; if column error, retry without them
+    let { data, error } = await supabase
       .from('bookings')
       .insert(insertPayload)
       .select('id, user_id, provider_id, service_type, date, start_time, end_time, price, currency, status')
       .single()
+    if (error && (error.code === '42703' || String(error.message || '').toLowerCase().includes('column'))) {
+      const fallbackPayload = { ...insertPayload }
+      delete fallbackPayload.otp_code
+      delete fallbackPayload.service_status
+      ;({ data, error } = await supabase
+        .from('bookings')
+        .insert(fallbackPayload)
+        .select('id, user_id, provider_id, service_type, date, start_time, end_time, price, currency, status')
+        .single())
+    }
+    if (data && otp) {
+      console.log('Booking created, OTP generated:', otp)
+      // Notify host about new booking
+      try {
+        await supabase.from('notifications').insert({
+          user_id: providerId,
+          type: 'new_booking',
+          title: 'New Booking Received',
+          message: `A new ${serviceType} booking request has been made. Please assign an employee.`
+        })
+      } catch (notifErr) {
+        console.warn('Failed to send host notification:', notifErr)
+      }
+    }
     return { data, error }
   },
 
@@ -635,5 +667,91 @@ export const db = {
       completedBookings: f.count || 0,
       error: a.error || b.error || c.error || d.error || null
     }
+  }
+  ,
+
+  // Verify OTP and start service (updates service_status and start_time)
+  startServiceWithOtp: async (bookingId, enteredOtp) => {
+    // Fetch stored OTP (if column exists)
+    let otpRow
+    let fetchErr
+    try {
+      const { data, error } = await supabase
+        .from('bookings')
+        .select('otp_code')
+        .eq('id', bookingId)
+        .single()
+      otpRow = data
+      fetchErr = error
+    } catch (e) {
+      fetchErr = e
+    }
+    if (fetchErr) {
+      return { ok: false, error: fetchErr }
+    }
+    if (!otpRow || typeof otpRow.otp_code === 'undefined') {
+      return { ok: false, error: { message: 'OTP not available for this booking.' } }
+    }
+    if (otpRow.otp_code !== enteredOtp) {
+      return { ok: false, error: { message: 'Incorrect OTP.' } }
+    }
+    // Update service status and start_time (if service_status exists); always set start_time
+    const updatePayload = {
+      start_time: new Date().toISOString()
+    }
+    // Attempt to set service_status when present
+    updatePayload.service_status = 'in_progress'
+    let { error: updateError } = await supabase
+      .from('bookings')
+      .update(updatePayload)
+      .eq('id', bookingId)
+    if (updateError && (updateError.code === '42703' || String(updateError.message || '').toLowerCase().includes('column'))) {
+      const fallback = { start_time: updatePayload.start_time }
+      ;({ error: updateError } = await supabase
+        .from('bookings')
+        .update(fallback)
+        .eq('id', bookingId))
+    }
+    if (updateError) return { ok: false, error: updateError }
+    return { ok: true }
+  },
+
+  // Generate OTP for a booking (15 minutes before service)
+  generateBookingOtp: async (bookingId) => {
+    const otp = db.generateOtp()
+    const { error } = await supabase
+      .from('bookings')
+      .update({
+        otp_code: otp,
+        otp_sent_at: new Date().toISOString()
+      })
+      .eq('id', bookingId)
+    if (error) return { error }
+    return { otp, error: null }
+  },
+
+  // Complete service automatically (when timer ends)
+  completeService: async (bookingId) => {
+    const { error } = await supabase
+      .from('bookings')
+      .update({
+        service_status: 'completed',
+        end_time: new Date().toISOString()
+      })
+      .eq('id', bookingId)
+    return { error }
+  },
+
+  // Send notification to user
+  sendNotification: async (userId, type, title, message) => {
+    const { error } = await supabase
+      .from('notifications')
+      .insert({
+        user_id: userId,
+        type,
+        title,
+        message
+      })
+    return { error }
   }
 }

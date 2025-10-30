@@ -39,6 +39,14 @@ const BookingDetailModal = ({ booking, onClose }) => {
               })()}</p>
             </div>
             <div>
+              <p className="text-white/60 text-sm">Started</p>
+              <p className="font-medium">{booking.start_time ? new Date(booking.start_time).toLocaleString() : '—'}</p>
+            </div>
+            <div>
+              <p className="text-white/60 text-sm">Ended</p>
+              <p className="font-medium">{booking.end_time ? new Date(booking.end_time).toLocaleString() : '—'}</p>
+            </div>
+            <div>
               <p className="text-white/60 text-sm">Price</p>
               <p className="font-medium">₹{Number(booking.price || 0).toLocaleString('en-IN')}</p>
             </div>
@@ -218,6 +226,14 @@ const Bookings = () => {
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="material-symbols-outlined text-white/50 text-base">schedule</span>
                       <span>{b.date ? new Date(b.date).toLocaleString() : '—'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="material-symbols-outlined text-white/50 text-base">play_arrow</span>
+                      <span>{b.start_time ? new Date(b.start_time).toLocaleString() : 'Not started'}</span>
+                    </div>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="material-symbols-outlined text-white/50 text-base">stop_circle</span>
+                      <span>{b.end_time ? new Date(b.end_time).toLocaleString() : 'Not ended'}</span>
                     </div>
                     <div className="flex items-center gap-2 sm:col-span-2 min-w-0">
                       <span className="material-symbols-outlined text-white/50 text-base">location_on</span>

@@ -8,7 +8,7 @@ const AboutUs = () => {
     {
       name: "Kushagra Rathore",
       role: "Co-Founder & CEO",
-      image: "/api/placeholder/300/300", // Replace with actual image path
+      image: "/founders/kushagra.jpg", // Place file at public/founders/kushagra.jpg
       bio: "Aspiring entrepreneur with a vision to revolutionize security services through technology. Passionate about creating innovative solutions that bridge the gap between traditional security and modern digital platforms.",
       expertise: ["Strategic Planning", "Business Development", "Technology Innovation", "Team Leadership"],
       social: {
@@ -20,7 +20,7 @@ const AboutUs = () => {
     {
       name: "Atharva Gour",
       role: "Co-Founder",
-      image: "/atharva-gour.jpg", // Place this image in public/atharva-gour.jpg
+      image: "/founders/atharva.jpg", // Place file at public/founders/atharva.jpg
       bio: "Tech-savvy entrepreneur dedicated to building scalable and secure platforms. Combines technical expertise with business acumen to deliver cutting-edge solutions in the security industry.",
       expertise: ["Full-Stack Development", "System Architecture", "Cloud Infrastructure", "Product Engineering"],
       social: {
@@ -160,60 +160,15 @@ const AboutUs = () => {
                 whileHover={{ scale: 1.02 }}
               >
                 <div className="text-center mb-6">
-                  <div className="w-32 h-32 bg-gradient-to-br from-[var(--primary-color)]/30 to-white/10 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                  <div className="w-40 h-40 bg-gradient-to-br from-[var(--primary-color)]/30 to-white/10 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
                     {founder.image ? (
                       <img loading="lazy" src={founder.image} alt={founder.name} className="w-full h-full object-cover" />
                     ) : (
                       <span className="material-symbols-outlined text-[var(--primary-color)] text-4xl">person</span>
                     )}
                   </div>
-                  <h3 className="text-2xl font-bold mb-2">{founder.name}</h3>
-                  <p className="text-[var(--primary-color)] font-medium">{founder.role}</p>
-                </div>
-
-                <p className="text-white/80 text-center mb-6 leading-relaxed">
-                  {founder.bio}
-                </p>
-
-                <div className="mb-6">
-                  <h4 className="text-lg font-semibold mb-3 text-center">Expertise</h4>
-                  <div className="flex flex-wrap justify-center gap-2">
-                    {founder.expertise.map((skill, skillIndex) => (
-                      <span
-                        key={skillIndex}
-                        className="px-3 py-1 bg-[var(--primary-color)]/20 text-[var(--primary-color)] rounded-full text-sm"
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex justify-center gap-4">
-                  <motion.a
-                    href={founder.social.linkedin}
-                    className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[var(--primary-color)]/20 transition-colors"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="material-symbols-outlined text-sm">work</span>
-                  </motion.a>
-                  <motion.a
-                    href={founder.social.twitter}
-                    className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[var(--primary-color)]/20 transition-colors"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="material-symbols-outlined text-sm">alternate_email</span>
-                  </motion.a>
-                  <motion.a
-                    href={`mailto:${founder.social.email}`}
-                    className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-[var(--primary-color)]/20 transition-colors"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <span className="material-symbols-outlined text-sm">mail</span>
-                  </motion.a>
+                  <h3 className="text-2xl font-bold mb-1">{founder.name}</h3>
+                  <p className="text-[var(--primary-color)] font-medium">Co Founder</p>
                 </div>
               </motion.div>
             ))}

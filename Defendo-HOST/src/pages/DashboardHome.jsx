@@ -16,6 +16,7 @@ const DashboardHome = () => {
   const [dashboardData, setDashboardData] = useState({
     totalBookings: 0,
     activeBookings: 0,
+    assignedBookings: 0,
     completedBookings: 0,
     monthlyRevenue: 0,
     recentBookings: []
@@ -61,6 +62,7 @@ const DashboardHome = () => {
         const [
           { data: totalBookingsData, error: totalBookingsError },
           { data: activeBookingsData, error: activeBookingsError },
+          { data: assignedBookingsData, error: assignedBookingsError },
           { data: completedBookingsData, error: completedBookingsError },
           { data: revenueData, error: revenueError },
           { data: recentBookingsData, error: recentBookingsError },
@@ -68,6 +70,7 @@ const DashboardHome = () => {
         ] = await Promise.all([
           supabase.from('bookings').select('id').eq('provider_id', user.id),
           supabase.from('bookings').select('id').eq('provider_id', user.id).in('status', ['pending','confirmed']),
+          supabase.from('bookings').select('id').eq('provider_id', user.id).eq('status','assigned'),
           supabase.from('bookings').select('id').eq('provider_id', user.id).eq('status','completed'),
           supabase.from('bookings').select('price, payment_status, service_type, status, date, created_at')
             .eq('provider_id', user.id)
@@ -82,14 +85,15 @@ const DashboardHome = () => {
           db.getMonthlyAnalytics(user.id)
         ])
 
-        if (totalBookingsError || activeBookingsError || completedBookingsError || revenueError || recentBookingsError) {
-          const errs = [totalBookingsError, activeBookingsError, completedBookingsError, revenueError, recentBookingsError]
+        if (totalBookingsError || activeBookingsError || assignedBookingsError || completedBookingsError || revenueError || recentBookingsError) {
+          const errs = [totalBookingsError, activeBookingsError, assignedBookingsError, completedBookingsError, revenueError, recentBookingsError]
           if (errs.some(e => e && (e.code === 'PGRST301' || e.status === 403))) setRlsIssue(true)
         }
 
         // Calculate stats
         const totalBookings = totalBookingsData?.length || 0
         const activeBookings = activeBookingsData?.length || 0
+        const assignedBookings = assignedBookingsData?.length || 0
         const completedBookings = completedBookingsData?.length || 0
         const monthlyRevenue = revenueData?.reduce((sum, booking) => sum + Number(booking.price || 0), 0) || 0
         const monthlyPaidBookings = Array.isArray(revenueData) ? revenueData : []
@@ -103,6 +107,7 @@ const DashboardHome = () => {
         setDashboardData({
           totalBookings,
           activeBookings,
+          assignedBookings,
           completedBookings,
           monthlyRevenue,
           recentBookings: recentBookingsData || [],
@@ -113,6 +118,7 @@ const DashboardHome = () => {
         console.log('Dashboard data loaded:', {
           totalBookings,
           activeBookings,
+          assignedBookings,
           completedBookings,
           monthlyRevenue
         })
@@ -130,7 +136,7 @@ const DashboardHome = () => {
     fetchDashboardData()
   }, [fetchDashboardData])
 
-  // Realtime: listen for new bookings for this host and push a notification
+  // Realtime: listen for bookings changes for this host and refresh dashboard
   useEffect(() => {
     if (!user?.id) return
 
@@ -159,6 +165,21 @@ const DashboardHome = () => {
             }
           }))
           setNotificationsOpen(true)
+          // refresh metrics dynamically for host
+          fetchDashboardData()
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'bookings',
+          filter: `provider_id=eq.${user.id}`
+        },
+        () => {
+          // refresh on status/price changes (assigned/completed etc.)
+          fetchDashboardData()
         }
       )
       .subscribe()
@@ -166,7 +187,7 @@ const DashboardHome = () => {
     return () => {
       try { supabase.removeChannel(channel) } catch (_) {}
     }
-  }, [user?.id])
+  }, [user?.id, fetchDashboardData])
 
   const getHostDisplayName = () => {
     if (hostProfile?.company_name) {
@@ -221,6 +242,13 @@ const DashboardHome = () => {
       value: dashboardData.activeBookings, 
       icon: "pending",
       growth: 5,
+      growthType: "increase"
+    },
+    { 
+      label: "Assigned", 
+      value: dashboardData.assignedBookings, 
+      icon: "assignment_turned_in",
+      growth: 3,
       growthType: "increase"
     },
     { 

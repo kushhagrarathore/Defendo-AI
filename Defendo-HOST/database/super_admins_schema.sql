@@ -89,3 +89,11 @@ GRANT ALL ON public.super_admins TO service_role;
 
 
 
+
+
+
+
+
+
+
+

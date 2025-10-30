@@ -646,12 +646,14 @@ const LandingPage = () => {
             {
               name: "Kushagra Rathore",
               role: "Co-Founder & CEO",
+              image: "/founders/kushagra.jpg",
               bio: "Aspiring entrepreneur with a vision to revolutionize security services through technology. Passionate about creating innovative solutions that bridge the gap between traditional security and modern digital platforms.",
               expertise: ["Strategic Planning", "Business Development", "Technology Innovation", "Team Leadership"]
             },
             {
               name: "Atharva Gour",
               role: "Co-Founder & CTO",
+              image: "/founders/atharva.jpg",
               bio: "Tech-savvy entrepreneur dedicated to building scalable and secure platforms. Combines technical expertise with business acumen to deliver cutting-edge solutions in the security industry.",
               expertise: ["Full-Stack Development", "System Architecture", "Cloud Infrastructure", "Product Engineering"]
             }
@@ -663,32 +665,17 @@ const LandingPage = () => {
               className="bg-white/5 backdrop-blur-md rounded-2xl p-8 border border-white/10"
             >
               <div className="text-center mb-6">
-                <div className="w-24 h-24 bg-gradient-to-br from-[var(--primary-color)]/30 to-white/10 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-[var(--primary-color)] text-3xl">
-                    person
-                  </span>
+                <div className="w-32 h-32 bg-gradient-to-br from-[var(--primary-color)]/30 to-white/10 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                  {founder.image ? (
+                    <img loading="lazy" src={founder.image} alt={founder.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="material-symbols-outlined text-[var(--primary-color)] text-3xl">person</span>
+                  )}
                 </div>
-                <h4 className="text-xl font-bold mb-2">{founder.name}</h4>
-                <p className="text-[var(--primary-color)] font-medium">{founder.role}</p>
+                <h4 className="text-xl font-bold mb-1">{founder.name}</h4>
+                <p className="text-[var(--primary-color)] font-medium">Co Founder</p>
               </div>
-
-              <p className="text-white/80 text-center mb-6 leading-relaxed">
-                {founder.bio}
-              </p>
-
-              <div className="mb-6">
-                <h5 className="text-lg font-semibold mb-3 text-center">Expertise</h5>
-                <div className="flex flex-wrap justify-center gap-2">
-                  {founder.expertise.map((skill, skillIndex) => (
-                    <span
-                      key={skillIndex}
-                      className="px-3 py-1 bg-[var(--primary-color)]/20 text-[var(--primary-color)] rounded-full text-sm"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              </div>
+              
             </motion.div>
           ))}
         </motion.div>

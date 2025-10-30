@@ -9,6 +9,10 @@ import Bookings from "./Bookings"
 import AddService from "./AddService"
 import Account from "./Account"
 import KYCUpload from "./KYCUpload"
+import Employees from "./Employees"
+import Assignments from "./Assignments"
+import Analytics from "./Analytics"
+import BookingManagement from "./BookingManagement"
 
 const Dashboard = () => {
   const location = useLocation()
@@ -21,6 +25,9 @@ const Dashboard = () => {
     { path: "/dashboard", label: "Dashboard", icon: "dashboard", color: "from-blue-500 to-cyan-500" },
     { path: "/dashboard/bookings", label: "Bookings", icon: "event", color: "from-teal-500 to-cyan-600" },
     { path: "/dashboard/services", label: "My Services", icon: "security", color: "from-green-500 to-emerald-500" },
+    { path: "/dashboard/employees", label: "My Employees", icon: "group", color: "from-indigo-500 to-blue-600" },
+    { path: "/dashboard/assignments", label: "Assignments", icon: "assignment_turned_in", color: "from-sky-500 to-cyan-600" },
+    { path: "/dashboard/analytics", label: "Analytics", icon: "analytics", color: "from-purple-500 to-pink-500" },
     { path: "/dashboard/add-service", label: "Add Service", icon: "add", color: "from-purple-500 to-pink-500" },
     { path: "/dashboard/kyc", label: "KYC Verification", icon: "verified_user", color: "from-yellow-500 to-orange-500" },
     { path: "/dashboard/account", label: "Account", icon: "person", color: "from-orange-500 to-red-500" }
@@ -319,6 +326,10 @@ const Dashboard = () => {
             <Route path="bookings" element={<Bookings />} />
             <Route path="services" element={<MyServices />} />
             <Route path="services/:id/edit" element={<EditService />} />
+            <Route path="employees" element={<Employees />} />
+            <Route path="assignments" element={<Assignments />} />
+            <Route path="analytics" element={<Analytics />} />
+            <Route path="booking-management" element={<BookingManagement />} />
             <Route path="add-service" element={<AddService />} />
             <Route path="kyc" element={<KYCUpload />} />
             <Route path="account" element={<Account />} />

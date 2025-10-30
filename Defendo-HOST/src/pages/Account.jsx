@@ -85,6 +85,14 @@ const Account = () => {
       return
     }
     try {
+      // Optional: reauthenticate with current password for security
+      if (!user?.email) throw new Error('Missing user email')
+      const { error: reauthError } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: passwords.current || ''
+      })
+      if (reauthError) throw new Error('Current password is incorrect')
+
       const { error: updErr } = await supabase.auth.updateUser({ password: passwords.next })
       if (updErr) throw updErr
       setMessage('Password updated')
