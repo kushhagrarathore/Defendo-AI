@@ -37,15 +37,15 @@ const BookingTimeline = ({ bookings = [] }) => {
 
   return (
     <motion.div
-      className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]"
+      className="rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.4 }}
     >
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white">Booking Timeline</h2>
+        <h2 className="text-xl font-bold text-slate-900">Booking Timeline</h2>
         <motion.button
-          className="text-[var(--primary-color)] text-sm font-medium hover:text-white transition-colors"
+          className="text-[var(--primary-color)] text-sm font-medium hover:text-emerald-600 transition-colors"
           whileHover={{ scale: 1.05 }}
         >
           View All
@@ -70,10 +70,10 @@ const BookingTimeline = ({ bookings = [] }) => {
             >
               {/* Timeline line */}
               {index < timelineBookings.length - 1 && (
-                <div className="absolute left-6 top-12 w-0.5 h-16 bg-white/10" />
+              <div className="absolute left-6 top-12 w-0.5 h-16 bg-slate-100" />
               )}
               
-              <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-white/5 transition-colors group">
+              <div className="flex items-start gap-4 p-4 rounded-lg hover:bg-slate-50 transition-colors group">
                 {/* Timeline dot */}
                 <motion.div
                   className={`w-12 h-12 rounded-full flex items-center justify-center ${getStatusColor(booking.status)} relative z-10`}
@@ -87,7 +87,7 @@ const BookingTimeline = ({ bookings = [] }) => {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-white font-medium capitalize">
+                      <h3 className="text-slate-900 font-medium capitalize">
                       {booking.service_type} Service
                     </h3>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}>
@@ -95,7 +95,7 @@ const BookingTimeline = ({ bookings = [] }) => {
                     </span>
                   </div>
                   
-                  <div className="space-y-1 text-sm text-white/70">
+                    <div className="space-y-1 text-sm text-slate-600">
                     <div className="flex items-center gap-2">
                       <span className="material-symbols-outlined text-xs">schedule</span>
                       <span>{formatDate(booking.date)} at {booking.time}</span>
@@ -112,7 +112,7 @@ const BookingTimeline = ({ bookings = [] }) => {
                 </div>
 
                 <motion.button
-                  className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-white/10 transition-all"
+                  className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-slate-100 transition-all"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
@@ -130,14 +130,14 @@ const BookingTimeline = ({ bookings = [] }) => {
             animate={{ opacity: 1 }}
           >
             <motion.span
-              className="material-symbols-outlined text-white/30 text-4xl mb-3 block"
+              className="material-symbols-outlined text-slate-300 text-4xl mb-3 block"
               animate={{ y: [0, -4, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             >
               timeline
             </motion.span>
-            <p className="text-white/60">No bookings scheduled</p>
-            <p className="text-white/40 text-sm">Your upcoming bookings will appear here</p>
+            <p className="text-slate-500">No bookings scheduled</p>
+            <p className="text-slate-400 text-sm">Your upcoming bookings will appear here</p>
           </motion.div>
         )}
       </div>

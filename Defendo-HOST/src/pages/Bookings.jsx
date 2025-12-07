@@ -148,15 +148,15 @@ const Bookings = () => {
   return (
     <div className="space-y-6 animate-fade-in-up">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold">Bookings</h1>
+        <h1 className="text-3xl font-extrabold text-slate-900">Bookings</h1>
         <div className="flex flex-wrap gap-2 items-center">
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/40 text-sm">search</span>
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate/400 text-sm">search</span>
             <input
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Search by ID, service, location..."
-            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg pl-9 pr-3 py-2 outline-none focus:border-[var(--primary-color)]"
+            className="bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
           />
           </div>
           {/* Filter chips */}
@@ -164,7 +164,7 @@ const Bookings = () => {
             <button
               key={s}
               onClick={() => setStatusFilter(prev => prev === s ? 'all' : s)}
-              className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${statusFilter === s ? 'bg-[var(--primary-color)]/20 border-[var(--primary-color)]/40 text-[var(--primary-color)]' : 'bg-white/5 border-white/10 text-white/60 hover:bg-white/10'}`}
+              className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${statusFilter === s ? 'bg-[var(--primary-color)]/10 border-[var(--primary-color)]/40 text-[var(--primary-color)]' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
             >
               <span className="material-symbols-outlined text-sm align-middle mr-1">
                 {s === 'pending' ? 'hourglass_top' : s === 'confirmed' ? 'event_available' : s === 'completed' ? 'check_circle' : 'cancel'}
@@ -175,7 +175,7 @@ const Bookings = () => {
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-lg px-3 py-2 outline-none focus:border-[var(--primary-color)]"
+            className="bg-white border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
           >
             <option value="all">All</option>
             <option value="pending">Pending</option>
@@ -188,21 +188,21 @@ const Bookings = () => {
 
       <GlassCard className="overflow-visible">
         {loading ? (
-          <div className="p-6 text-white/60">Loading...</div>
+          <div className="p-6 text-slate-500">Loading...</div>
         ) : filtered.length === 0 ? (
-          <div className="p-6 text-white/60">No bookings found.</div>
+          <div className="p-6 text-slate-500">No bookings found.</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
             {filtered.map((b) => (
-              <div key={b.id} className="rounded-2xl bg-[#0b100e] border border-[#29382f] shadow-[0_6px_30px_rgba(0,0,0,0.25)] hover:shadow-[0_10px_40px_rgba(0,0,0,0.35)] transition-all">
+              <div key={b.id} className="rounded-2xl bg-white border border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:shadow-[0_18px_60px_rgba(15,23,42,0.16)] transition-all">
                 {/* Card header */}
                 <div className="flex items-start justify-between p-4">
                   <div className="flex items-center gap-2">
                     <span className="material-symbols-outlined text-[var(--primary-color)]">shield_person</span>
                     <div>
-                      <div className="font-semibold capitalize leading-tight">{b.service_type || '—'}</div>
+                      <div className="font-semibold capitalize leading-tight text-slate-900">{b.service_type || '—'}</div>
                       <button
-                        className="text-xs text-white/50 hover:text-white/80 transition-colors"
+                        className="text-xs text-slate-400 hover:text-slate-700 transition-colors"
                         title="Click to copy full ID"
                         onClick={() => copyId(b.id)}
                       >
@@ -211,8 +211,8 @@ const Bookings = () => {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-white/60">Price</div>
-                    <div className="text-lg font-bold">₹{Number(b.price || 0).toLocaleString('en-IN')}</div>
+                      <div className="text-sm text-slate-500">Price</div>
+                      <div className="text-lg font-bold text-slate-900">₹{Number(b.price || 0).toLocaleString('en-IN')}</div>
                   </div>
                 </div>
 
@@ -220,24 +220,24 @@ const Bookings = () => {
                 <div className="px-4 pb-4 space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-white/50 text-base">person</span>
-                      <span className="truncate" title={b.user_name || ''}>{b.user_name || 'Customer'}</span>
+                      <span className="material-symbols-outlined text-slate-400 text-base">person</span>
+                      <span className="truncate text-slate-800" title={b.user_name || ''}>{b.user_name || 'Customer'}</span>
                     </div>
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-white/50 text-base">schedule</span>
-                      <span>{b.date ? new Date(b.date).toLocaleString() : '—'}</span>
+                      <span className="material-symbols-outlined text-slate-400 text-base">schedule</span>
+                      <span className="text-slate-700">{b.date ? new Date(b.date).toLocaleString() : '—'}</span>
                     </div>
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-white/50 text-base">play_arrow</span>
-                      <span>{b.start_time ? new Date(b.start_time).toLocaleString() : 'Not started'}</span>
+                      <span className="material-symbols-outlined text-slate-400 text-base">play_arrow</span>
+                      <span className="text-slate-700">{b.start_time ? new Date(b.start_time).toLocaleString() : 'Not started'}</span>
                     </div>
                     <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-white/50 text-base">stop_circle</span>
-                      <span>{b.end_time ? new Date(b.end_time).toLocaleString() : 'Not ended'}</span>
+                      <span className="material-symbols-outlined text-slate-400 text-base">stop_circle</span>
+                      <span className="text-slate-700">{b.end_time ? new Date(b.end_time).toLocaleString() : 'Not ended'}</span>
                     </div>
                     <div className="flex items-center gap-2 sm:col-span-2 min-w-0">
-                      <span className="material-symbols-outlined text-white/50 text-base">location_on</span>
-                      <span className="truncate" title={(() => {
+                      <span className="material-symbols-outlined text-slate-400 text-base">location_on</span>
+                      <span className="truncate text-slate-700" title={(() => {
                         if (!b.location) return '—'
                         if (typeof b.location === 'string') return b.location || '—'
                         const obj = b.location || {}
@@ -280,7 +280,7 @@ const Bookings = () => {
                     </span>
 
                     <div className="ml-auto">
-                      <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--primary-color)]/15 border border-[var(--primary-color)]/30 text-[var(--primary-color)] hover:bg-[var(--primary-color)]/25 transition-colors text-sm" onClick={() => setSelected(b)}>
+                      <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--primary-color)]/10 border border-[var(--primary-color)]/40 text-[var(--primary-color)] hover:bg-[var(--primary-color)]/20 transition-colors text-sm" onClick={() => setSelected(b)}>
                         <span className="material-symbols-outlined text-sm">visibility</span>
                         View
                       </button>

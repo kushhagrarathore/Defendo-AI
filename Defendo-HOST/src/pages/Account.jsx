@@ -105,14 +105,16 @@ const Account = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d0f0e] text-[#e0e0e0] p-8">
+    <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900 px-4 py-8 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-[#00ff87] bg-clip-text text-transparent mb-4">
+        <div className="mb-10">
+          <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900 tracking-tight mb-3">
             Account Settings
           </h1>
-          <p className="text-[#e0e0e0]/70 text-lg">Manage your company profile and security settings</p>
+          <p className="text-sm sm:text-base text-slate-500">
+            Manage your company profile and security preferences in one place.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -121,36 +123,40 @@ const Account = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="rounded-2xl p-6 bg-[#0f0f0f]/80 backdrop-blur-sm border border-[#1f1f1f] shadow-xl"
+            className="rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)]"
           >
             {/* Section Header */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-[#00ff87]/20 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#00ff87] text-lg">business</span>
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                <span className="material-symbols-outlined text-emerald-600 text-lg">business</span>
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-100">Company Profile</h2>
-                <p className="text-gray-400 text-sm">Update your company information</p>
+                <h2 className="text-base font-semibold text-slate-900">Company Profile</h2>
+                <p className="text-xs text-slate-500">Update your company information</p>
               </div>
             </div>
 
             {/* Company Logo Section */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-300 mb-3">Company Logo</label>
+              <label className="block text-xs font-medium text-slate-600 mb-3">
+                Company Logo
+              </label>
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-lg bg-[#121212] border border-[#1f1f1f] flex items-center justify-center overflow-hidden group hover:border-[#00ff87]/40 transition-all duration-300">
+                <div className="w-16 h-16 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center overflow-hidden group hover:border-emerald-400 transition-all duration-200">
                   {companyLogo.length > 0 ? (
                     <img 
                       src={companyLogo[0]} 
                       alt="Company Logo" 
-                      className="w-full h-full object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-xl"
                     />
                   ) : (
-                    <span className="material-symbols-outlined text-gray-500 text-xl group-hover:text-[#00ff87] transition-colors">business</span>
+                    <span className="material-symbols-outlined text-slate-400 text-xl group-hover:text-emerald-600 transition-colors">
+                      business
+                    </span>
                   )}
                 </div>
                 <div className="flex-1">
-                  <p className="text-gray-400 text-sm mb-3">
+                  <p className="text-xs text-slate-500 mb-3">
                     {companyLogo.length > 0 
                       ? "Logo from your service images. Upload a new logo to update it."
                       : "No company logo found. Add a service with images to set your company logo."
@@ -171,13 +177,15 @@ const Account = () => {
               {canEditKeys.has('company_name') && (
                 <div className="relative group">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                    <span className="material-symbols-outlined text-gray-500 text-lg">business</span>
+                    <span className="material-symbols-outlined text-slate-400 text-lg">
+                      business
+                    </span>
                   </div>
                   <input
                     type="text"
                     value={form.company_name || ''}
                     onChange={e => updateField('company_name', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 text-sm"
                     placeholder="Company Name"
                   />
                 </div>
@@ -186,13 +194,15 @@ const Account = () => {
               {canEditKeys.has('full_name') && (
                 <div className="relative group">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                    <span className="material-symbols-outlined text-gray-500 text-lg">person</span>
+                    <span className="material-symbols-outlined text-slate-400 text-lg">
+                      person
+                    </span>
                   </div>
                   <input
                     type="text"
                     value={form.full_name || ''}
                     onChange={e => updateField('full_name', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 text-sm"
                     placeholder="Contact Name"
                   />
                 </div>
@@ -201,13 +211,15 @@ const Account = () => {
               {canEditKeys.has('phone') && (
                 <div className="relative group">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                    <span className="material-symbols-outlined text-gray-500 text-lg">phone</span>
+                    <span className="material-symbols-outlined text-slate-400 text-lg">
+                      phone
+                    </span>
                   </div>
                   <input
                     type="tel"
                     value={form.phone || ''}
                     onChange={e => updateField('phone', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 text-sm"
                     placeholder="Phone Number"
                   />
                 </div>
@@ -216,13 +228,15 @@ const Account = () => {
               {canEditKeys.has('address') && (
                 <div className="relative group">
                   <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                    <span className="material-symbols-outlined text-gray-500 text-lg">location_on</span>
+                    <span className="material-symbols-outlined text-slate-400 text-lg">
+                      location_on
+                    </span>
                   </div>
                   <input
                     type="text"
                     value={form.address || ''}
                     onChange={e => updateField('address', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 text-sm"
                     placeholder="Address"
                   />
                 </div>
@@ -231,13 +245,15 @@ const Account = () => {
               {(canEditKeys.has('company_description') || canEditKeys.has('bio')) && (
                 <div className="relative group">
                   <div className="absolute left-3 top-4 z-10">
-                    <span className="material-symbols-outlined text-gray-500 text-lg">description</span>
+                    <span className="material-symbols-outlined text-slate-400 text-lg">
+                      description
+                    </span>
                   </div>
                   <textarea
                     rows={4}
                     value={canEditKeys.has('company_description') ? (form.company_description || '') : (form.bio || '')}
                     onChange={e => canEditKeys.has('company_description') ? updateField('company_description', e.target.value) : updateField('bio', e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300 resize-none"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 resize-none text-sm"
                     placeholder="Company Description"
                   />
                 </div>
@@ -250,55 +266,67 @@ const Account = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="rounded-2xl p-6 bg-[#0f0f0f]/80 backdrop-blur-sm border border-[#1f1f1f] shadow-xl"
+            className="rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)]"
           >
             {/* Section Header */}
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 rounded-lg bg-[#00ff87]/20 flex items-center justify-center">
-                <span className="material-symbols-outlined text-[#00ff87] text-lg">lock</span>
+              <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                <span className="material-symbols-outlined text-emerald-600 text-lg">
+                  lock
+                </span>
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-100">Security Settings</h2>
-                <p className="text-gray-400 text-sm">Manage your account security</p>
+                <h2 className="text-base font-semibold text-slate-900">
+                  Security Settings
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Manage your account security
+                </p>
               </div>
             </div>
 
             <div className="space-y-4">
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                  <span className="material-symbols-outlined text-gray-500 text-lg">lock</span>
+                  <span className="material-symbols-outlined text-slate-400 text-lg">
+                    lock
+                  </span>
                 </div>
                 <input
                   type="password"
                   value={passwords.current}
                   onChange={e => setPasswords(p => ({ ...p, current: e.target.value }))}
-                  className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 text-sm"
                   placeholder="Current Password"
                 />
               </div>
 
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                  <span className="material-symbols-outlined text-gray-500 text-lg">lock_reset</span>
+                  <span className="material-symbols-outlined text-slate-400 text-lg">
+                    lock_reset
+                  </span>
                 </div>
                 <input
                   type="password"
                   value={passwords.next}
                   onChange={e => setPasswords(p => ({ ...p, next: e.target.value }))}
-                  className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 text-sm"
                   placeholder="New Password"
                 />
               </div>
 
               <div className="relative group">
                 <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
-                  <span className="material-symbols-outlined text-gray-500 text-lg">verified_user</span>
+                  <span className="material-symbols-outlined text-slate-400 text-lg">
+                    verified_user
+                  </span>
                 </div>
                 <input
                   type="password"
                   value={passwords.confirm}
                   onChange={e => setPasswords(p => ({ ...p, confirm: e.target.value }))}
-                  className="w-full pl-10 pr-4 py-3 bg-[#121212] border border-[#1f1f1f] rounded-lg text-white placeholder-gray-500 focus:border-[#00ff87] focus:outline-none focus:ring-1 focus:ring-[#00ff87]/20 transition-all duration-300"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-200 transition-all duration-200 text-sm"
                   placeholder="Confirm New Password"
                 />
               </div>
@@ -306,7 +334,7 @@ const Account = () => {
               <div className="flex justify-end pt-4">
                 <button 
                   onClick={onChangePassword} 
-                  className="px-4 py-2 rounded-lg border border-[#00ff87]/30 bg-[#00ff87]/10 hover:bg-[#00ff87]/20 text-[#00ff87] font-medium transition-all duration-300 hover:scale-105"
+                  className="px-4 py-2 rounded-lg border border-emerald-500/30 bg-emerald-50 text-emerald-700 text-sm font-medium hover:bg-emerald-100 transition-all duration-200"
                 >
                   Update Password
                 </button>
@@ -316,17 +344,17 @@ const Account = () => {
         </div>
 
         {/* Status Messages */}
-        <div className="mt-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4 min-h-[32px]">
             {message && (
-              <div className="flex items-center gap-2 text-[#00ff87]">
-                <span className="material-symbols-outlined text-lg">check_circle</span>
+              <div className="flex items-center gap-2 text-emerald-700 text-sm">
+                <span className="material-symbols-outlined text-base">check_circle</span>
                 <span className="font-medium">{message}</span>
               </div>
             )}
             {error && (
-              <div className="flex items-center gap-2 text-red-400">
-                <span className="material-symbols-outlined text-lg">error</span>
+              <div className="flex items-center gap-2 text-rose-600 text-sm">
+                <span className="material-symbols-outlined text-base">error</span>
                 <span className="font-medium">{error}</span>
               </div>
             )}
@@ -336,18 +364,18 @@ const Account = () => {
           <motion.button 
             onClick={onSave} 
             disabled={saving}
-            className="px-6 py-3 rounded-lg bg-[#00ff87] text-black font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center px-6 py-3 rounded-xl bg-emerald-500 text-white text-sm font-semibold shadow-[0_12px_30px_rgba(16,185,129,0.4)] hover:bg-emerald-600 hover:shadow-[0_16px_40px_rgba(16,185,129,0.45)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >
             {saving ? (
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
                 Saving…
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-lg">save</span>
+                <span className="material-symbols-outlined text-base">save</span>
                 Save Changes
               </div>
             )}

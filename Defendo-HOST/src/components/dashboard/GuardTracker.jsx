@@ -32,13 +32,13 @@ const GuardTracker = () => {
 
   return (
     <motion.div
-      className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]"
+      className="rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.6 }}
     >
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-white">Guard Status</h2>
+        <h2 className="text-xl font-bold text-slate-900">Guard Status</h2>
         <motion.div
           className="flex items-center gap-2"
           whileHover={{ scale: 1.05 }}
@@ -48,7 +48,7 @@ const GuardTracker = () => {
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           />
-          <span className="text-green-400 text-sm font-medium">
+          <span className="text-emerald-600 text-sm font-medium">
             {onlineCount}/{totalGuards} Online
           </span>
         </motion.div>
@@ -68,7 +68,7 @@ const GuardTracker = () => {
                 type: 'spring',
                 stiffness: 200
               }}
-              className="flex items-center gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors group"
+              className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors group"
             >
               {/* Status indicator */}
               <motion.div
@@ -83,7 +83,7 @@ const GuardTracker = () => {
 
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 mb-1">
-                  <h3 className="text-white font-medium text-sm truncate">
+                  <h3 className="text-slate-900 font-medium text-sm truncate">
                     {guard.name}
                   </h3>
                   <motion.div
@@ -102,16 +102,16 @@ const GuardTracker = () => {
                     }}
                   />
                 </div>
-                <p className="text-white/70 text-xs truncate">
+                <p className="text-slate-600 text-xs truncate">
                   {guard.location}
                 </p>
-                <p className="text-white/50 text-xs">
+                <p className="text-slate-400 text-xs">
                   Last seen: {guard.lastSeen}
                 </p>
               </div>
 
               <motion.button
-                className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-white/10 transition-all"
+                className="opacity-0 group-hover:opacity-100 p-2 rounded-lg hover:bg-slate-100 transition-all"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -124,19 +124,19 @@ const GuardTracker = () => {
 
       {/* Map placeholder */}
       <motion.div
-        className="mt-6 p-4 rounded-lg border border-white/10 bg-white/5 text-center"
+        className="mt-6 p-4 rounded-lg border border-slate-200 bg-slate-50 text-center"
         whileHover={{ scale: 1.02 }}
         transition={{ duration: 0.2 }}
       >
         <motion.span
-          className="material-symbols-outlined text-white/30 text-3xl mb-2 block"
+          className="material-symbols-outlined text-slate-300 text-3xl mb-2 block"
           animate={{ rotate: [0, 5, -5, 0] }}
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         >
           map
         </motion.span>
-        <p className="text-white/60 text-sm">Live Map View</p>
-        <p className="text-white/40 text-xs">Coming Soon</p>
+        <p className="text-slate-600 text-sm">Live Map View</p>
+        <p className="text-slate-400 text-xs">Coming Soon</p>
       </motion.div>
     </motion.div>
   )

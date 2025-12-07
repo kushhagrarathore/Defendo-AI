@@ -30,9 +30,9 @@ const ChartsSection = ({ data = [] }) => {
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="bg-[#1a241e] border border-white/20 rounded-lg p-3 shadow-xl"
+          className="bg-white border border-slate-200 rounded-lg p-3 shadow-xl"
         >
-          <p className="text-white font-medium">{`${label}`}</p>
+          <p className="text-slate-900 font-medium">{`${label}`}</p>
           {payload.map((entry, index) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
               {`${entry.dataKey}: ${entry.value}`}
@@ -53,22 +53,22 @@ const ChartsSection = ({ data = [] }) => {
     >
       {/* Bookings Chart */}
       <motion.div
-        className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]"
+        className="rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]"
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2 }}
       >
-        <h3 className="text-xl font-bold mb-4 text-white">Monthly Bookings</h3>
+        <h3 className="text-xl font-bold mb-4 text-slate-900">Monthly Bookings</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} barSize={12}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
               <XAxis 
                 dataKey="name" 
-                stroke="rgba(255,255,255,0.6)"
+                stroke="rgba(148,163,184,0.9)"
                 fontSize={12}
               />
               <YAxis 
-                stroke="rgba(255,255,255,0.6)"
+                stroke="rgba(148,163,184,0.9)"
                 fontSize={12}
               />
               <Tooltip content={<CustomTooltip />} />
@@ -86,22 +86,22 @@ const ChartsSection = ({ data = [] }) => {
 
       {/* Revenue Chart */}
       <motion.div
-        className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)]"
+        className="rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]"
         whileHover={{ scale: 1.01 }}
         transition={{ duration: 0.2 }}
       >
-        <h3 className="text-xl font-bold mb-4 text-white">Revenue Trend</h3>
+        <h3 className="text-xl font-bold mb-4 text-slate-900">Revenue Trend</h3>
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(148,163,184,0.2)" />
               <XAxis 
                 dataKey="name" 
-                stroke="rgba(255,255,255,0.6)"
+                stroke="rgba(148,163,184,0.9)"
                 fontSize={12}
               />
               <YAxis 
-                stroke="rgba(255,255,255,0.6)"
+                stroke="rgba(148,163,184,0.9)"
                 fontSize={12}
               />
               <Tooltip content={<CustomTooltip />} />

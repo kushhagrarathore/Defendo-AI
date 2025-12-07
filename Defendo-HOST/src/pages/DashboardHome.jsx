@@ -269,15 +269,14 @@ const DashboardHome = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-[#0C0F13] text-[#C5C6C7] relative overflow-hidden">
-      {/* Animated Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+    <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900 relative overflow-hidden">
+      {/* Subtle Background Pattern */}
+      <div className="absolute inset-0 opacity-60 pointer-events-none">
         <motion.div
-          className="absolute top-20 right-20 w-96 h-96 bg-gradient-to-br from-[#00AFFF] to-[#1FFF87] rounded-full blur-3xl"
+          className="absolute top-20 right-20 w-72 h-72 bg-gradient-to-br from-[var(--primary-color)]/20 to-sky-200/40 rounded-full blur-3xl"
           animate={{
-            scale: [1, 1.2, 1],
-            rotate: [0, 180, 360],
-            opacity: [0.05, 0.1, 0.05]
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.5, 0.3]
           }}
           transition={{
             duration: 8,
@@ -286,14 +285,13 @@ const DashboardHome = () => {
           }}
         />
         <motion.div
-          className="absolute bottom-20 left-20 w-80 h-80 bg-gradient-to-br from-[#1FFF87] to-[#00AFFF] rounded-full blur-2xl"
+          className="absolute bottom-16 left-16 w-72 h-72 bg-gradient-to-br from-sky-200/30 to-emerald-200/50 rounded-full blur-3xl"
           animate={{
-            scale: [1.2, 1, 1.2],
-            rotate: [360, 180, 0],
-            opacity: [0.03, 0.08, 0.03]
+            scale: [1.1, 1, 1.1],
+            opacity: [0.25, 0.45, 0.25]
           }}
           transition={{
-            duration: 6,
+            duration: 7,
             repeat: Infinity,
             ease: 'easeInOut'
           }}
@@ -310,22 +308,22 @@ const DashboardHome = () => {
         >
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-white to-[#00AFFF] bg-clip-text text-transparent mb-4">
+              <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-sky-500 bg-clip-text text-transparent mb-4">
                 Welcome Back, {getHostDisplayName()}
               </h1>
-              <p className="text-[#C5C6C7] text-lg">Here's what's happening with your security services today.</p>
+              <p className="text-slate-600 text-lg">Here's what's happening with your security services today.</p>
             </div>
             
             {/* Notifications Button */}
             <motion.button
               onClick={() => setNotificationsOpen(true)}
-              className="relative p-4 rounded-2xl bg-white/5 border border-[#00AFFF]/20 hover:bg-white/10 hover:border-[#00AFFF]/40 transition-all duration-300 backdrop-blur-sm"
+              className="relative p-4 rounded-2xl bg-white border border-slate-200 hover:border-[var(--primary-color)]/60 hover:shadow-[0_18px_60px_rgba(15,23,42,0.16)] transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <span className="material-symbols-outlined text-[#00AFFF] text-xl">notifications</span>
+              <span className="material-symbols-outlined text-[var(--primary-color)] text-xl">notifications</span>
               <motion.div
-                className="absolute -top-1 -right-1 w-3 h-3 bg-[#1FFF87] rounded-full"
+                className="absolute -top-1 -right-1 w-3 h-3 bg-[var(--primary-color)] rounded-full"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
               />
@@ -334,7 +332,7 @@ const DashboardHome = () => {
 
           {rlsIssue && (
             <motion.div 
-              className="mt-6 p-4 rounded-2xl bg-yellow-500/10 border border-yellow-500/20 text-yellow-300 text-sm backdrop-blur-sm"
+              className="mt-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 text-sm"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
             >
@@ -362,18 +360,18 @@ const DashboardHome = () => {
         
         {/* Verified Account Banner */}
         <motion.div
-          className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-[#1FFF87]/10 to-[#00AFFF]/10 border border-[#1FFF87]/20 backdrop-blur-sm"
+          className="mb-8 p-6 rounded-2xl bg-gradient-to-r from-[var(--primary-color)]/10 to-sky-100/60 border border-[var(--primary-color)]/30"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-slate-700 rounded-xl">
-              <span className="material-symbols-outlined text-slate-200 text-xl">verified</span>
+            <div className="p-3 bg-white rounded-xl shadow-sm">
+              <span className="material-symbols-outlined text-[var(--primary-color)] text-xl">verified</span>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-white">Account Verified</h3>
-              <p className="text-[#C5C6C7] text-sm">Your security services are active and ready for bookings</p>
+              <h3 className="text-lg font-semibold text-slate-900">Account Verified</h3>
+              <p className="text-slate-600 text-sm">Your security services are active and ready for bookings</p>
             </div>
           </div>
         </motion.div>

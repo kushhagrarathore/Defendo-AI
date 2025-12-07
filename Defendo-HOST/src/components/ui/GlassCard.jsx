@@ -1,6 +1,6 @@
 const GlassCard = ({ className = "", children }) => {
   return (
-    <div className={`rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)] ${className}`}>
+    <div className={`rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)] ${className}`}>
       {children}
     </div>
   )

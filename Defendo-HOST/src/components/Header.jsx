@@ -1,13 +1,15 @@
 import { Link } from "react-router-dom"
+import BrandLogo from "./BrandLogo"
 
 const Header = () => {
   return (
     <header className="sticky top-0 z-50 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#29382f] bg-[#111714]/80 px-10 py-4 backdrop-blur-sm">
       <Link to="/" className="flex items-center gap-4 text-white">
-        <svg className="h-8 w-8 text-[var(--primary-color)]" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
-        </svg>
-        <h2 className="text-xl font-bold leading-tight tracking-[-0.015em] text-white">Defendo Host</h2>
+        <BrandLogo
+          text="Defendo Host"
+          imgClassName="h-8 w-auto"
+          textClassName="text-xl font-bold leading-tight tracking-[-0.015em] text-white"
+        />
       </Link>
       <nav className="hidden items-center gap-8 md:flex">
         <Link to="/about" className="text-sm font-medium text-white/70 transition-colors hover:text-white">About Us</Link>

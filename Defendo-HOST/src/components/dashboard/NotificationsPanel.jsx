@@ -64,22 +64,22 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
           
           {/* Panel */}
           <motion.div
-            className="fixed right-0 top-0 h-full w-96 bg-[#111714] border-l border-white/10 shadow-2xl z-50"
+            className="fixed right-0 top-0 h-full w-96 bg-white border-l border-slate-200 shadow-2xl z-50"
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
           >
-            <div className="p-6 border-b border-white/10">
+            <div className="p-6 border-b border-slate-200">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-bold text-white">Notifications</h2>
+                <h2 className="text-xl font-bold text-slate-900">Notifications</h2>
                 <motion.button
                   onClick={onClose}
-                  className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+                  className="p-2 rounded-lg hover:bg-slate-100 transition-colors"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <span className="material-symbols-outlined text-white/70">close</span>
+                  <span className="material-symbols-outlined text-slate-500">close</span>
                 </motion.button>
               </div>
             </div>
@@ -98,7 +98,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                       type: 'spring',
                       stiffness: 200
                     }}
-                    className={`p-4 rounded-lg border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-200 ${
+                    className={`p-4 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-all duration-200 ${
                       notification.unread ? 'ring-2 ring-[var(--primary-color)]/30' : ''
                     }`}
                     onClick={() => markAsRead(notification.id)}
@@ -116,7 +116,7 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="text-white font-medium text-sm truncate">
+                          <h4 className="text-slate-900 font-medium text-sm truncate">
                             {notification.title}
                           </h4>
                           {notification.unread && (
@@ -127,10 +127,10 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                             />
                           )}
                         </div>
-                        <p className="text-white/70 text-xs mb-2 line-clamp-2">
+                        <p className="text-slate-600 text-xs mb-2 line-clamp-2">
                           {notification.message}
                         </p>
-                        <p className="text-white/50 text-xs">
+                        <p className="text-slate-400 text-xs">
                           {notification.time}
                         </p>
                       </div>
@@ -140,11 +140,11 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                           e.stopPropagation()
                           removeNotification(notification.id)
                         }}
-                        className="p-1 rounded hover:bg-white/10 transition-colors opacity-0 group-hover:opacity-100"
+                        className="p-1 rounded hover:bg-slate-100 transition-colors opacity-0 group-hover:opacity-100"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                       >
-                        <span className="material-symbols-outlined text-white/50 text-sm">close</span>
+                        <span className="material-symbols-outlined text-slate-400 text-sm">close</span>
                       </motion.button>
                     </div>
                   </motion.div>
@@ -158,14 +158,14 @@ const NotificationsPanel = ({ isOpen, onClose }) => {
                   animate={{ opacity: 1 }}
                 >
                   <motion.span
-                    className="material-symbols-outlined text-white/30 text-4xl mb-3 block"
+                    className="material-symbols-outlined text-slate-300 text-4xl mb-3 block"
                     animate={{ y: [0, -4, 0] }}
                     transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                   >
                     notifications_none
                   </motion.span>
-                  <p className="text-white/60">No notifications</p>
-                  <p className="text-white/40 text-sm">You're all caught up!</p>
+                  <p className="text-slate-500">No notifications</p>
+                  <p className="text-slate-400 text-sm">You're all caught up!</p>
                 </motion.div>
               )}
             </div>

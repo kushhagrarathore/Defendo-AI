@@ -57,6 +57,12 @@ const AddService = () => {
     ]
   }
 
+  const inputClasses =
+    "w-full px-4 py-3 bg-white border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300"
+  const textAreaClasses = `${inputClasses} resize-none`
+  const smallInputClasses =
+    "flex-1 px-3 py-2 bg-white border border-slate-200 rounded text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)]/20 text-sm transition-all duration-300"
+
   // Removed currency support per requirements
 
   // Indian States and Cities
@@ -391,7 +397,7 @@ const AddService = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-4xl font-bold gradient-text animate-slide-in-left">Add New Service</h1>
-          <p className="text-white/70 mt-2 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
+          <p className="text-slate-600 mt-2 animate-slide-in-left" style={{animationDelay: '0.1s'}}>
             Create a new security service offering
           </p>
         </div>
@@ -422,7 +428,7 @@ const AddService = () => {
           <fieldset disabled={blockedBanner} className={blockedBanner ? 'opacity-60 pointer-events-none' : ''}>
           {/* Service Name */}
           <div className="space-y-2">
-            <label htmlFor="name" className="block text-sm font-medium text-white">
+            <label htmlFor="name" className="block text-sm font-medium text-slate-700">
               Service Name *
             </label>
             <input
@@ -431,7 +437,7 @@ const AddService = () => {
               name="name"
               value={formData.name}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300"
+              className={inputClasses}
               placeholder="e.g., Event Security, Bodyguard Protection"
               required
             />
@@ -439,7 +445,7 @@ const AddService = () => {
 
           {/* Description */}
           <div className="space-y-2">
-            <label htmlFor="description" className="block text-sm font-medium text-white">
+            <label htmlFor="description" className="block text-sm font-medium text-slate-700">
               Description *
             </label>
             <textarea
@@ -448,7 +454,7 @@ const AddService = () => {
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 resize-none"
+              className={textAreaClasses}
               placeholder="Describe your service in detail, including what clients can expect..."
               required
             />
@@ -456,7 +462,7 @@ const AddService = () => {
 
           {/* Service Type */}
           <div className="space-y-2">
-            <label htmlFor="service_type" className="block text-sm font-medium text-white">
+            <label htmlFor="service_type" className="block text-sm font-medium text-slate-700">
               Service Type *
             </label>
             <select
@@ -464,7 +470,7 @@ const AddService = () => {
               name="service_type"
               value={formData.service_type}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300"
+              className={inputClasses}
               required
             >
               <option value="">Select service type</option>
@@ -477,10 +483,10 @@ const AddService = () => {
           {/* Subcategories */}
           {formData.service_type && serviceSubcategories[formData.service_type] && (
             <div className="space-y-4">
-              <label className="block text-sm font-medium text-white">
+              <label className="block text-sm font-medium text-slate-700">
                 Select Subcategories with Pricing *
               </label>
-              <div className="space-y-4 bg-[#1a241e] border border-[#29382f] rounded-lg p-4">
+              <div className="space-y-4 bg-slate-50 border border-slate-200 rounded-lg p-4">
                 {serviceSubcategories[formData.service_type].map((subcategory) => (
                   <div key={subcategory.value} className="space-y-2">
                     <div className="flex items-center space-x-3">
@@ -489,9 +495,9 @@ const AddService = () => {
                         id={`subcategory_${subcategory.value}`}
                         checked={subcategories[subcategory.value]?.selected || false}
                         onChange={(e) => handleSubcategoryChange(subcategory.value, e.target.checked)}
-                        className="w-4 h-4 text-[var(--primary-color)] bg-[#111714] border-[#29382f] rounded focus:ring-[var(--primary-color)] focus:ring-2"
+                        className="w-4 h-4 text-[var(--primary-color)] bg-white border-slate-300 rounded focus:ring-[var(--primary-color)] focus:ring-2"
                       />
-                      <label htmlFor={`subcategory_${subcategory.value}`} className="text-white text-sm font-medium">
+                    <label htmlFor={`subcategory_${subcategory.value}`} className="text-slate-800 text-sm font-medium">
                         {subcategory.label}
                       </label>
                     </div>
@@ -505,27 +511,27 @@ const AddService = () => {
                             placeholder="Custom subcategory name"
                             value={customSubcategory.name}
                             onChange={(e) => handleCustomSubcategoryChange('name', e.target.value)}
-                            className="w-full px-3 py-2 bg-[#111714] border border-[#29382f] rounded text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)]/20 transition-all duration-300 text-sm"
+                            className="w-full px-3 py-2 bg-white border border-slate-200 rounded text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)]/20 transition-all duration-300 text-sm"
                           />
                         )}
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           {/* Availability count */}
                           <div className="flex items-center gap-2">
-                            <label className="text-white/80 text-sm whitespace-nowrap">Availability</label>
+                            <label className="text-slate-600 text-sm whitespace-nowrap">Availability</label>
                             <input
                               type="number"
                               min="0"
                               placeholder="0"
                               value={subcategories[subcategory.value]?.availability || ''}
                               onChange={(e) => handleSubcategoryAvailabilityChange(subcategory.value, e.target.value)}
-                              className="flex-1 px-3 py-2 bg-[#111714] border border-[#29382f] rounded text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)]/20 transition-all duration-300 text-sm"
+                              className={smallInputClasses}
                             />
                           </div>
 
                           {/* Image upload per guard type */}
                           <div>
-                            <label className="text-white/80 text-sm block mb-1">Images</label>
+                            <label className="text-slate-600 text-sm block mb-1">Images</label>
                             <ImageUpload
                               images={subcategories[subcategory.value]?.images || []}
                               onImagesChange={(files) => handleSubcategoryImagesChange(subcategory.value, files)}
@@ -542,12 +548,12 @@ const AddService = () => {
                             id={`pricing_${subcategory.value}`}
                             checked={subcategories[subcategory.value]?.pricingEnabled || false}
                             onChange={(e) => handleSubcategoryPricingToggle(subcategory.value, e.target.checked)}
-                            className="w-4 h-4 text-[var(--primary-color)] bg-[#111714] border-[#29382f] rounded focus:ring-[var(--primary-color)] focus:ring-2"
+                            className="w-4 h-4 text-[var(--primary-color)] bg-white border-slate-300 rounded focus:ring-[var(--primary-color)] focus:ring-2"
                           />
-                          <label htmlFor={`pricing_${subcategory.value}`} className="text-white text-sm">Enable hourly pricing</label>
+                          <label htmlFor={`pricing_${subcategory.value}`} className="text-slate-800 text-sm">Enable hourly pricing</label>
                           {subcategories[subcategory.value]?.pricingEnabled && (
                             <div className="flex items-center gap-2 ml-2">
-                              <span className="text-white/80 text-sm">₹</span>
+                              <span className="text-slate-600 text-sm">₹</span>
                               <input
                                 type="number"
                                 min="0"
@@ -555,9 +561,9 @@ const AddService = () => {
                                 placeholder="Price / hour"
                                 value={subcategories[subcategory.value]?.price || ''}
                                 onChange={(e) => handleSubcategoryPriceChange(subcategory.value, e.target.value)}
-                                className="w-32 px-3 py-2 bg-[#111714] border border-[#29382f] rounded text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)]/20 transition-all duration-300 text-sm"
+                                className="w-32 px-3 py-2 bg-white border border-slate-200 rounded text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:outline-none focus:ring-1 focus:ring-[var(--primary-color)]/20 transition-all duration-300 text-sm"
                               />
-                              <span className="text-white/60 text-sm">/hour</span>
+                              <span className="text-slate-500 text-sm">/hour</span>
                             </div>
                           )}
                         </div>
@@ -566,8 +572,8 @@ const AddService = () => {
                   </div>
                 ))}
                 
-                <div className="mt-4 p-3 bg-[#111714] rounded-lg border border-[#29382f]/50">
-                  <p className="text-white/70 text-xs">
+                <div className="mt-4 p-3 bg-slate-100 rounded-lg border border-slate-200">
+                  <p className="text-slate-600 text-xs">
                     💡 Select the subcategories you offer and set individual pricing for each. 
                     This allows clients to choose specific services with transparent pricing.
                   </p>
@@ -581,7 +587,7 @@ const AddService = () => {
           {/* State and City */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label htmlFor="state" className="block text-sm font-medium text-white">
+            <label htmlFor="state" className="block text-sm font-medium text-slate-700">
                 State *
               </label>
               <select
@@ -589,7 +595,7 @@ const AddService = () => {
                 name="state"
                 value={formData.state}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300"
+              className={inputClasses}
                 required
               >
                 <option value="">Select State</option>
@@ -599,7 +605,7 @@ const AddService = () => {
               </select>
             </div>
             <div className="space-y-2">
-              <label htmlFor="city" className="block text-sm font-medium text-white">
+            <label htmlFor="city" className="block text-sm font-medium text-slate-700">
                 City *
               </label>
               <select
@@ -608,7 +614,7 @@ const AddService = () => {
                 value={formData.city}
                 onChange={handleChange}
                 disabled={!formData.state}
-                className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`${inputClasses} disabled:opacity-50 disabled:cursor-not-allowed`}
                 required
               >
                 <option value="">Select City</option>
@@ -621,7 +627,7 @@ const AddService = () => {
 
           {/* Specializations */}
           <div className="space-y-2">
-            <label htmlFor="specializations" className="block text-sm font-medium text-white">
+            <label htmlFor="specializations" className="block text-sm font-medium text-slate-700">
               Specializations
             </label>
             <input
@@ -630,15 +636,15 @@ const AddService = () => {
               name="specializations"
               value={formData.specializations}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300"
+              className={inputClasses}
               placeholder="e.g., Crowd Control, Access Control, Emergency Response (comma-separated)"
             />
-            <p className="text-xs text-white/60">Separate multiple specializations with commas</p>
+            <p className="text-xs text-slate-500">Separate multiple specializations with commas</p>
           </div>
 
           {/* Equipment Included */}
           <div className="space-y-2">
-            <label htmlFor="equipment_included" className="block text-sm font-medium text-white">
+            <label htmlFor="equipment_included" className="block text-sm font-medium text-slate-700">
               Equipment Included
             </label>
             <input
@@ -647,15 +653,15 @@ const AddService = () => {
               name="equipment_included"
               value={formData.equipment_included}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300"
+              className={inputClasses}
               placeholder="e.g., Radio Communication, First Aid Kit, Flashlight (comma-separated)"
             />
-            <p className="text-xs text-white/60">Separate multiple equipment items with commas</p>
+            <p className="text-xs text-slate-500">Separate multiple equipment items with commas</p>
           </div>
 
           {/* Image Upload */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-white">
+            <label className="block text-sm font-medium text-slate-700">
               Upload the logo of the company
             </label>
             <ImageUpload
@@ -674,9 +680,9 @@ const AddService = () => {
               name="is_active"
               checked={formData.is_active}
               onChange={handleChange}
-              className="h-4 w-4 text-[var(--primary-color)] bg-[#1a241e] border-[#29382f] rounded focus:ring-[var(--primary-color)] focus:ring-2"
+              className="h-4 w-4 text-[var(--primary-color)] bg-white border-slate-300 rounded focus:ring-[var(--primary-color)] focus:ring-2"
             />
-            <label htmlFor="is_active" className="text-sm text-white">
+            <label htmlFor="is_active" className="text-sm text-slate-700">
               Service is currently available for booking
             </label>
           </div>
@@ -688,7 +694,7 @@ const AddService = () => {
             <button
               type="button"
               onClick={checkStorageBuckets}
-              className="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+                className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
             >
               Check Storage Buckets
             </button>
@@ -699,7 +705,7 @@ const AddService = () => {
             <PrimaryButton type="submit" disabled={isLoading || blockedBanner} className="flex-1">
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <div className="w-4 h-4 border-2 border-[#111714] border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-slate-200 border-t-transparent rounded-full animate-spin"></div>
                   Adding Service...
                 </div>
               ) : (
@@ -709,7 +715,7 @@ const AddService = () => {
             <button
               type="button"
               onClick={() => navigate('/dashboard/services')}
-              className="flex-1 bg-[#29382f] text-white py-3 px-6 rounded-lg font-bold hover:bg-[#3a4a3f] transition-all duration-300 ripple"
+              className="flex-1 bg-slate-100 text-slate-800 py-3 px-6 rounded-lg font-bold hover:bg-slate-200 transition-all duration-300"
             >
               Cancel
             </button>

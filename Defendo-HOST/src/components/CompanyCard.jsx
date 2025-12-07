@@ -100,3 +100,9 @@ export default function CompanyCard({ company, onSelect, onToggleVerified, proce
 
 
 
+
+
+
+
+
+

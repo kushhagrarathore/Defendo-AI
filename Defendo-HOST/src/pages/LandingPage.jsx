@@ -319,7 +319,9 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-[var(--primary-color)]">shield_lock</span>
-            <span className="font-bold">Defendo Host</span>
+            <span className="font-bold">DEFENDO
+
+            </span>
           </div>
           <div className="flex items-center gap-6">
             {['About Us','Features','Services','Testimonials'].map((label, i) => {
@@ -362,7 +364,7 @@ const LandingPage = () => {
             })}
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Link to="/login" className="text-white/80 hover:text-white px-4 py-2 rounded-lg hover:bg-white/5 transition-colors">
-                Login
+                Host-Login
               </Link>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

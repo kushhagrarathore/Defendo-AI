@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
+import BrandLogo from "../components/BrandLogo"
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,8 @@ const Signup = () => {
   const [signupResult, setSignupResult] = useState(null)
   const { signUp, error, clearError } = useAuth()
   const navigate = useNavigate()
+  const inputClass =
+    "w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100 transition-all"
 
   const handleChange = (e) => {
     const { name, value } = e.target
@@ -68,25 +71,29 @@ const Signup = () => {
 
   if (success) {
     return (
-      <div className="bg-[#111714] text-white min-h-screen flex flex-col">
-        <header className="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#29382f] px-10 py-4">
-          <Link to="/" className="flex items-center gap-3 text-white">
-            <svg className="h-8 w-8 text-[var(--primary-color)]" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
-            </svg>
-            <h2 className="text-xl font-bold tracking-tighter">Defendo Host</h2>
+      <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900 flex flex-col">
+        <header className="flex items-center justify-between border-b border-slate-200 px-6 md:px-10 py-4 bg-white/80 backdrop-blur">
+          <Link to="/" className="flex items-center gap-3 text-slate-900">
+            <BrandLogo
+              text="Defendo Host"
+              imgClassName="h-10 w-auto drop-shadow-sm"
+              textClassName="text-xl font-bold tracking-tight text-slate-900"
+            />
+          </Link>
+          <Link to="/dashboard" className="text-sm font-medium text-slate-500 hover:text-slate-900 transition-colors">
+            Go to dashboard
           </Link>
         </header>
         <main className="flex flex-1 items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-          <div className="w-full max-w-md space-y-8 text-center">
-            <div className="w-16 h-16 bg-[var(--primary-color)] rounded-full flex items-center justify-center mx-auto">
-              <span className="material-symbols-outlined text-[#111714] text-2xl">check</span>
+          <div className="w-full max-w-md space-y-6 text-center bg-white rounded-2xl shadow-[0_20px_60px_rgba(15,23,42,0.1)] border border-slate-100 p-10">
+            <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto">
+              <span className="material-symbols-outlined text-emerald-600 text-2xl">check</span>
             </div>
-            <h2 className="text-3xl font-bold text-white">Account Created!</h2>
-            <p className="text-gray-400">
+            <h2 className="text-3xl font-bold text-slate-900">Account Created!</h2>
+            <p className="text-slate-500">
               {signupResult?.data?.user 
                 ? "Welcome to Defendo! Redirecting to your dashboard..." 
-                : "Please check your email to verify your account. You'll be redirected to login shortly."
+                : "Please verify your email. We’ll redirect you to login shortly."
               }
             </p>
           </div>
@@ -96,117 +103,136 @@ const Signup = () => {
   }
 
   return (
-    <div className="bg-gradient-to-br from-[#0a0f0b] via-[#111714] to-[#0a0f0b] text-white min-h-screen flex flex-col relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--primary-color)]/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-purple-500/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
-      </div>
-
-      {/* Floating particles */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-[var(--primary-color)] rounded-full animate-ping opacity-60"></div>
-        <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-white rounded-full animate-ping opacity-40 delay-500"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-1.5 h-1.5 bg-[var(--primary-color)] rounded-full animate-ping opacity-50 delay-1000"></div>
-        <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-white rounded-full animate-ping opacity-30 delay-1500"></div>
-      </div>
-
-      <header className="relative z-10 flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#29382f]/50 px-10 py-4 backdrop-blur-sm">
-        <Link to="/" className="flex items-center gap-3 text-white group">
-          <div className="p-2 rounded-lg bg-[var(--primary-color)]/10 group-hover:bg-[var(--primary-color)]/20 transition-all duration-300">
-            <svg className="h-6 w-6 text-[var(--primary-color)] group-hover:scale-110 transition-transform duration-300" fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z" fill="currentColor"></path>
-            </svg>
-          </div>
-          <h1 className="text-xl font-bold tracking-tight group-hover:text-[var(--primary-color)] transition-colors duration-300">Defendo Host</h1>
+    <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900 flex flex-col">
+      <header className="flex items-center justify-between border-b border-slate-200 px-6 md:px-10 py-4 bg-white/80 backdrop-blur">
+        <Link to="/" className="flex items-center gap-3 text-slate-900 group">
+          <BrandLogo
+            text="Defendo Host"
+            imgClassName="h-10 w-auto drop-shadow-sm"
+            textClassName="text-xl font-bold tracking-tight group-hover:text-[var(--primary-color)] transition-colors duration-300"
+          />
         </Link>
-        <div className="flex items-center gap-6 text-sm">
-          <Link to="/login" className="group flex items-center gap-2 rounded-full bg-[#29382f] px-5 py-2.5 font-semibold hover:bg-[#3d5245] transition-all duration-300 relative overflow-hidden">
-            <span className="relative z-10">Log In</span>
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+        <div className="flex items-center gap-4 text-sm">
+          <span className="hidden sm:flex items-center gap-2 text-slate-500">
+            <span className="material-symbols-outlined text-base text-emerald-500">verified_user</span>
+            Secure onboarding
+          </span>
+          <Link
+            to="/login"
+            className="inline-flex items-center gap-2 rounded-full border border-slate-200 px-5 py-2.5 font-semibold text-slate-700 hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+          >
+            Log In
+            <span className="material-symbols-outlined text-base">north_east</span>
           </Link>
         </div>
       </header>
 
-      <main className="relative z-10 flex flex-1 items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md">
-          {/* Signup Card */}
-          <div className="bg-[#1a241e]/80 backdrop-blur-xl border border-[#29382f]/50 rounded-2xl p-8 shadow-2xl shadow-black/20">
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-[var(--primary-color)] to-[#2a5a3a] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-[var(--primary-color)]/25">
-                <span className="material-symbols-outlined text-[#111714] text-2xl">person_add</span>
+      <main className="flex flex-1 items-center justify-center py-14 px-4 sm:px-6 lg:px-10">
+        <div className="w-full max-w-5xl grid lg:grid-cols-[1.05fr_0.95fr] gap-8">
+          <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-[0_25px_60px_rgba(15,23,42,0.12)]">
+            <div className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] uppercase text-emerald-600 bg-emerald-50 px-4 py-1 rounded-full mb-6">
+              <span className="material-symbols-outlined text-sm">bolt</span>
+              Fast track onboarding
+            </div>
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">One account. All of Defendo.</h2>
+            <p className="text-slate-500 leading-relaxed mb-8">
+              Whether you are a security agency or a business in need of reliable guards, Defendo brings every booking, payout,
+              and guard assignment into a single powerful dashboard.
+            </p>
+            <div className="grid sm:grid-cols-2 gap-4">
+              {[
+                { title: 'Provider ready', desc: 'Agencies scale bookings in weeks.' },
+                { title: 'Smart compliance', desc: 'Built-in KYC & verification workflow.' },
+                { title: 'Realtime visibility', desc: 'Track shifts and attendance live.' },
+                { title: 'Priority payouts', desc: 'Automated invoicing every month.' }
+              ].map((item) => (
+                <div key={item.title} className="p-4 rounded-2xl bg-slate-50 border border-slate-100">
+                  <p className="text-sm font-semibold text-slate-900">{item.title}</p>
+                  <p className="text-xs text-slate-500 mt-1">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-8 flex items-center gap-4 text-sm text-slate-500">
+              <div className="flex -space-x-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-10 w-10 rounded-full border-2 border-white bg-emerald-100 flex items-center justify-center text-emerald-700 font-semibold">
+                    {['AP', 'KN', 'DL'][i]}
+                  </div>
+                ))}
               </div>
-              <h2 className="text-3xl font-bold tracking-tight text-white mb-2">
-                {formData.userType === "host" ? "Join Defendo Host" : "Join Defendo"}
+              Trusted by 500+ security businesses
+            </div>
+          </div>
+
+          <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-[0_30px_70px_rgba(15,23,42,0.15)]">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <span className="material-symbols-outlined text-emerald-600 text-2xl">person_add</span>
+              </div>
+              <h2 className="text-2xl font-semibold text-slate-900 mb-2">
+                {formData.userType === "host" ? "Create your provider account" : "Create your Defendo account"}
               </h2>
-              <p className="text-gray-400">
+              <p className="text-sm text-slate-500">
                 {formData.userType === "host" 
-                  ? "Register as a security service provider and start offering your services."
-                  : "Create your account to book security services and stay protected."
+                  ? "Register as a verified security provider and start receiving bookings."
+                  : "Book trusted guards for corporate, residential, or event needs."
                 }
               </p>
             </div>
 
             {error && (
-              <div className="mb-6 bg-red-500/10 border border-red-500/20 rounded-xl p-4 backdrop-blur-sm">
+              <div className="mb-6 bg-rose-50 border border-rose-200 rounded-xl p-4">
                 <div className="flex items-center gap-3">
-                  <span className="material-symbols-outlined text-red-400">error</span>
-                  <p className="text-red-400 text-sm">{error}</p>
+                  <span className="material-symbols-outlined text-rose-500">error</span>
+                  <p className="text-rose-600 text-sm">{error}</p>
                 </div>
               </div>
             )}
 
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-4">
-                {/* User Type Selection */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-white mb-3">
-                    Register as:
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-3">
+                    Register as
                   </label>
                   <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, userType: "host" }))}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                      className={`p-4 rounded-2xl border-2 text-sm font-semibold transition-all ${
                         formData.userType === "host"
-                          ? "border-[var(--primary-color)] bg-[var(--primary-color)]/10 text-[var(--primary-color)]"
-                          : "border-[#3d5245] bg-[#111714]/50 text-gray-400 hover:border-[var(--primary-color)]/50"
+                          ? "border-emerald-500 text-emerald-600 bg-emerald-50"
+                          : "border-slate-200 text-slate-500 hover:border-emerald-200"
                       }`}
                     >
-                      <div className="flex flex-col items-center space-y-2">
+                      <div className="flex flex-col items-center space-y-1">
                         <span className="material-symbols-outlined text-2xl">security</span>
-                        <span className="font-medium">Security Provider</span>
-                        <span className="text-xs opacity-75">Offer security services</span>
+                        <span>Security Provider</span>
                       </div>
                     </button>
-                    
                     <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, userType: "user" }))}
-                      className={`p-4 rounded-xl border-2 transition-all duration-300 ${
+                      className={`p-4 rounded-2xl border-2 text-sm font-semibold transition-all ${
                         formData.userType === "user"
-                          ? "border-[var(--primary-color)] bg-[var(--primary-color)]/10 text-[var(--primary-color)]"
-                          : "border-[#3d5245] bg-[#111714]/50 text-gray-400 hover:border-[var(--primary-color)]/50"
+                          ? "border-emerald-500 text-emerald-600 bg-emerald-50"
+                          : "border-slate-200 text-slate-500 hover:border-emerald-200"
                       }`}
                     >
-                      <div className="flex flex-col items-center space-y-2">
+                      <div className="flex flex-col items-center space-y-1">
                         <span className="material-symbols-outlined text-2xl">person</span>
-                        <span className="font-medium">Regular User</span>
-                        <span className="text-xs opacity-75">Book security services</span>
+                        <span>Booking User</span>
                       </div>
                     </button>
                   </div>
                 </div>
 
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span className="material-symbols-outlined text-gray-400 group-focus-within:text-[var(--primary-color)] transition-colors duration-300">
-                      person
-                    </span>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <span className="material-symbols-outlined">person</span>
                   </div>
                   <input 
-                    className="w-full pl-12 pr-4 py-4 bg-[#111714]/50 border border-[#3d5245] rounded-xl text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 backdrop-blur-sm" 
+                    className={inputClass}
                     id="full-name" 
                     name="fullName" 
                     placeholder="Full Name" 
@@ -217,16 +243,13 @@ const Signup = () => {
                   />
                 </div>
 
-                {/* Company Name - Only for Hosts */}
                 {formData.userType === "host" && (
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <span className="material-symbols-outlined text-gray-400 group-focus-within:text-[var(--primary-color)] transition-colors duration-300">
-                        apartment
-                      </span>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                      <span className="material-symbols-outlined">apartment</span>
                     </div>
                     <input 
-                      className="w-full pl-12 pr-4 py-4 bg-[#111714]/50 border border-[#3d5245] rounded-xl text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 backdrop-blur-sm" 
+                      className={inputClass}
                       id="company-name" 
                       name="companyName" 
                       placeholder="Company Name" 
@@ -238,14 +261,12 @@ const Signup = () => {
                   </div>
                 )}
 
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span className="material-symbols-outlined text-gray-400 group-focus-within:text-[var(--primary-color)] transition-colors duration-300">
-                      mail
-                    </span>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <span className="material-symbols-outlined">mail</span>
                   </div>
                   <input 
-                    className="w-full pl-12 pr-4 py-4 bg-[#111714]/50 border border-[#3d5245] rounded-xl text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 backdrop-blur-sm" 
+                    className={inputClass}
                     id="email-address" 
                     name="email" 
                     placeholder="Email address" 
@@ -256,14 +277,12 @@ const Signup = () => {
                   />
                 </div>
 
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span className="material-symbols-outlined text-gray-400 group-focus-within:text-[var(--primary-color)] transition-colors duration-300">
-                      phone
-                    </span>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <span className="material-symbols-outlined">phone</span>
                   </div>
                   <input 
-                    className="w-full pl-12 pr-4 py-4 bg-[#111714]/50 border border-[#3d5245] rounded-xl text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 backdrop-blur-sm" 
+                    className={inputClass}
                     id="contact-info" 
                     name="phone" 
                     placeholder="Phone Number" 
@@ -274,16 +293,13 @@ const Signup = () => {
                   />
                 </div>
 
-                {/* Business Address - Only for Hosts */}
                 {formData.userType === "host" && (
-                  <div className="relative group">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                      <span className="material-symbols-outlined text-gray-400 group-focus-within:text-[var(--primary-color)] transition-colors duration-300">
-                        location_on
-                      </span>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                      <span className="material-symbols-outlined">location_on</span>
                     </div>
                     <input 
-                      className="w-full pl-12 pr-4 py-4 bg-[#111714]/50 border border-[#3d5245] rounded-xl text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 backdrop-blur-sm" 
+                      className={inputClass}
                       id="address" 
                       name="address" 
                       placeholder="Business Address" 
@@ -295,14 +311,12 @@ const Signup = () => {
                   </div>
                 )}
 
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span className="material-symbols-outlined text-gray-400 group-focus-within:text-[var(--primary-color)] transition-colors duration-300">
-                      lock
-                    </span>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <span className="material-symbols-outlined">lock</span>
                   </div>
                   <input 
-                    className="w-full pl-12 pr-4 py-4 bg-[#111714]/50 border border-[#3d5245] rounded-xl text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 backdrop-blur-sm" 
+                    className={inputClass}
                     id="password" 
                     name="password" 
                     placeholder="Password" 
@@ -313,14 +327,12 @@ const Signup = () => {
                   />
                 </div>
 
-                <div className="relative group">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <span className="material-symbols-outlined text-gray-400 group-focus-within:text-[var(--primary-color)] transition-colors duration-300">
-                      lock
-                    </span>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                    <span className="material-symbols-outlined">lock</span>
                   </div>
                   <input 
-                    className="w-full pl-12 pr-4 py-4 bg-[#111714]/50 border border-[#3d5245] rounded-xl text-white placeholder-gray-500 focus:border-[var(--primary-color)] focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 transition-all duration-300 backdrop-blur-sm" 
+                    className={inputClass}
                     id="confirm-password" 
                     name="confirmPassword" 
                     placeholder="Confirm Password" 
@@ -331,10 +343,10 @@ const Signup = () => {
                   />
                 </div>
               </div>
-              
+
               {formData.password && formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                <div className="flex items-center gap-2 text-red-400 text-sm">
-                  <span className="material-symbols-outlined text-sm">error</span>
+                <div className="flex items-center gap-2 text-rose-500 text-sm">
+                  <span className="material-symbols-outlined text-base">error</span>
                   <span>Passwords do not match</span>
                 </div>
               )}
@@ -342,11 +354,11 @@ const Signup = () => {
               <button 
                 type="submit"
                 disabled={isLoading || formData.password !== formData.confirmPassword}
-                className="group relative w-full flex justify-center items-center py-4 px-6 border border-transparent rounded-xl text-sm font-bold text-[#111714] bg-gradient-to-r from-[var(--primary-color)] to-[#2a5a3a] hover:shadow-lg hover:shadow-[var(--primary-color)]/25 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                className="group relative w-full flex justify-center items-center py-4 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-emerald-500 to-emerald-600 shadow-[0_18px_40px_rgba(16,185,129,0.3)] hover:from-emerald-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {isLoading ? (
                   <div className="flex items-center gap-3">
-                    <div className="w-5 h-5 border-2 border-[#111714] border-t-transparent rounded-full animate-spin"></div>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                     Creating Account...
                   </div>
                 ) : (
@@ -358,13 +370,11 @@ const Signup = () => {
               </button>
             </form>
 
-            <div className="mt-8 text-center">
-              <p className="text-gray-400">
-                Already have an account?
-                <Link to="/login" className="font-medium text-[var(--primary-color)] hover:text-opacity-80 ml-1 transition-colors">
-                  Log in
-                </Link>
-              </p>
+            <div className="mt-8 text-center text-sm text-slate-500">
+              Already have an account?
+              <Link to="/login" className="font-semibold text-emerald-600 hover:text-emerald-700 ml-1">
+                Log in
+              </Link>
             </div>
           </div>
         </div>

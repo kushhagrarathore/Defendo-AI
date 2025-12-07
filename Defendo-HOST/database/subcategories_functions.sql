@@ -282,3 +282,9 @@ GRANT EXECUTE ON FUNCTION get_popular_subcategories(VARCHAR, INTEGER) TO anon;
 
 
 
+
+
+
+
+
+

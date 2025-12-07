@@ -23,7 +23,7 @@ const StatsCard = ({
 
   return (
     <motion.div
-      className="rounded-2xl p-6 border border-white/10 bg-white/5 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.15)] group hover:border-[var(--primary-color)]/30 transition-all duration-300"
+      className="rounded-2xl p-6 border border-slate-200 bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)] group hover:border-[var(--primary-color)]/60 transition-all duration-300"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ 
@@ -63,15 +63,15 @@ const StatsCard = ({
             </span>
           </motion.div>
           <div>
-            <p className="text-white/70 text-sm font-medium">{label}</p>
+            <p className="text-slate-500 text-sm font-medium">{label}</p>
             <div className="flex items-center gap-2">
               <AnimatedCounter 
                 end={value} 
                 suffix={isCurrency ? '' : ''}
-                className="text-2xl font-bold text-white"
+                className="text-2xl font-bold text-slate-900"
                 delay={index * 0.1}
               />
-              {isCurrency && <span className="text-2xl font-bold text-white">₹</span>}
+              {isCurrency && <span className="text-2xl font-bold text-slate-900">₹</span>}
             </div>
           </div>
         </div>
@@ -80,8 +80,8 @@ const StatsCard = ({
           <motion.div
             className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
               growthType === 'increase' 
-                ? 'bg-green-500/20 text-green-400' 
-                : 'bg-red-500/20 text-red-400'
+                ? 'bg-emerald-50 text-emerald-600' 
+                : 'bg-rose-50 text-rose-600'
             }`}
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -97,7 +97,7 @@ const StatsCard = ({
       
       {/* Animated progress bar */}
       <motion.div
-        className="w-full h-1 bg-white/10 rounded-full overflow-hidden"
+      className="w-full h-1 bg-slate-100 rounded-full overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 + index * 0.1 }}
@@ -118,6 +118,11 @@ const StatsCard = ({
 }
 
 export default StatsCard
+
+
+
+
+
 
 
 

@@ -297,20 +297,20 @@ const Employees = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0C0F13] text-[#C5C6C7]">
+    <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900">
       <div className="max-w-7xl mx-auto p-6 md:p-8">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl md:text-4xl font-semibold text-white">My Employees</h1>
-            <p className="text-[#C5C6C7]/80 mt-1">Manage staff, import from CSV/Excel, and assign quickly</p>
+            <h1 className="text-3xl md:text-4xl font-semibold text-slate-900">My Employees</h1>
+            <p className="text-slate-600 mt-1">Manage staff, import from CSV/Excel, and assign quickly</p>
           </div>
           <div className="flex items-center gap-3">
-            <button onClick={() => { setUploadPreview([]); setFileKey(k => k + 1); setShowUploadModal(true) }} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 transition">
+            <button onClick={() => { setUploadPreview([]); setFileKey(k => k + 1); setShowUploadModal(true) }} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
               <span className="material-symbols-outlined">upload</span>
               <span className="font-medium">Upload CSV / Excel</span>
             </button>
-            <button onClick={() => setShowAddModal(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#00AFFF] text-black shadow hover:shadow-md transition">
+            <button onClick={() => setShowAddModal(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--primary-color)] text-[#0f172a] shadow hover:shadow-md transition">
               <span className="material-symbols-outlined">add</span>
               <span className="font-medium">Add Employee</span>
             </button>
@@ -318,19 +318,19 @@ const Employees = () => {
         </div>
 
         {/* Filters */}
-        <div className="rounded-2xl border border-white/10 p-4 mb-6 bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 backdrop-blur-xl">
+        <div className="rounded-2xl border border-slate-200 p-4 mb-6 bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]">
           <div className="flex flex-col md:flex-row gap-3">
             <div className="flex-1">
               <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/50">search</span>
-                <input className="w-full pl-10 pr-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-[#00AFFF]/20" placeholder="Search by name" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <input className="w-full pl-10 pr-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20" placeholder="Search by name" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
               </div>
             </div>
-            <select className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-[#00AFFF]/20" value={filters.role} onChange={e => setFilters({ ...filters, role: e.target.value })}>
+            <select className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 focus:ring-2 focus:ring-[var(--primary-color)]/20" value={filters.role} onChange={e => setFilters({ ...filters, role: e.target.value })}>
               <option value="">All Roles</option>
               {roleOptions.map(r => <option key={r} value={r}>{r}</option>)}
             </select>
-                <select className="px-3 py-2 rounded-xl bg-white/5 border border-white/10 text-white focus:ring-2 focus:ring-[#00AFFF]/20" value={filters.status} onChange={e => setFilters({ ...filters, status: e.target.value })}>
+            <select className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 focus:ring-2 focus:ring-[var(--primary-color)]/20" value={filters.status} onChange={e => setFilters({ ...filters, status: e.target.value })}>
               <option value="">All Status</option>
               {statusOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
             </select>
@@ -338,11 +338,11 @@ const Employees = () => {
         </div>
 
         {/* Table */}
-        <div className="rounded-2xl border border-white/10 overflow-hidden bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 backdrop-blur-xl">
+        <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]">
           <div className="overflow-x-auto">
-            <table className="min-w-full text-left">
-              <thead className="bg-white/5">
-                <tr className="text-white/70">
+            <table className="min-w-full text-left text-sm">
+              <thead className="bg-slate-50">
+                <tr className="text-slate-500">
                   <th className="px-4 py-3 font-medium">Photo</th>
                   <th className="px-4 py-3 font-medium">Name</th>
                   <th className="px-4 py-3 font-medium">Role</th>
@@ -354,40 +354,40 @@ const Employees = () => {
               <tbody>
                 {loading && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-white/60">Loading…</td>
+                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">Loading…</td>
                   </tr>
                 )}
                 {!loading && filteredEmployees.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-white/60">No employees yet</td>
+                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">No employees yet</td>
                   </tr>
                 )}
                 {filteredEmployees.map(emp => (
-                  <tr key={emp.id} className="border-t border-white/10 hover:bg-white/5">
+                  <tr key={emp.id} className="border-t border-slate-100 hover:bg-slate-50">
                     <td className="px-4 py-3">
-                      <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center">
                         {emp.photo ? (<img src={emp.photo} alt={emp.name} className="w-full h-full object-cover" />) : (
-                          <span className="material-symbols-outlined text-white/60">person</span>
+                          <span className="material-symbols-outlined text-slate-400">person</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-medium text-white">{emp.name}</td>
-                    <td className="px-4 py-3">{emp.role}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900">{emp.name}</td>
+                    <td className="px-4 py-3 text-slate-700">{emp.role}</td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        emp.status === 'Available' ? 'bg-emerald-500/20 text-emerald-300' : emp.status === 'Assigned' ? 'bg-red-500/20 text-red-300' : 'bg-white/10 text-white/70'
+                        emp.status === 'Available' ? 'bg-emerald-50 text-emerald-700' : emp.status === 'Assigned' ? 'bg-rose-50 text-rose-700' : 'bg-slate-50 text-slate-500'
                       }`}>
                         {emp.status === 'Available' ? '🟢 Available' : emp.status === 'Assigned' ? '🔴 Assigned' : '⚫ Off-duty'}
                       </span>
                     </td>
-                    <td className="px-4 py-3">{emp.assignedTo || <span className="text-white/50">—</span>}</td>
+                    <td className="px-4 py-3 text-slate-700">{emp.assignedTo || <span className="text-slate-400">—</span>}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <button className="p-2 rounded-lg hover:bg-white/10" title="Edit">
-                          <span className="material-symbols-outlined text-white/80">edit</span>
+                        <button className="p-2 rounded-lg hover:bg-slate-100" title="Edit">
+                          <span className="material-symbols-outlined text-slate-600">edit</span>
                         </button>
-                        <button onClick={() => onDelete(emp.id)} className="p-2 rounded-lg hover:bg-white/10" title="Delete">
-                          <span className="material-symbols-outlined text-red-400">delete</span>
+                        <button onClick={() => onDelete(emp.id)} className="p-2 rounded-lg hover:bg-rose-50" title="Delete">
+                          <span className="material-symbols-outlined text-rose-500">delete</span>
                         </button>
                       </div>
                     </td>

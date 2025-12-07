@@ -287,68 +287,68 @@ const Assignments = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#0C0F13] text-[#C5C6C7]">
+    <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900">
       <div className="max-w-7xl mx-auto p-6 md:p-8">
-        <h1 className="text-3xl md:text-4xl font-semibold text-white mb-6">Assignment Board</h1>
+        <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 mb-6">Assignment Board</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-white/10 shadow-sm p-4 bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 backdrop-blur-xl">
-            <h2 className="text-lg font-semibold mb-3 text-white">Available Employees</h2>
-            <div className="min-h-[400px] rounded-xl border border-dashed border-white/10 p-3">
-              {loading && <div className="text-white/70 p-4">Loading…</div>}
-              {!loading && error && <div className="text-red-400 p-4">{error}</div>}
+          <div className="rounded-2xl border border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.08)] p-4 bg-white">
+            <h2 className="text-lg font-semibold mb-3 text-slate-900">Available Employees</h2>
+            <div className="min-h-[400px] rounded-xl border border-dashed border-slate-200 p-3">
+              {loading && <div className="text-slate-500 p-4">Loading…</div>}
+              {!loading && error && <div className="text-rose-600 p-4">{error}</div>}
               {!loading && !error && available.length === 0 && (
-                <div className="text-white/60 p-4">No available employees</div>
+                <div className="text-slate-500 p-4">No available employees</div>
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {available.map(emp => (
-                  <div key={emp.id} className={`flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-2xl ${activeBookingId ? 'ring-1 ring-[#00AFFF]/30' : ''}`}>
-                    <div className="w-10 h-10 rounded-full bg-white/10 overflow-hidden flex items-center justify-center">
+                  <div key={emp.id} className={`flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-2xl ${activeBookingId ? 'ring-1 ring-sky-200' : ''}`}>
+                    <div className="w-10 h-10 rounded-full bg-white overflow-hidden flex items-center justify-center">
                       {emp.photo ? (
                         <img src={emp.photo} alt={emp.name} className="w-full h-full object-cover" />
                       ) : (
-                        <span className="material-symbols-outlined text-white/60">person</span>
+                        <span className="material-symbols-outlined text-slate-400">person</span>
                       )}
                     </div>
                     <div className="flex-1">
-                      <div className="text-white font-medium">{emp.name}</div>
-                      <div className="text-xs text-white/70">{emp.role} • {emp.experience} yrs{emp.location ? ` • ${emp.location}` : ''}</div>
+                      <div className="text-slate-900 font-medium">{emp.name}</div>
+                      <div className="text-xs text-slate-500">{emp.role} • {emp.experience} yrs{emp.location ? ` • ${emp.location}` : ''}</div>
                     </div>
                     <button onClick={() => {
                       if (!activeBookingId) { alert('Select a booking first: click "Assign Employee" on a booking card.'); return }
                       assignEmployeeToBooking(emp.id, activeBookingId)
-                    }} className="px-3 py-1 rounded-xl bg-[#00AFFF] text-black text-sm font-semibold">Assign</button>
+                    }} className="px-3 py-1 rounded-xl bg-slate-900 text-white text-sm font-semibold">Assign</button>
                   </div>
                 ))}
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-white/10 shadow-sm p-4 bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 backdrop-blur-xl">
-            <h2 className="text-lg font-semibold mb-3 text-white">Active Bookings</h2>
-            <div className="min-h-[400px] rounded-xl border border-dashed border-white/10 p-3">
+          <div className="rounded-2xl border border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.08)] p-4 bg-white">
+            <h2 className="text-lg font-semibold mb-3 text-slate-900">Active Bookings</h2>
+            <div className="min-h-[400px] rounded-xl border border-dashed border-slate-200 p-3">
               {bookings.length === 0 && (
-                <div className="text-white/60 p-4">No active bookings</div>
+                <div className="text-slate-500 p-4">No active bookings</div>
               )}
               <div className="grid grid-cols-1 gap-3">
                 {bookings.map(b => (
-                  <div key={b.id} className={`p-3 bg-white/5 border border-white/10 rounded-2xl ${activeBookingId === b.id ? 'ring-2 ring-[#00AFFF]' : ''}`}>
+                  <div key={b.id} className={`p-3 bg-slate-50 border border-slate-200 rounded-2xl ${activeBookingId === b.id ? 'ring-2 ring-sky-200' : ''}`}>
                     <div className="flex items-center justify-between">
-                      <div className="text-white font-semibold">Booking #{String(b.id).slice(0,8)}</div>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${b.status === 'pending' ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>{b.status}</span>
+                      <div className="text-slate-900 font-semibold">Booking #{String(b.id).slice(0,8)}</div>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${b.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{b.status}</span>
                     </div>
-                    <div className="mt-2 text-sm text-white/80">
-                      <div>Service: <span className="font-medium capitalize">{b.serviceType}</span></div>
+                    <div className="mt-2 text-sm text-slate-600">
+                      <div>Service: <span className="font-medium capitalize text-slate-900">{b.serviceType}</span></div>
                       {b.date && (<div>Date: {new Date(b.date).toLocaleDateString()}</div>)}
                       <div>Location: {b.location}</div>
                       {b.startTime && (<div>Started: {new Date(b.startTime).toLocaleString()}</div>)}
                       {b.endTime && (<div>Ended: {new Date(b.endTime).toLocaleString()}</div>)}
                       {b.assignedEmployeeId && (
-                        <div className="text-green-400">✓ Employee Assigned</div>
+                        <div className="text-emerald-600 font-medium">✓ Employee Assigned</div>
                       )}
                     </div>
                     
                     {/* Live Timer for in-progress services */}
                     {b.serviceStatus === 'in_progress' && b.startTime && (
-                      <div className="mt-3 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                      <div className="mt-3 p-3 bg-emerald-50 border border-emerald-100 rounded-lg">
                         <LiveServiceTimer 
                           bookingId={b.id}
                           startTime={b.startTime}
@@ -360,39 +360,39 @@ const Assignments = () => {
                     <div className="mt-3 flex items-center gap-2">
                       {activeBookingId === b.id ? (
                         <>
-                          <span className="text-white/70 text-sm">Now select an employee to assign</span>
-                          <button onClick={() => setActiveBookingId(null)} className="px-3 py-1 rounded-xl border border-white/10 text-white/80 text-sm">Cancel</button>
+                          <span className="text-slate-600 text-sm">Now select an employee to assign</span>
+                          <button onClick={() => setActiveBookingId(null)} className="px-3 py-1 rounded-xl border border-slate-200 text-slate-600 text-sm">Cancel</button>
                         </>
                       ) : b.status === 'pending' ? (
-                        <button onClick={() => setActiveBookingId(b.id)} className="px-3 py-1 rounded-xl bg-[#00AFFF] text-black text-sm font-semibold">Assign Employee</button>
+                        <button onClick={() => setActiveBookingId(b.id)} className="px-3 py-1 rounded-xl bg-slate-900 text-white text-sm font-semibold">Assign Employee</button>
                       ) : b.status === 'assigned' ? (
                         <div className="flex items-center gap-2">
                           <button 
                             onClick={() => generateOtp(b.id)} 
-                            className="px-3 py-1 rounded-xl bg-amber-500 text-black text-sm font-semibold"
+                            className="px-3 py-1 rounded-xl bg-amber-500 text-white text-sm font-semibold"
                           >
                             Generate OTP
                           </button>
                           {generatedOtps[b.id] && (
-                            <span className="text-green-400 text-sm">OTP: {generatedOtps[b.id]}</span>
+                            <span className="text-emerald-600 text-sm font-medium">OTP: {generatedOtps[b.id]}</span>
                           )}
                         </div>
                       ) : null}
-                      <button className="px-3 py-1 rounded-xl border border-white/10 text-white/80 text-sm">Details</button>
+                      <button className="px-3 py-1 rounded-xl border border-slate-200 text-slate-600 text-sm">Details</button>
                     </div>
                     
                     {/* OTP start section for assigned bookings */}
                     {b.status === 'assigned' && (
                       <div className="mt-3 flex items-center gap-2">
                         <input
-                          className="px-3 py-2 rounded-lg border border-white/10 bg-white/5 text-white/90 w-32"
+                          className="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-800 w-32"
                           placeholder="Enter OTP"
                           value={otpInputs[b.id] || ''}
                           onChange={e => setOtpInputs(prev => ({ ...prev, [b.id]: e.target.value.replace(/\D/g, '').slice(0,6) }))}
                         />
                         <button
                           onClick={() => handleStartWithOtp(b.id)}
-                          className="px-3 py-1 rounded-xl bg-emerald-500 text-black text-sm font-semibold"
+                          className="px-3 py-1 rounded-xl bg-emerald-500 text-white text-sm font-semibold"
                         >
                           Start Service
                         </button>
