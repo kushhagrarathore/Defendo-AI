@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { motion } from 'framer-motion'
 import { useAuth } from '../contexts/AuthContext'
 import { db, supabase } from '../lib/supabase'
 import GlassCard from '../components/ui/GlassCard'
@@ -146,127 +147,163 @@ const Bookings = () => {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in-up">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-extrabold text-slate-900">Bookings</h1>
-        <div className="flex flex-wrap gap-2 items-center">
-          <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate/400 text-sm">search</span>
-            <input
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder="Search by ID, service, location..."
-            className="bg-white border border-slate-200 rounded-lg pl-9 pr-3 py-2 outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
-          />
+    <div className="space-y-6">
+      {/* Enhanced Header */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
+          <div>
+            <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-slate-900 via-slate-800 to-[var(--primary-color)] bg-clip-text text-transparent mb-3">
+              Bookings
+            </h1>
+            <p className="text-slate-600 text-base md:text-lg">Manage and track all your service bookings</p>
           </div>
-          {/* Filter chips */}
-          {['pending','confirmed','completed','cancelled'].map(s => (
-            <button
-              key={s}
-              onClick={() => setStatusFilter(prev => prev === s ? 'all' : s)}
-              className={`px-3 py-1.5 rounded-full text-xs border transition-colors ${statusFilter === s ? 'bg-[var(--primary-color)]/10 border-[var(--primary-color)]/40 text-[var(--primary-color)]' : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'}`}
+        </div>
+
+        {/* Enhanced Search and Filter Bar */}
+        <div className="bg-white rounded-2xl p-4 shadow-lg border border-slate-200/60">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+              <input
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search by ID, service, location, customer..."
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all bg-slate-50/50"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={e => setStatusFilter(e.target.value)}
+              className="px-4 py-3 rounded-xl border border-slate-200 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all bg-white font-medium text-slate-700"
             >
-              <span className="material-symbols-outlined text-sm align-middle mr-1">
-                {s === 'pending' ? 'hourglass_top' : s === 'confirmed' ? 'event_available' : s === 'completed' ? 'check_circle' : 'cancel'}
-              </span>
-              {s.charAt(0).toUpperCase() + s.slice(1)}
-            </button>
-          ))}
-          <select
-            value={statusFilter}
-            onChange={e => setStatusFilter(e.target.value)}
-            className="bg-white border border-slate-200 rounded-lg px-3 py-2 outline-none focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20"
-          >
-            <option value="all">All</option>
-            <option value="pending">Pending</option>
-            <option value="confirmed">Confirmed</option>
-            <option value="completed">Completed</option>
-            <option value="cancelled">Cancelled</option>
-          </select>
+              <option value="all">All Status</option>
+              <option value="pending">Pending</option>
+              <option value="confirmed">Confirmed</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          
+          {/* Filter Chips */}
+          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-200">
+            {['pending','confirmed','completed','cancelled'].map(s => (
+              <button
+                key={s}
+                onClick={() => setStatusFilter(prev => prev === s ? 'all' : s)}
+                className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all ${
+                  statusFilter === s 
+                    ? 'bg-gradient-to-r from-[var(--primary-color)] to-emerald-500 text-white border-transparent shadow-lg' 
+                    : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300'
+                }`}
+              >
+                <span className="material-symbols-outlined text-sm align-middle mr-1.5">
+                  {s === 'pending' ? 'hourglass_top' : s === 'confirmed' ? 'event_available' : s === 'completed' ? 'check_circle' : 'cancel'}
+                </span>
+                {s.charAt(0).toUpperCase() + s.slice(1)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      <GlassCard className="overflow-visible">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-lg overflow-hidden">
         {loading ? (
-          <div className="p-6 text-slate-500">Loading...</div>
+          <div className="p-12 text-center">
+            <div className="w-8 h-8 border-4 border-[var(--primary-color)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-slate-500">Loading bookings...</p>
+          </div>
         ) : filtered.length === 0 ? (
-          <div className="p-6 text-slate-500">No bookings found.</div>
+          <div className="p-12 text-center">
+            <div className="text-6xl mb-4">📋</div>
+            <h3 className="text-xl font-semibold text-slate-900 mb-2">No bookings found</h3>
+            <p className="text-slate-500">Try adjusting your search or filter criteria</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 p-6">
             {filtered.map((b) => (
-              <div key={b.id} className="rounded-2xl bg-white border border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.08)] hover:shadow-[0_18px_60px_rgba(15,23,42,0.16)] transition-all">
+              <motion.div 
+                key={b.id} 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="group relative overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-lg hover:shadow-2xl hover:shadow-blue-200/20 transition-all duration-300 cursor-pointer"
+                whileHover={{ y: -4, scale: 1.01 }}
+              >
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary-color)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                
+                {/* Status Badge */}
+                <div className="absolute top-5 right-5 z-10">
+                  <span className={`px-3.5 py-1.5 rounded-full text-xs font-bold shadow-lg backdrop-blur-sm border ${getStatusBadgeClass(b.status)}`}>
+                    {b.status || '—'}
+                  </span>
+                </div>
+
                 {/* Card header */}
-                <div className="flex items-start justify-between p-4">
-                  <div className="flex items-center gap-2">
-                    <span className="material-symbols-outlined text-[var(--primary-color)]">shield_person</span>
-                    <div>
-                      <div className="font-semibold capitalize leading-tight text-slate-900">{b.service_type || '—'}</div>
-                      <button
-                        className="text-xs text-slate-400 hover:text-slate-700 transition-colors"
-                        title="Click to copy full ID"
-                        onClick={() => copyId(b.id)}
-                      >
-                        {shortId(b.id)}{copiedId === b.id ? ' • Copied' : ''}
-                      </button>
+                <div className="p-6 pb-4">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="p-3 bg-gradient-to-br from-[var(--primary-color)] to-emerald-500 rounded-xl shadow-lg">
+                        <span className="material-symbols-outlined text-white text-xl">shield_person</span>
+                      </div>
+                      <div>
+                        <div className="font-bold text-lg capitalize text-slate-900">{b.service_type || 'Service'}</div>
+                        <button
+                          className="text-xs text-slate-500 hover:text-slate-700 transition-colors font-medium"
+                          title="Click to copy full ID"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            copyId(b.id)
+                          }}
+                        >
+                          {shortId(b.id)}{copiedId === b.id ? ' • Copied!' : ''}
+                        </button>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                      <div className="text-sm text-slate-500">Price</div>
-                      <div className="text-lg font-bold text-slate-900">₹{Number(b.price || 0).toLocaleString('en-IN')}</div>
+                  <div className="mb-4 p-4 bg-gradient-to-br from-slate-50 to-slate-100 rounded-xl border border-slate-200">
+                    <div className="text-xs text-slate-500 font-medium mb-1">Total Price</div>
+                    <div className="text-2xl font-extrabold text-slate-900">₹{Number(b.price || 0).toLocaleString('en-IN')}</div>
                   </div>
                 </div>
 
                 {/* Card body */}
-                <div className="px-4 pb-4 space-y-3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-slate-400 text-base">person</span>
-                      <span className="truncate text-slate-800" title={b.user_name || ''}>{b.user_name || 'Customer'}</span>
+                <div className="px-6 pb-6 space-y-4">
+                  <div className="grid grid-cols-1 gap-3">
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="material-symbols-outlined text-slate-500 text-lg">person</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-slate-500 font-medium">Customer</div>
+                        <div className="truncate text-slate-900 font-semibold" title={b.user_name || ''}>{b.user_name || 'Customer'}</div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-slate-400 text-base">schedule</span>
-                      <span className="text-slate-700">{b.date ? new Date(b.date).toLocaleString() : '—'}</span>
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="material-symbols-outlined text-slate-500 text-lg">schedule</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-slate-500 font-medium">Booking Date</div>
+                        <div className="text-slate-900 font-semibold">{b.date ? new Date(b.date).toLocaleDateString() : '—'}</div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-slate-400 text-base">play_arrow</span>
-                      <span className="text-slate-700">{b.start_time ? new Date(b.start_time).toLocaleString() : 'Not started'}</span>
-                    </div>
-                    <div className="flex items-center gap-2 min-w-0">
-                      <span className="material-symbols-outlined text-slate-400 text-base">stop_circle</span>
-                      <span className="text-slate-700">{b.end_time ? new Date(b.end_time).toLocaleString() : 'Not ended'}</span>
-                    </div>
-                    <div className="flex items-center gap-2 sm:col-span-2 min-w-0">
-                      <span className="material-symbols-outlined text-slate-400 text-base">location_on</span>
-                      <span className="truncate text-slate-700" title={(() => {
-                        if (!b.location) return '—'
-                        if (typeof b.location === 'string') return b.location || '—'
-                        const obj = b.location || {}
-                        return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
-                      })()}>{(() => {
-                        if (!b.location) return '—'
-                        if (typeof b.location === 'string') return b.location || '—'
-                        const obj = b.location || {}
-                        return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
-                      })()}</span>
+                    <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+                      <span className="material-symbols-outlined text-slate-500 text-lg">location_on</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-slate-500 font-medium">Location</div>
+                        <div className="truncate text-slate-900 font-semibold" title={(() => {
+                          if (!b.location) return '—'
+                          if (typeof b.location === 'string') return b.location || '—'
+                          const obj = b.location || {}
+                          return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+                        })()}>{(() => {
+                          if (!b.location) return '—'
+                          if (typeof b.location === 'string') return b.location || '—'
+                          const obj = b.location || {}
+                          return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+                        })()}</div>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2 pt-1">
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs capitalize ${getStatusBadgeClass(b.status)}`}>
-                      <span className="material-symbols-outlined text-sm">
-                        {(() => {
-                          const s = (b.status || '').toLowerCase()
-                          if (s === 'pending') return 'hourglass_top'
-                          if (s === 'confirmed') return 'event_available'
-                          if (s === 'completed') return 'check_circle'
-                          if (s === 'cancelled') return 'cancel'
-                          return 'info'
-                        })()}
-                      </span>
-                      {b.status || '—'}
-                    </span>
-
-                    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs capitalize ${getPaymentBadgeClass(b.payment_status)}`}>
+                  <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200">
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold capitalize ${getPaymentBadgeClass(b.payment_status)}`}>
                       <span className="material-symbols-outlined text-sm">
                         {(() => {
                           const p = (b.payment_status || '').toLowerCase()
@@ -279,19 +316,23 @@ const Bookings = () => {
                       {b.payment_status || '—'}
                     </span>
 
-                    <div className="ml-auto">
-                      <button className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[var(--primary-color)]/10 border border-[var(--primary-color)]/40 text-[var(--primary-color)] hover:bg-[var(--primary-color)]/20 transition-colors text-sm" onClick={() => setSelected(b)}>
-                        <span className="material-symbols-outlined text-sm">visibility</span>
-                        View
-                      </button>
-                    </div>
+                    <button 
+                      className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 text-white hover:from-slate-800 hover:to-slate-700 transition-all text-sm font-semibold shadow-lg hover:shadow-xl" 
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelected(b)
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-sm">visibility</span>
+                      View Details
+                    </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
-      </GlassCard>
+      </div>
 
       <BookingDetailModal booking={selected} onClose={() => setSelected(null)} />
     </div>

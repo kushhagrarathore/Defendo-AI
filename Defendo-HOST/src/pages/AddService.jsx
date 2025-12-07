@@ -37,10 +37,16 @@ const AddService = () => {
   // Subcategory configurations for each service type
   const serviceSubcategories = {
     guards: [
-      { value: "security_guard", label: "Security Guard" },
-      { value: "security_supervisor", label: "Security Supervisor" },
-      { value: "male_bouncer", label: "Male Bouncer" },
-      { value: "female_bouncer", label: "Female Bouncer" },
+      { value: "night_guard", label: "Night Guard" },
+      { value: "day_guard", label: "Day Guard" },
+      { value: "male_guard", label: "Male Guard" },
+      { value: "female_guard", label: "Female Guard" },
+      { value: "bouncer", label: "Bouncer" },
+      { value: "event_security", label: "Event Security" },
+      { value: "emergency_response", label: "Emergency Response" },
+      { value: "corporate_security", label: "Corporate Security" },
+      { value: "industrial_security", label: "Industrial Security" },
+      { value: "personal_bodyguard", label: "Personal Bodyguard" },
       { value: "other", label: "Other (Custom)" }
     ],
     drones: [
@@ -231,11 +237,6 @@ const AddService = () => {
     setError(null)
 
     try {
-      if (!hostProfile?.verified) {
-        setError('Your company is not verified yet. Please wait for admin approval before adding services.')
-        return
-      }
-
       // Check for duplicate service type
       const { data: existingServices, error: fetchError } = await db.getHostServices(user.id)
       
@@ -389,8 +390,6 @@ const AddService = () => {
     }
   }
 
-  const blockedBanner = !hostProfile?.verified
-
   return (
     <div className="space-y-8 animate-fade-in-up">
       {/* Header */}
@@ -402,15 +401,6 @@ const AddService = () => {
           </p>
         </div>
       </div>
-
-      {blockedBanner && (
-        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
-          <div className="flex items-center gap-3">
-            <span className="material-symbols-outlined text-yellow-400">error</span>
-            <p className="text-yellow-300 text-sm">Your company is not verified yet. You cannot add services until an admin verifies your account.</p>
-          </div>
-        </div>
-      )}
 
       {/* Error Message */}
       {error && (
@@ -424,8 +414,6 @@ const AddService = () => {
       
       <GlassCard className="max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Disable entire form if unverified */}
-          <fieldset disabled={blockedBanner} className={blockedBanner ? 'opacity-60 pointer-events-none' : ''}>
           {/* Service Name */}
           <div className="space-y-2">
             <label htmlFor="name" className="block text-sm font-medium text-slate-700">
@@ -686,7 +674,6 @@ const AddService = () => {
               Service is currently available for booking
             </label>
           </div>
-          </fieldset>
 
           {/* Debug Section */}
           <div className="mt-4 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
@@ -702,7 +689,7 @@ const AddService = () => {
 
           {/* Submit Buttons */}
           <div className="flex gap-4 pt-4">
-            <PrimaryButton type="submit" disabled={isLoading || blockedBanner} className="flex-1">
+            <PrimaryButton type="submit" disabled={isLoading} className="flex-1">
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-slate-200 border-t-transparent rounded-full animate-spin"></div>

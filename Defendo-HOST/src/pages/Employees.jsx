@@ -297,101 +297,144 @@ const Employees = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900">
-      <div className="max-w-7xl mx-auto p-6 md:p-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-semibold text-slate-900">My Employees</h1>
-            <p className="text-slate-600 mt-1">Manage staff, import from CSV/Excel, and assign quickly</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <button onClick={() => { setUploadPreview([]); setFileKey(k => k + 1); setShowUploadModal(true) }} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition">
-              <span className="material-symbols-outlined">upload</span>
-              <span className="font-medium">Upload CSV / Excel</span>
-            </button>
-            <button onClick={() => setShowAddModal(true)} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--primary-color)] text-[#0f172a] shadow hover:shadow-md transition">
-              <span className="material-symbols-outlined">add</span>
-              <span className="font-medium">Add Employee</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <div className="rounded-2xl border border-slate-200 p-4 mb-6 bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]">
-          <div className="flex flex-col md:flex-row gap-3">
-            <div className="flex-1">
-              <div className="relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">search</span>
-                <input className="w-full pl-10 pr-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[var(--primary-color)]/20" placeholder="Search by name" value={filters.search} onChange={e => setFilters({ ...filters, search: e.target.value })} />
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 text-slate-900">
+      <div className="max-w-7xl mx-auto p-6 md:p-8 lg:p-10">
+        {/* Enhanced Header */}
+        <div className="mb-10">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+            <div>
+              <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-slate-900 via-slate-800 to-[var(--primary-color)] bg-clip-text text-transparent mb-3">
+                My Employees
+              </h1>
+              <p className="text-slate-600 text-base md:text-lg">Manage staff, import from CSV/Excel, and assign quickly</p>
             </div>
-            <select className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 focus:ring-2 focus:ring-[var(--primary-color)]/20" value={filters.role} onChange={e => setFilters({ ...filters, role: e.target.value })}>
-              <option value="">All Roles</option>
-              {roleOptions.map(r => <option key={r} value={r}>{r}</option>)}
-            </select>
-            <select className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-800 focus:ring-2 focus:ring-[var(--primary-color)]/20" value={filters.status} onChange={e => setFilters({ ...filters, status: e.target.value })}>
-              <option value="">All Status</option>
-              {statusOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
-            </select>
+            <div className="flex items-center gap-3">
+              <button 
+                onClick={() => { setUploadPreview([]); setFileKey(k => k + 1); setShowUploadModal(true) }} 
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 hover:shadow-lg transition-all font-semibold"
+              >
+                <span className="material-symbols-outlined">upload</span>
+                Upload CSV / Excel
+              </button>
+              <button 
+                onClick={() => setShowAddModal(true)} 
+                className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[var(--primary-color)] to-emerald-500 text-white shadow-lg hover:shadow-xl transition-all font-semibold"
+              >
+                <span className="material-symbols-outlined">add</span>
+                Add Employee
+              </button>
+            </div>
+          </div>
+
+          {/* Enhanced Filters */}
+          <div className="bg-white rounded-2xl p-4 shadow-lg border border-slate-200/60 mb-6">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1 relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">search</span>
+                <input 
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all bg-slate-50/50 text-slate-900 placeholder-slate-400" 
+                  placeholder="Search by name..." 
+                  value={filters.search} 
+                  onChange={e => setFilters({ ...filters, search: e.target.value })} 
+                />
+              </div>
+              <select 
+                className="px-4 py-3 rounded-xl border border-slate-200 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all bg-white font-medium text-slate-700" 
+                value={filters.role} 
+                onChange={e => setFilters({ ...filters, role: e.target.value })}
+              >
+                <option value="">All Roles</option>
+                {roleOptions.map(r => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <select 
+                className="px-4 py-3 rounded-xl border border-slate-200 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all bg-white font-medium text-slate-700" 
+                value={filters.status} 
+                onChange={e => setFilters({ ...filters, status: e.target.value })}
+              >
+                <option value="">All Status</option>
+                {statusOptions.map(s => <option key={s.value} value={s.value}>{s.label}</option>)}
+              </select>
+            </div>
           </div>
         </div>
 
-        {/* Table */}
-        <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-[0_10px_40px_rgba(15,23,42,0.08)]">
+        {/* Enhanced Table */}
+        <div className="rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-lg">
           <div className="overflow-x-auto">
             <table className="min-w-full text-left text-sm">
-              <thead className="bg-slate-50">
-                <tr className="text-slate-500">
-                  <th className="px-4 py-3 font-medium">Photo</th>
-                  <th className="px-4 py-3 font-medium">Name</th>
-                  <th className="px-4 py-3 font-medium">Role</th>
-                  <th className="px-4 py-3 font-medium">Status</th>
-                  <th className="px-4 py-3 font-medium">Assigned To</th>
-                  <th className="px-4 py-3 font-medium">Actions</th>
+              <thead className="bg-gradient-to-r from-slate-50 to-slate-100">
+                <tr>
+                  <th className="px-6 py-4 font-semibold text-slate-700">Photo</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700">Name</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700">Role</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700">Status</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700">Assigned To</th>
+                  <th className="px-6 py-4 font-semibold text-slate-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {loading && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">Loading…</td>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="w-8 h-8 border-4 border-[var(--primary-color)] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                      <p className="text-slate-500">Loading employees…</p>
+                    </td>
                   </tr>
                 )}
                 {!loading && filteredEmployees.length === 0 && (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-slate-500">No employees yet</td>
+                    <td colSpan={6} className="px-6 py-12 text-center">
+                      <div className="text-6xl mb-4">👥</div>
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">No employees found</h3>
+                      <p className="text-slate-500">Add your first employee to get started</p>
+                    </td>
                   </tr>
                 )}
                 {filteredEmployees.map(emp => (
-                  <tr key={emp.id} className="border-t border-slate-100 hover:bg-slate-50">
-                    <td className="px-4 py-3">
-                      <div className="w-10 h-10 rounded-full bg-slate-100 overflow-hidden flex items-center justify-center">
-                        {emp.photo ? (<img src={emp.photo} alt={emp.name} className="w-full h-full object-cover" />) : (
-                          <span className="material-symbols-outlined text-slate-400">person</span>
+                  <motion.tr 
+                    key={emp.id} 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="border-t border-slate-100 hover:bg-slate-50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[var(--primary-color)] to-emerald-500 overflow-hidden flex items-center justify-center shadow-lg">
+                        {emp.photo ? (
+                          <img src={emp.photo} alt={emp.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <span className="material-symbols-outlined text-white text-xl">person</span>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 font-medium text-slate-900">{emp.name}</td>
-                    <td className="px-4 py-3 text-slate-700">{emp.role}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        emp.status === 'Available' ? 'bg-emerald-50 text-emerald-700' : emp.status === 'Assigned' ? 'bg-rose-50 text-rose-700' : 'bg-slate-50 text-slate-500'
+                    <td className="px-6 py-4">
+                      <div className="font-bold text-slate-900">{emp.name}</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold">{emp.role}</span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-bold border ${
+                        emp.status === 'Available' 
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+                          : emp.status === 'Assigned' 
+                          ? 'bg-rose-50 text-rose-700 border-rose-200' 
+                          : 'bg-slate-50 text-slate-500 border-slate-200'
                       }`}>
                         {emp.status === 'Available' ? '🟢 Available' : emp.status === 'Assigned' ? '🔴 Assigned' : '⚫ Off-duty'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-slate-700">{emp.assignedTo || <span className="text-slate-400">—</span>}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-6 py-4 text-slate-700 font-medium">{emp.assignedTo || <span className="text-slate-400">—</span>}</td>
+                    <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <button className="p-2 rounded-lg hover:bg-slate-100" title="Edit">
-                          <span className="material-symbols-outlined text-slate-600">edit</span>
+                        <button className="p-2 rounded-xl hover:bg-blue-50 transition-colors" title="Edit">
+                          <span className="material-symbols-outlined text-blue-600 text-lg">edit</span>
                         </button>
-                        <button onClick={() => onDelete(emp.id)} className="p-2 rounded-lg hover:bg-rose-50" title="Delete">
-                          <span className="material-symbols-outlined text-rose-500">delete</span>
+                        <button onClick={() => onDelete(emp.id)} className="p-2 rounded-xl hover:bg-rose-50 transition-colors" title="Delete">
+                          <span className="material-symbols-outlined text-rose-500 text-lg">delete</span>
                         </button>
                       </div>
                     </td>
-                  </tr>
+                  </motion.tr>
                 ))}
               </tbody>
             </table>

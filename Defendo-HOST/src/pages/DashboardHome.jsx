@@ -269,14 +269,14 @@ const DashboardHome = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8fbff] via-white to-[#fdfdff] text-slate-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 text-slate-900 relative overflow-hidden">
       {/* Subtle Background Pattern */}
-      <div className="absolute inset-0 opacity-60 pointer-events-none">
+      <div className="absolute inset-0 opacity-40 pointer-events-none">
         <motion.div
-          className="absolute top-20 right-20 w-72 h-72 bg-gradient-to-br from-[var(--primary-color)]/20 to-sky-200/40 rounded-full blur-3xl"
+          className="absolute top-20 right-20 w-72 h-72 bg-gradient-to-br from-[var(--primary-color)]/10 to-sky-200/20 rounded-full blur-3xl"
           animate={{
             scale: [1, 1.1, 1],
-            opacity: [0.3, 0.5, 0.3]
+            opacity: [0.2, 0.3, 0.2]
           }}
           transition={{
             duration: 8,
@@ -285,10 +285,10 @@ const DashboardHome = () => {
           }}
         />
         <motion.div
-          className="absolute bottom-16 left-16 w-72 h-72 bg-gradient-to-br from-sky-200/30 to-emerald-200/50 rounded-full blur-3xl"
+          className="absolute bottom-16 left-16 w-72 h-72 bg-gradient-to-br from-sky-200/15 to-emerald-200/25 rounded-full blur-3xl"
           animate={{
             scale: [1.1, 1, 1.1],
-            opacity: [0.25, 0.45, 0.25]
+            opacity: [0.15, 0.25, 0.15]
           }}
           transition={{
             duration: 7,
@@ -298,32 +298,32 @@ const DashboardHome = () => {
         />
       </div>
 
-      <div className="relative z-10 p-8">
+      <div className="relative z-10">
         {/* Header Section */}
         <motion.div 
-          className="mb-12"
+          className="mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
             <div>
-              <h1 className="text-5xl font-bold bg-gradient-to-r from-slate-900 to-sky-500 bg-clip-text text-transparent mb-4">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold bg-gradient-to-r from-slate-900 via-slate-800 to-[var(--primary-color)] bg-clip-text text-transparent mb-3">
                 Welcome Back, {getHostDisplayName()}
               </h1>
-              <p className="text-slate-600 text-lg">Here's what's happening with your security services today.</p>
+              <p className="text-slate-600 text-base md:text-lg">Here's what's happening with your security services today.</p>
             </div>
             
             {/* Notifications Button */}
             <motion.button
               onClick={() => setNotificationsOpen(true)}
-              className="relative p-4 rounded-2xl bg-white border border-slate-200 hover:border-[var(--primary-color)]/60 hover:shadow-[0_18px_60px_rgba(15,23,42,0.16)] transition-all duration-300"
+              className="relative p-4 rounded-2xl bg-white border border-slate-200 shadow-lg hover:border-[var(--primary-color)]/60 hover:shadow-xl hover:shadow-[var(--primary-color)]/20 transition-all duration-300"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
               <span className="material-symbols-outlined text-[var(--primary-color)] text-xl">notifications</span>
               <motion.div
-                className="absolute -top-1 -right-1 w-3 h-3 bg-[var(--primary-color)] rounded-full"
+                className="absolute -top-1 -right-1 w-3 h-3 bg-[var(--primary-color)] rounded-full shadow-lg"
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
               />
@@ -378,59 +378,68 @@ const DashboardHome = () => {
         
         {/* Enhanced Stats Grid */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-6 mb-10"
           initial="hidden"
           animate="visible"
           variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.1 } } }}
         >
-          {stats.map((stat, index) => (
+          {stats.map((stat, index) => {
+            const colorClasses = [
+              { bg: "from-blue-500 to-blue-600", border: "border-blue-200/80", shadow: "shadow-blue-200/30" },
+              { bg: "from-emerald-500 to-emerald-600", border: "border-emerald-200/80", shadow: "shadow-emerald-200/30" },
+              { bg: "from-sky-500 to-sky-600", border: "border-sky-200/80", shadow: "shadow-sky-200/30" },
+              { bg: "from-amber-500 to-amber-600", border: "border-amber-200/80", shadow: "shadow-amber-200/30" },
+              { bg: "from-purple-500 to-purple-600", border: "border-purple-200/80", shadow: "shadow-purple-200/30" }
+            ]
+            const colors = colorClasses[index % colorClasses.length]
+            return (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 border border-[#00AFFF]/20 backdrop-blur-xl hover:border-[#00AFFF]/40 transition-all duration-300 hover:scale-105"
+                className={`group relative overflow-hidden rounded-2xl p-6 bg-gradient-to-br from-white to-slate-50/50 border ${colors.border} shadow-lg hover:shadow-2xl hover:${colors.shadow} transition-all duration-300 hover:-translate-y-2`}
             >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="p-3 bg-slate-700 rounded-xl">
-                    <span className="material-symbols-outlined text-slate-200 text-xl">{stat.icon}</span>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[#C5C6C7] text-sm font-medium">{stat.label}</p>
-                    <p className="text-3xl font-bold text-white">
-                      {stat.isCurrency ? formatCurrency(stat.value) : stat.value}
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-slate-100/50 to-transparent rounded-full blur-2xl"></div>
+                <div className="relative flex items-center justify-between">
+                  <div>
+                    <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-2">{stat.label}</p>
+                    <p className="text-4xl font-extrabold text-slate-900 mb-1">
+                      {stat.isCurrency ? formatCurrency(stat.value) : stat.value.toLocaleString()}
                     </p>
+                    <div className="flex items-center gap-1.5 mt-2">
+                      <span className="text-emerald-600 text-xs font-bold">+{stat.growth}%</span>
+                      <span className="text-slate-400 text-xs">vs last month</span>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[#1FFF87] text-sm font-medium">+{stat.growth}%</span>
-                  <span className="text-[#C5C6C7] text-xs">vs last month</span>
+                  <div className={`p-4 bg-gradient-to-br ${colors.bg} rounded-2xl shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <span className="material-symbols-outlined text-white text-3xl">{stat.icon}</span>
                 </div>
               </div>
             </motion.div>
-          ))}
+            )
+          })}
         </motion.div>
 
         {/* Analytics Section */}
         <motion.div
-          className="mb-12"
+          className="mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center gap-3 mb-6">
-            <div className="p-2 bg-slate-700 rounded-xl">
-              <span className="material-symbols-outlined text-slate-200 text-lg">analytics</span>
+            <div className="p-3 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-lg">
+              <span className="material-symbols-outlined text-white text-xl">analytics</span>
             </div>
-            <h2 className="text-3xl font-bold text-white">Analytics</h2>
+            <h2 className="text-3xl font-bold text-slate-900">Analytics Overview</h2>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Monthly Bookings Chart */}
-            <div className="rounded-2xl bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 border border-[#00AFFF]/20 backdrop-blur-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-4">Monthly Bookings</h3>
-              <div className="h-64 flex items-center justify-center">
-                <div className="text-[#C5C6C7] text-center">
+            <div className="rounded-2xl bg-white border border-slate-200 shadow-lg p-6">
+              <h3 className="text-xl font-semibold text-slate-900 mb-4">Monthly Bookings</h3>
+              <div className="h-64 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200">
+                <div className="text-slate-400 text-center">
                   <span className="material-symbols-outlined text-6xl mb-4 block">show_chart</span>
                   <p>Chart visualization coming soon</p>
                 </div>
@@ -438,10 +447,10 @@ const DashboardHome = () => {
             </div>
             
             {/* Revenue Trends Chart */}
-            <div className="rounded-2xl bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 border border-[#1FFF87]/20 backdrop-blur-xl p-6">
-              <h3 className="text-xl font-semibold text-white mb-4">Revenue Trends</h3>
-              <div className="h-64 flex items-center justify-center">
-                <div className="text-[#C5C6C7] text-center">
+            <div className="rounded-2xl bg-white border border-slate-200 shadow-lg p-6">
+              <h3 className="text-xl font-semibold text-slate-900 mb-4">Revenue Trends</h3>
+              <div className="h-64 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200">
+                <div className="text-slate-400 text-center">
                   <span className="material-symbols-outlined text-6xl mb-4 block">trending_up</span>
                   <p>Chart visualization coming soon</p>
                 </div>
@@ -451,44 +460,44 @@ const DashboardHome = () => {
         </motion.div>
 
         {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10">
           {/* Booking Timeline */}
           <div className="lg:col-span-2">
             <motion.div
-              className="rounded-2xl bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 border border-[#00AFFF]/20 backdrop-blur-xl p-6"
+              className="rounded-2xl bg-white border border-slate-200 shadow-lg p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-slate-700 rounded-xl">
-                  <span className="material-symbols-outlined text-slate-200 text-lg">schedule</span>
+                <div className="p-3 bg-gradient-to-br from-sky-500 to-sky-600 rounded-xl shadow-lg">
+                  <span className="material-symbols-outlined text-white text-lg">schedule</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white">Booking Timeline</h3>
+                <h3 className="text-xl font-semibold text-slate-900">Recent Bookings</h3>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {(dashboardData.recentBookings || []).slice(0, 5).map((booking, index) => (
                   <motion.div
                     key={booking.id}
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.6 + index * 0.1 }}
-                    className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
+                    className="flex items-center gap-4 p-4 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 hover:shadow-md transition-all duration-300"
                   >
-                    <div className="w-3 h-3 bg-[#1FFF87] rounded-full"></div>
+                    <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg"></div>
                     <div className="flex-1">
-                      <p className="text-white font-medium capitalize">{booking.service_type || 'Service'}</p>
-                      <p className="text-[#C5C6C7] text-sm">{booking.status}</p>
+                      <p className="text-slate-900 font-semibold capitalize">{booking.service_type || 'Service'}</p>
+                      <p className="text-slate-500 text-sm capitalize">{booking.status}</p>
                     </div>
-                    <div className="text-[#C5C6C7] text-sm">
+                    <div className="text-slate-500 text-sm font-medium">
                       {booking.created_at ? new Date(booking.created_at).toLocaleDateString() : 'N/A'}
                     </div>
                   </motion.div>
                 ))}
                 {(!dashboardData.recentBookings || dashboardData.recentBookings.length === 0) && (
-                  <div className="text-center py-8 text-[#C5C6C7]">
-                    <span className="material-symbols-outlined text-4xl mb-2 block">event_available</span>
-                    <p>No recent bookings</p>
+                  <div className="text-center py-12 bg-slate-50 rounded-xl border border-slate-200">
+                    <span className="material-symbols-outlined text-5xl mb-3 block text-slate-400">event_available</span>
+                    <p className="text-slate-500">No recent bookings</p>
                   </div>
                 )}
               </div>
@@ -499,18 +508,18 @@ const DashboardHome = () => {
           <div className="space-y-6">
             {/* Guard Status Panel */}
             <motion.div
-              className="rounded-2xl bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 border border-[#1FFF87]/20 backdrop-blur-xl p-6"
+              className="rounded-2xl bg-white border border-slate-200 shadow-lg p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-slate-700 rounded-xl">
-                  <span className="material-symbols-outlined text-slate-200 text-lg">security</span>
+                <div className="p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-lg">
+                  <span className="material-symbols-outlined text-white text-lg">security</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white">Guard Status</h3>
+                <h3 className="text-xl font-semibold text-slate-900">Guard Status</h3>
               </div>
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {[
                   { name: "John Smith", status: "on-duty", time: "2h 15m ago" },
                   { name: "Mike Johnson", status: "online", time: "5m ago" },
@@ -521,21 +530,21 @@ const DashboardHome = () => {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.7 + index * 0.1 }}
-                    className="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all duration-300"
+                    className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 hover:bg-slate-100 transition-all duration-300"
                   >
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#00AFFF] to-[#1FFF87] rounded-full flex items-center justify-center text-black font-bold">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[var(--primary-color)] to-emerald-500 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                       {guard.name.split(' ').map(n => n[0]).join('')}
                     </div>
                     <div className="flex-1">
-                      <p className="text-white font-medium">{guard.name}</p>
-                      <p className="text-[#C5C6C7] text-sm capitalize">{guard.status}</p>
+                      <p className="text-slate-900 font-semibold">{guard.name}</p>
+                      <p className="text-slate-500 text-sm capitalize">{guard.status}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${
-                        guard.status === 'on-duty' ? 'bg-[#1FFF87]' : 
-                        guard.status === 'online' ? 'bg-[#00AFFF]' : 'bg-gray-500'
-                      }`}></div>
-                      <span className="text-[#C5C6C7] text-xs">{guard.time}</span>
+                        guard.status === 'on-duty' ? 'bg-emerald-500' : 
+                        guard.status === 'online' ? 'bg-blue-500' : 'bg-slate-400'
+                      } shadow-lg`}></div>
+                      <span className="text-slate-500 text-xs">{guard.time}</span>
                     </div>
                   </motion.div>
                 ))}
@@ -544,74 +553,50 @@ const DashboardHome = () => {
 
             {/* Live Map View Button */}
             <motion.button
-              className="w-full p-6 rounded-2xl bg-gradient-to-r from-[#00AFFF]/10 to-[#1FFF87]/10 border border-[#00AFFF]/20 backdrop-blur-sm hover:border-[#00AFFF]/40 transition-all duration-300 group"
+              className="w-full p-6 rounded-2xl bg-white border border-slate-200 shadow-lg hover:shadow-xl hover:border-[var(--primary-color)]/40 transition-all duration-300 group"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
               whileHover={{ scale: 1.02 }}
             >
               <div className="flex items-center gap-4">
-                <div className="p-3 bg-slate-700 rounded-xl group-hover:scale-110 transition-transform duration-300">
-                  <span className="material-symbols-outlined text-slate-200 text-xl">map</span>
+                <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl group-hover:scale-110 transition-transform duration-300 shadow-lg">
+                  <span className="material-symbols-outlined text-white text-xl">map</span>
                 </div>
                 <div className="text-left">
-                  <h3 className="text-lg font-semibold text-white">Live Map View</h3>
-                  <p className="text-[#C5C6C7] text-sm">Track guard locations in real-time</p>
+                  <h3 className="text-lg font-semibold text-slate-900">Live Map View</h3>
+                  <p className="text-slate-500 text-sm">Track guard locations in real-time</p>
                 </div>
               </div>
             </motion.button>
 
             {/* This Month Summary */}
             <motion.div
-              className="rounded-2xl bg-gradient-to-br from-[#1a1a1a]/80 to-[#0f0f0f]/80 border border-[#00AFFF]/20 backdrop-blur-xl p-6"
+              className="rounded-2xl bg-white border border-slate-200 shadow-lg p-6"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
             >
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-slate-700 rounded-xl">
-                  <span className="material-symbols-outlined text-slate-200 text-lg">calendar_month</span>
+                <div className="p-3 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl shadow-lg">
+                  <span className="material-symbols-outlined text-white text-lg">calendar_month</span>
                 </div>
-                <h3 className="text-xl font-semibold text-white">This Month</h3>
+                <h3 className="text-xl font-semibold text-slate-900">This Month</h3>
               </div>
               <div className="space-y-4">
-                <div className="flex items-center justify-between py-3 border-b border-white/10">
-                  <div className="text-[#C5C6C7] text-sm">Paid bookings</div>
-                  <div className="font-semibold text-white">{(dashboardData.monthlyPaidBookings || []).length}</div>
+                <div className="flex items-center justify-between py-3 border-b border-slate-200">
+                  <div className="text-slate-600 text-sm font-medium">Paid bookings</div>
+                  <div className="font-bold text-slate-900 text-lg">{(dashboardData.monthlyPaidBookings || []).length}</div>
                 </div>
                 <div className="flex items-center justify-between py-3">
-                  <div className="text-[#C5C6C7] text-sm">Revenue</div>
-                  <div className="font-semibold text-[#1FFF87]">{formatCurrency(dashboardData.monthlyRevenue || 0)}</div>
+                  <div className="text-slate-600 text-sm font-medium">Revenue</div>
+                  <div className="font-bold text-[var(--primary-color)] text-lg">{formatCurrency(dashboardData.monthlyRevenue || 0)}</div>
                 </div>
               </div>
             </motion.div>
           </div>
         </div>
       </div>
-
-        {/* Floating Action Button */}
-        <motion.button
-          className="fixed bottom-8 right-8 w-16 h-16 bg-gradient-to-r from-[#00AFFF] to-[#1FFF87] rounded-2xl shadow-2xl flex items-center justify-center z-30 backdrop-blur-sm border border-[#00AFFF]/20"
-          whileHover={{ 
-            scale: 1.1,
-            boxShadow: '0 0 30px rgba(0,175,255,0.4)'
-          }}
-          whileTap={{ scale: 0.9 }}
-          animate={{
-            y: [0, -4, 0],
-            boxShadow: [
-              '0 8px 30px rgba(0,175,255,0.3)',
-              '0 12px 40px rgba(0,175,255,0.4)',
-              '0 8px 30px rgba(0,175,255,0.3)'
-            ]
-          }}
-          transition={{
-            y: { duration: 2, repeat: Infinity, ease: 'easeInOut' },
-            boxShadow: { duration: 2, repeat: Infinity, ease: 'easeInOut' }
-          }}
-        >
-          <span className="material-symbols-outlined text-black text-xl">add</span>
-        </motion.button>
 
         {/* Notifications Panel */}
         <NotificationsPanel 

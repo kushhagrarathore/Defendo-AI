@@ -78,7 +78,12 @@ const UserSignup = () => {
 
     setSuccess(true)
     setIsLoading(false)
-    setTimeout(() => navigate("/user-portal"), 1500)
+    // Redirect to user portal if user is logged in, otherwise to login
+    if (result.user) {
+      setTimeout(() => navigate("/user-portal"), 1500)
+    } else {
+      setTimeout(() => navigate("/user-login"), 1800)
+    }
   }
 
   return (
@@ -89,9 +94,8 @@ const UserSignup = () => {
           <span className="text-xs uppercase tracking-[0.3em] text-slate-500 hidden sm:inline">Citizen Portal</span>
         </Link>
         <div className="flex gap-3 text-sm">
-          <Link to="/user-login" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:border-slate-300 transition">
-            <span className="material-symbols-outlined text-base">login</span>
-            Sign in
+          <Link to="/user-login" className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-slate-200 text-slate-700 hover:border-slate-300">
+            Already have an account?
           </Link>
         </div>
       </header>
@@ -135,91 +139,88 @@ const UserSignup = () => {
               Create account
             </div>
             <h2 className="text-2xl font-semibold text-slate-900">Secure services in less than 2 minutes</h2>
-            <p className="text-sm text-slate-500">We'll set up your profile and guide you through your first booking.</p>
+            <p className="text-sm text-slate-500">We’ll set up your profile inside the `profiles` table and guide your first booking.</p>
           </div>
 
           {error && (
-            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600 flex items-center gap-2">
-              <span className="material-symbols-outlined text-base">error</span>
+            <div className="mb-6 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
               {error}
             </div>
           )}
           {success && (
-            <div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-600 flex items-center gap-2">
-              <span className="material-symbols-outlined text-base">check_circle</span>
-              Account created successfully! Redirecting to your portal...
+            <div className="mb-6 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-600">
+              Account created! Redirecting you to your portal...
             </div>
           )}
 
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Full name *</label>
+              <label className="text-sm font-semibold text-slate-700">Full name</label>
               <input
                 name="fullName"
                 value={formData.fullName}
                 onChange={handleChange}
                 placeholder="Nikita Sharma"
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Phone number *</label>
+              <label className="text-sm font-semibold text-slate-700">Phone</label>
               <input
                 name="phone"
-                type="tel"
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+91 90000 12345"
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Email address *</label>
+              <label className="text-sm font-semibold text-slate-700">Email address</label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="you@company.com"
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
                 required
               />
             </div>
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Password *</label>
+                <label className="text-sm font-semibold text-slate-700">Password</label>
                 <input
                   type="password"
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Create a password"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                  className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-1">Confirm password *</label>
+                <label className="text-sm font-semibold text-slate-700">Confirm password</label>
                 <input
                   type="password"
                   name="confirmPassword"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Re-enter password"
-                  className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                  className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
                   required
                 />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Primary use case</label>
+              <label className="text-sm font-semibold text-slate-700">Primary use case</label>
               <select
                 name="useCase"
                 value={formData.useCase}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
               >
                 {useCases.map((option) => (
                   <option key={option}>{option}</option>
@@ -227,12 +228,12 @@ const UserSignup = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">Community / employee size</label>
+              <label className="text-sm font-semibold text-slate-700">Community / employee size</label>
               <select
                 name="communitySize"
                 value={formData.communitySize}
                 onChange={handleChange}
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
               >
                 {communitySizes.map((option) => (
                   <option key={option}>{option}</option>
@@ -240,13 +241,13 @@ const UserSignup = () => {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1">City / address</label>
+              <label className="text-sm font-semibold text-slate-700">City / address</label>
               <input
                 name="address"
                 value={formData.address}
                 onChange={handleChange}
                 placeholder="Bengaluru, Whitefield"
-                className="w-full rounded-2xl border border-slate-200 px-4 py-3 bg-white focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition"
+                className="w-full mt-1 rounded-2xl border border-slate-200 px-4 py-3 focus:border-blue-500 focus:outline-none"
               />
             </div>
             <label className="flex items-start gap-3 text-sm text-slate-600">
@@ -268,19 +269,9 @@ const UserSignup = () => {
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               disabled={isLoading}
-              className="w-full py-3.5 rounded-2xl bg-blue-600 text-white font-semibold shadow-[0_18px_40px_rgba(37,99,235,0.35)] hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-2xl bg-blue-600 text-white font-semibold shadow-[0_18px_40px_rgba(37,99,235,0.35)] hover:bg-blue-700 transition disabled:opacity-50"
             >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Creating account...
-                </>
-              ) : (
-                <>
-                  <span className="material-symbols-outlined text-base">person_add</span>
-                  Create my booking account
-                </>
-              )}
+              {isLoading ? "Creating account…" : "Create my booking account"}
             </motion.button>
           </form>
         </motion.section>

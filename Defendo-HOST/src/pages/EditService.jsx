@@ -93,105 +93,141 @@ const EditService = () => {
   }
 
   if (!service) {
-    return <div className="text-white/70">Service not found</div>
+    return (
+      <div className="text-center py-20">
+        <div className="text-6xl mb-4">❌</div>
+        <h3 className="text-2xl font-bold text-slate-900 mb-2">Service not found</h3>
+        <p className="text-slate-500">The service you're looking for doesn't exist</p>
+      </div>
+    )
   }
 
   return (
-    <div className="space-y-8 animate-fade-in-up">
-      <div>
-        <h1 className="text-3xl font-bold gradient-text">Edit Service</h1>
-        <p className="text-white/70 mt-1">Update your service details</p>
+    <div className="space-y-8">
+      {/* Enhanced Header */}
+      <div className="mb-8">
+        <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-slate-900 via-slate-800 to-[var(--primary-color)] bg-clip-text text-transparent mb-3">
+          Edit Service
+        </h1>
+        <p className="text-slate-600 text-base md:text-lg">Update your service details and settings</p>
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4">
-          <p className="text-red-400 text-sm">{error}</p>
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4 shadow-lg">
+          <div className="flex items-center gap-3">
+            <span className="material-symbols-outlined text-red-500">error</span>
+            <p className="text-red-700 text-sm font-medium">{error}</p>
+          </div>
         </div>
       )}
 
-      <GlassCard className="max-w-2xl">
-        <div className="space-y-4">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-6 md:p-8 max-w-2xl">
+        <div className="space-y-6">
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-white">Service Name</label>
+            <label className="block text-sm font-semibold text-slate-900">Service Name</label>
             <input
               name="service_name"
               value={service.service_name || ''}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white"
+              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all"
+              placeholder="Enter service name"
             />
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-white">Description</label>
+            <label className="block text-sm font-semibold text-slate-900">Description</label>
             <textarea
               name="description"
               rows={4}
               value={service.description || ''}
               onChange={handleChange}
-              className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white"
+              className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all resize-none"
+              placeholder="Describe your service..."
             />
           </div>
 
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <label className="block text-sm font-medium text-white">Subcategories (JSON)</label>
-            {subcategoriesError ? (
-              <span className="text-red-400 text-xs">{subcategoriesError}</span>
-            ) : null}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-semibold text-slate-900">Subcategories (JSON)</label>
+              {subcategoriesError && (
+                <span className="text-red-600 text-xs font-medium bg-red-50 px-2 py-1 rounded">{subcategoriesError}</span>
+              )}
+            </div>
+            <textarea
+              rows={10}
+              value={subcategoriesText}
+              onChange={(e) => {
+                setSubcategoriesText(e.target.value)
+                if (subcategoriesError) setSubcategoriesError('')
+              }}
+              placeholder={SUBCATEGORY_PLACEHOLDER}
+              className="w-full font-mono text-sm px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all min-h-[200px] resize-none"
+            />
+            <p className="text-slate-500 text-xs mt-2">💡 Tip: Provide valid JSON. Leave empty to remove subcategories.</p>
           </div>
-          <textarea
-            rows={10}
-            value={subcategoriesText}
-            onChange={(e) => {
-              setSubcategoriesText(e.target.value)
-              if (subcategoriesError) setSubcategoriesError('')
-            }}
-            placeholder={SUBCATEGORY_PLACEHOLDER}
-            className="w-full font-mono text-sm px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white min-h-[200px]"
-          />
-          <p className="text-white/50 text-xs">Tip: Provide valid JSON. Leave empty to remove subcategories.</p>
-        </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-white">State</label>
+              <label className="block text-sm font-semibold text-slate-900">State</label>
               <input
                 name="state"
                 value={service.state || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white"
+                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all"
+                placeholder="Enter state"
               />
             </div>
             <div className="space-y-2">
-              <label className="block text-sm font-medium text-white">City</label>
+              <label className="block text-sm font-semibold text-slate-900">City</label>
               <input
                 name="city"
                 value={service.city || ''}
                 onChange={handleChange}
-                className="w-full px-4 py-3 bg-[#1a241e] border border-[#29382f] rounded-lg text-white"
+                className="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:border-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 outline-none transition-all"
+                placeholder="Enter city"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <input type="checkbox" checked={!!service.is_active} onChange={handleToggleActive} className="w-4 h-4" />
-            <span className="text-white">Active</span>
+          <div className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
+            <input 
+              type="checkbox" 
+              checked={!!service.is_active} 
+              onChange={handleToggleActive} 
+              className="w-5 h-5 rounded border-slate-300 text-[var(--primary-color)] focus:ring-2 focus:ring-[var(--primary-color)]/20 cursor-pointer" 
+            />
+            <label className="text-slate-900 font-semibold cursor-pointer">Active Service</label>
+            <span className="ml-auto text-xs text-slate-500">
+              {service.is_active ? '✅ Visible to customers' : '❌ Hidden from customers'}
+            </span>
           </div>
 
-          <div className="flex gap-3 pt-2">
-            <PrimaryButton onClick={handleSave} disabled={saving}>
-              {saving ? 'Saving...' : 'Save Changes'}
-            </PrimaryButton>
+          <div className="flex gap-3 pt-4 border-t border-slate-200">
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 bg-gradient-to-r from-[var(--primary-color)] to-emerald-500 text-white py-3 px-6 rounded-xl font-bold hover:shadow-lg hover:shadow-emerald-300/40 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saving ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Saving...
+                </div>
+              ) : (
+                'Save Changes'
+              )}
+            </button>
             <button
               type="button"
               onClick={() => navigate('/dashboard/services')}
-              className="bg-[#29382f] text-white py-3 px-6 rounded-lg font-bold hover:bg-[#3a4a3f] transition-all duration-300"
+              className="px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-xl font-semibold hover:bg-slate-50 hover:border-slate-300 transition-all duration-300"
             >
               Cancel
             </button>
           </div>
         </div>
-      </GlassCard>
+      </div>
     </div>
   )
 }
