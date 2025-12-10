@@ -34,6 +34,16 @@ const ServiceDetailView = ({ service, onBack, onEdit, onDelete }) => {
         
         for (const imagePath of subcat.images) {
           try {
+            // If it's already a full URL (signed URL or public URL), use it directly
+            if (typeof imagePath === 'string' && (imagePath.startsWith('http://') || imagePath.startsWith('https://'))) {
+              // Check if it's a signed URL (contains query params) - use it directly
+              if (imagePath.includes('?') || imagePath.includes('/public/')) {
+                console.log('Using existing URL:', imagePath)
+                freshUrls.push(imagePath)
+                continue
+              }
+            }
+            
             // Check if it's already a file path or a URL
             let filePath = imagePath
             
@@ -44,16 +54,32 @@ const ServiceDetailView = ({ service, onBack, onEdit, onDelete }) => {
               if (imagePath.includes('/public/guard_services/')) {
                 urlParts = imagePath.split('/storage/v1/object/public/guard_services/')
               } else if (imagePath.includes('/guard_services/')) {
-                urlParts = imagePath.split('/storage/v1/object/guard_services/')
+                // Handle private bucket URLs
+                const match = imagePath.match(/\/guard_services\/(.+?)(\?|$)/)
+                if (match && match[1]) {
+                  filePath = match[1]
+                  console.log('Extracted file path from private URL:', filePath)
+                } else {
+                  urlParts = imagePath.split('/storage/v1/object/guard_services/')
+                }
               }
               
               if (urlParts && urlParts.length > 1) {
-                filePath = urlParts[1]
+                // Remove query parameters if present
+                filePath = urlParts[1].split('?')[0]
                 console.log('Extracted file path:', filePath)
-              } else {
+              } else if (!filePath || filePath === imagePath) {
                 console.warn('Could not extract file path from URL:', imagePath)
+                // Try to use the URL as-is if extraction fails
+                freshUrls.push(imagePath)
                 continue
               }
+            }
+            
+            // If filePath is still a full URL, skip signing
+            if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+              freshUrls.push(filePath)
+              continue
             }
             
             // Generate fresh signed URL
@@ -63,20 +89,31 @@ const ServiceDetailView = ({ service, onBack, onEdit, onDelete }) => {
             
             if (error) {
               console.error('Error generating signed URL for', filePath, ':', error)
+              // Fallback: try to use the original path as URL if it looks like a URL
+              if (imagePath.startsWith('http')) {
+                freshUrls.push(imagePath)
+              }
               continue
             } else {
               freshUrls.push(signedUrlData.signedUrl)
             }
           } catch (err) {
             console.error('Error processing image path:', imagePath, err)
+            // Fallback: use original path if it's a URL
+            if (typeof imagePath === 'string' && (imagePath.startsWith('http://') || imagePath.startsWith('https://'))) {
+              freshUrls.push(imagePath)
+            }
             continue
           }
         }
         
-        imageUrls[key] = freshUrls
+        if (freshUrls.length > 0) {
+          imageUrls[key] = freshUrls
+        }
       }
     }
     
+    console.log('Generated image URLs:', imageUrls)
     return imageUrls
   }
 

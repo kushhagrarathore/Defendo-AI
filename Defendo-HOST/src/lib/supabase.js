@@ -242,7 +242,7 @@ export const db = {
   getHostBookings: async (hostId) => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('id, status, date, created_at, service_type, price, payment_status, user_id, host_id:provider_id, start_time, end_time, location, user_notes')
+      .select('id, status, date, created_at, service_type, price, payment_status, user_id, provider_id, start_time, end_time, location, user_notes')
       .eq('provider_id', hostId)
       .order('created_at', { ascending: false })
     return { data, error }
@@ -505,7 +505,7 @@ export const db = {
   getRecentBookings: async (hostId, limit = 5) => {
     const { data, error } = await supabase
       .from('bookings')
-      .select('id, service_type, status, created_at, price, host_id:provider_id')
+      .select('id, service_type, status, created_at, price, provider_id')
       .eq('provider_id', hostId)
       .order('created_at', { ascending: false })
       .limit(limit)
@@ -547,17 +547,24 @@ export const db = {
 
   // Create a booking as an end-user. user_id is inferred from session if not provided.
   // Includes optional OTP and service_status fields when present in schema.
-  createBooking: async ({ providerId, serviceType, date, startTime, endTime, price, currency = 'INR', userNotes = '', location = null }) => {
+  createBooking: async ({ providerId, serviceType, date, startTime, endTime, price, currency = 'INR', userNotes = '', location = null, durationHours = 1 }) => {
     const { data: sessionData } = await supabase.auth.getUser()
     const currentUserId = sessionData?.user?.id
     const otp = db.generateOtp()
+
+    // Ensure required time fields exist for stricter schemas
+    const normalizedStart = startTime || '09:00'
+    const normalizedEnd = endTime || '10:00'
+    const normalizedDuration = durationHours || 1
+
     const insertPayload = {
       user_id: currentUserId,
       provider_id: providerId,
       service_type: serviceType,
       date,
-      start_time: startTime || null,
-      end_time: endTime || null,
+      start_time: normalizedStart,
+      end_time: normalizedEnd,
+      duration_hours: normalizedDuration,
       price: price ?? 0,
       currency,
       user_notes: userNotes || '',
@@ -585,19 +592,51 @@ export const db = {
     }
     if (data && otp) {
       console.log('Booking created, OTP generated:', otp)
-      // Notify host about new booking
-      try {
-        await supabase.from('notifications').insert({
-          user_id: providerId,
-          type: 'new_booking',
-          title: 'New Booking Received',
-          message: `A new ${serviceType} booking request has been made. Please assign an employee.`
-        })
-      } catch (notifErr) {
-        console.warn('Failed to send host notification:', notifErr)
-      }
+      // Notifications are handled by database-side triggers/RPCs.
     }
     return { data, error }
+  },
+
+  // Host assigns an employee/guard to a booking and notifies the user.
+  assignEmployeeToBooking: async ({ bookingId, employeeId }) => {
+    if (!bookingId || !employeeId) {
+      return { error: { message: 'Missing booking or employee.' } }
+    }
+
+    // Fetch employee + booking in parallel
+    const [{ data: employee, error: empErr }, { data: booking, error: bookErr }] = await Promise.all([
+      supabase.from('employees').select('id, name, role, phone, photo_url').eq('id', employeeId).single(),
+      supabase.from('bookings').select('id, user_id, provider_id').eq('id', bookingId).single()
+    ])
+    if (empErr) return { error: empErr }
+    if (bookErr) return { error: bookErr }
+
+    const updates = {
+      assigned_employee_id: employeeId,
+      service_status: 'assigned',
+      status: 'confirmed',
+      updated_at: new Date().toISOString()
+    }
+
+    const [{ error: bookingUpdateErr }, { error: empUpdateErr }] = await Promise.all([
+      supabase.from('bookings').update(updates).eq('id', bookingId),
+      supabase.from('employees').update({ status: 'Assigned' }).eq('id', employeeId)
+    ])
+    if (bookingUpdateErr) return { error: bookingUpdateErr }
+    if (empUpdateErr) return { error: empUpdateErr }
+
+    // Notify the user about the assignment
+    if (booking?.user_id) {
+      await supabase.from('notifications').insert({
+        user_id: booking.user_id,
+        type: 'booking_update',
+        title: 'Guard Assigned',
+        message: `Your booking has been assigned to ${employee?.name || 'a guard'}.`,
+        metadata: { booking_id: bookingId, guard_id: employeeId }
+      })
+    }
+
+    return { data: { bookingId, employeeId }, error: null }
   },
 
   // Host-visible summary: id, customer name, start/end, service type

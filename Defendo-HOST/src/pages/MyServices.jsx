@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "../contexts/AuthContext"
-import { db } from "../lib/supabase"
+import { db, supabase } from "../lib/supabase"
 import ServiceImageCarousel from "../components/ServiceImageCarousel"
 import ServiceDetailView from "../components/ServiceDetailView"
 
@@ -19,6 +19,7 @@ const MyServices = () => {
   const [searchQuery, setSearchQuery] = useState("")
   const [filterType, setFilterType] = useState("all")
   const [sortBy, setSortBy] = useState("recent")
+  const [subcategoryImages, setSubcategoryImages] = useState({}) // Map of serviceId_subcategoryKey -> image URLs
   
   const parseSubcategories = (subCategoryText) => {
     if (!subCategoryText) return {}
@@ -31,6 +32,100 @@ const MyServices = () => {
       return {}
     }
   }
+
+  // Generate signed URLs for subcategory images
+  const generateSignedUrlsForService = async (service) => {
+    const subcategories = parseSubcategories(service.sub_category)
+    if (!subcategories || Object.keys(subcategories).length === 0) return
+
+    const imageMap = {}
+    
+    for (const [key, subcat] of Object.entries(subcategories)) {
+      if (subcat.images && subcat.images.length > 0) {
+        const freshUrls = []
+        
+        for (const imagePath of subcat.images) {
+          try {
+            // If it's already a full URL, use it directly
+            if (typeof imagePath === 'string' && (imagePath.startsWith('http://') || imagePath.startsWith('https://'))) {
+              // Check if it's a signed URL or public URL
+              if (imagePath.includes('?') || imagePath.includes('/public/')) {
+                freshUrls.push(imagePath)
+                continue
+              }
+            }
+            
+            let filePath = imagePath
+            
+            // Extract file path from URL if needed
+            if (imagePath.includes('/storage/v1/object/')) {
+              let urlParts
+              if (imagePath.includes('/public/guard_services/')) {
+                urlParts = imagePath.split('/storage/v1/object/public/guard_services/')
+              } else if (imagePath.includes('/guard_services/')) {
+                const match = imagePath.match(/\/guard_services\/(.+?)(\?|$)/)
+                if (match && match[1]) {
+                  filePath = match[1]
+                } else {
+                  urlParts = imagePath.split('/storage/v1/object/guard_services/')
+                }
+              }
+              
+              if (urlParts && urlParts.length > 1) {
+                filePath = urlParts[1].split('?')[0]
+              } else if (!filePath || filePath === imagePath) {
+                // Use URL as-is if extraction fails
+                freshUrls.push(imagePath)
+                continue
+              }
+            }
+            
+            // Skip if still a full URL
+            if (filePath.startsWith('http://') || filePath.startsWith('https://')) {
+              freshUrls.push(filePath)
+              continue
+            }
+            
+            // Generate fresh signed URL
+            const { data: signedUrlData, error } = await supabase.storage
+              .from('guard_services')
+              .createSignedUrl(filePath, 60 * 60 * 24 * 7) // 7 days expiry
+            
+            if (error) {
+              console.error('Error generating signed URL for', filePath, ':', error)
+              if (imagePath.startsWith('http')) {
+                freshUrls.push(imagePath)
+              }
+            } else {
+              freshUrls.push(signedUrlData.signedUrl)
+            }
+          } catch (err) {
+            console.error('Error processing image path:', imagePath, err)
+            if (typeof imagePath === 'string' && (imagePath.startsWith('http://') || imagePath.startsWith('https://'))) {
+              freshUrls.push(imagePath)
+            }
+          }
+        }
+        
+        if (freshUrls.length > 0) {
+          imageMap[`${service.id}_${key}`] = freshUrls
+        }
+      }
+    }
+    
+    if (Object.keys(imageMap).length > 0) {
+      setSubcategoryImages(prev => ({ ...prev, ...imageMap }))
+    }
+  }
+
+  // Load images for all services when they're fetched
+  useEffect(() => {
+    if (services.length > 0) {
+      services.forEach(service => {
+        generateSignedUrlsForService(service)
+      })
+    }
+  }, [services])
 
   // Service type configurations
   const serviceTypeConfig = {
@@ -536,14 +631,54 @@ const MyServices = () => {
                         <div className="mb-6">
                           <p className="text-slate-500 text-sm mb-3 font-medium">Subcategories & Pricing:</p>
                           <div className="space-y-2">
-                            {Object.entries(parseSubcategories(service.sub_category)).map(([key, subcat]) => (
-                              <div key={key} className="flex justify-between items-center bg-slate-50 border border-slate-200 rounded-xl px-4 py-3">
-                                <span className="text-slate-900 text-sm font-semibold">{subcat.label}</span>
-                                <span className="text-[var(--primary-color)] font-bold text-sm">
-                                  {subcat.currency} {subcat.price_per_hour}/hr
-                                </span>
-                              </div>
-                            ))}
+                            {Object.entries(parseSubcategories(service.sub_category)).map(([key, subcat]) => {
+                              const imageKey = `${service.id}_${key}`
+                              const images = subcategoryImages[imageKey] || []
+                              const firstImage = images.length > 0 ? images[0] : null
+                              
+                              return (
+                                <div key={key} className="bg-slate-50 border border-slate-200 rounded-xl overflow-hidden">
+                                  <div className="flex items-center gap-3 p-3">
+                                    {/* Subcategory Image */}
+                                    {firstImage ? (
+                                      <div className="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-slate-200">
+                                        <img 
+                                          src={firstImage} 
+                                          alt={subcat.label}
+                                          className="w-full h-full object-cover"
+                                          onError={(e) => {
+                                            e.target.style.display = 'none'
+                                            e.target.nextSibling.style.display = 'flex'
+                                          }}
+                                        />
+                                        <div className="w-full h-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold hidden">
+                                          {subcat.label?.[0]?.toUpperCase() || 'G'}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="flex-shrink-0 w-16 h-16 rounded-lg bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
+                                        {subcat.label?.[0]?.toUpperCase() || 'G'}
+                                      </div>
+                                    )}
+                                    
+                                    {/* Subcategory Info */}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-slate-900 text-sm font-semibold truncate">{subcat.label}</span>
+                                        <span className="text-[var(--primary-color)] font-bold text-sm ml-2">
+                                          {subcat.currency || 'INR'} {subcat.price_per_hour}/hr
+                                        </span>
+                                      </div>
+                                      {images.length > 1 && (
+                                        <p className="text-xs text-slate-500 mt-1">
+                                          {images.length} {images.length === 1 ? 'image' : 'images'}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            })}
                           </div>
                         </div>
                       )}

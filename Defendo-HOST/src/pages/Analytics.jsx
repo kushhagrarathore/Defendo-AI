@@ -18,11 +18,11 @@ const Analytics = () => {
       try {
         setLoading(true)
         setError("")
-        // Assigned employees for this host
+        // Assigned employees for this provider
         const { data: emps, error: empErr } = await supabase
           .from('employees')
           .select('id, role, location')
-          .eq('host_id', user.id)
+          .eq('provider_id', user.id)
           .eq('status', 'Assigned')
         if (empErr) throw empErr
         setAssignedCount(emps?.length || 0)
@@ -47,7 +47,7 @@ const Analytics = () => {
           const bookingIds = Array.from(new Set(gas.map(g => g.booking_id).filter(Boolean)))
 
           const [{ data: e2 }, { data: b2 }] = await Promise.all([
-            supabase.from('employees').select('id, name, role, phone').in('id', guardIds).eq('host_id', user.id),
+            supabase.from('employees').select('id, name, role, phone').in('id', guardIds).eq('provider_id', user.id),
             supabase.from('bookings').select('id, user_id, service_type, date, location').in('id', bookingIds).eq('provider_id', user.id)
           ])
           const byEmp = Object.fromEntries((e2 || []).map(x => [x.id, x]))

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Routes, Route, useSearchParams } from "react-router-dom"
+import { Routes, Route, useSearchParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { useAuth } from "../contexts/AuthContext"
 import { supabase } from "../lib/supabase"
@@ -8,6 +8,7 @@ import UserLayout from "../components/UserLayout"
 import UserDashboard from "./UserDashboard"
 import UserBookings from "./UserBookings"
 import UserAccount from "./UserAccount"
+import CompanyServices from "./CompanyServices"
 
 // Golden Yellow accent color
 const GOLDEN_YELLOW = "#DAA520"
@@ -31,6 +32,7 @@ const serviceCategories = [
 // Service Selection Component (Screen 1 & 2)
 const ServiceSelection = () => {
   const { user, profile } = useAuth()
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedCategory, setSelectedCategory] = useState(null)
   const [providers, setProviders] = useState([])
@@ -119,7 +121,7 @@ const ServiceSelection = () => {
       // Get unique provider/host IDs
       const providerIds = [...new Set(
         servicesData
-          .map(s => s.provider_id || s.host_id)
+          .map(s => s.provider_id)
           .filter(Boolean)
       )]
       
@@ -128,7 +130,7 @@ const ServiceSelection = () => {
       if (providerIds.length > 0) {
         const { data: profiles, error: profilesError } = await supabase
           .from("host_profiles")
-          .select("id, company_name, full_name, rating, verified, phone, address, city, state, avatar_url, logo_path")
+          .select("id, company_name, full_name, rating, phone, address, avatar_url, logo_path")
           .in("id", providerIds)
         
         if (!profilesError && profiles) {
@@ -138,7 +140,7 @@ const ServiceSelection = () => {
       
       // Merge profiles with services
       let filtered = servicesData.map(service => {
-        const hostId = service.provider_id || service.host_id
+        const hostId = service.provider_id
         const profile = profilesData.find(p => p.id === hostId) || null
         return {
           ...service,
@@ -196,7 +198,7 @@ const ServiceSelection = () => {
       // Get unique provider/host IDs
       const providerIds = [...new Set(
         servicesData
-          .map(s => s.provider_id || s.host_id)
+          .map(s => s.provider_id)
           .filter(Boolean)
       )]
       
@@ -205,7 +207,7 @@ const ServiceSelection = () => {
       if (providerIds.length > 0) {
         const { data: profiles, error: profilesError } = await supabase
           .from("host_profiles")
-          .select("id, company_name, full_name, rating, verified, phone, address, city, state, avatar_url, logo_path")
+          .select("id, company_name, full_name, rating, phone, address, avatar_url, logo_path")
           .in("id", providerIds)
         
         if (!profilesError && profiles) {
@@ -215,7 +217,7 @@ const ServiceSelection = () => {
       
       // Merge profiles with services
       const merged = servicesData.map(service => {
-        const hostId = service.provider_id || service.host_id
+        const hostId = service.provider_id
         const profile = profilesData.find(p => p.id === hostId) || null
         return {
           ...service,
@@ -256,7 +258,7 @@ const ServiceSelection = () => {
       // Get unique provider/host IDs
       const providerIds = [...new Set(
         servicesData
-          .map(s => s.provider_id || s.host_id)
+          .map(s => s.provider_id)
           .filter(Boolean)
       )]
       
@@ -265,7 +267,7 @@ const ServiceSelection = () => {
       if (providerIds.length > 0) {
         const { data: profiles, error: profilesError } = await supabase
           .from("host_profiles")
-          .select("id, company_name, full_name, rating, verified, phone, address, city, state, avatar_url, logo_path")
+          .select("id, company_name, full_name, rating, phone, address, avatar_url, logo_path")
           .in("id", providerIds)
         
         if (!profilesError && profiles) {
@@ -275,7 +277,7 @@ const ServiceSelection = () => {
       
       // Merge profiles with services
       const merged = servicesData.map(service => {
-        const hostId = service.provider_id || service.host_id
+        const hostId = service.provider_id
         const profile = profilesData.find(p => p.id === hostId) || null
         return {
           ...service,
@@ -341,100 +343,48 @@ const ServiceSelection = () => {
   const fetchTopCompanies = async () => {
     setLoadingCompanies(true)
     try {
-      // Fetch host profiles that have active services, sorted by rating
-      const { data: servicesData, error: servicesError } = await supabase
+      const { data: services, error: servicesError } = await supabase
         .from("host_services")
-        .select("provider_id, host_id, rating, total_bookings")
+        .select("id, provider_id, service_name, description, price, location, images")
         .eq("is_active", true)
-      
       if (servicesError) {
-        console.error("Error fetching services for companies:", servicesError)
+        console.error("Error fetching services:", servicesError)
+        setTopCompanies([])
+        return
+      }
+      console.log("Fetched services:", services)
+
+      const hostIds = [...new Set((services || []).map(s => s.provider_id))]
+      if (hostIds.length === 0) {
         setTopCompanies([])
         return
       }
 
-      if (!servicesData || servicesData.length === 0) {
-        setTopCompanies([])
-        return
-      }
-
-      // Get unique provider IDs and aggregate stats
-      const companyStats = {}
-      servicesData.forEach(service => {
-        const providerId = service.provider_id || service.host_id
-        if (providerId) {
-          if (!companyStats[providerId]) {
-            companyStats[providerId] = {
-              id: providerId,
-              totalServices: 0,
-              totalBookings: 0,
-              avgRating: 0,
-              ratings: []
-            }
-          }
-          companyStats[providerId].totalServices++
-          companyStats[providerId].totalBookings += service.total_bookings || 0
-          if (service.rating) {
-            companyStats[providerId].ratings.push(service.rating)
-          }
-        }
-      })
-
-      // Calculate average ratings
-      Object.values(companyStats).forEach(company => {
-        if (company.ratings.length > 0) {
-          company.avgRating = company.ratings.reduce((a, b) => a + b, 0) / company.ratings.length
-        }
-      })
-
-      // Get top companies (by rating and bookings)
-      const topCompanyIds = Object.values(companyStats)
-        .sort((a, b) => {
-          // Sort by rating first, then by total bookings
-          if (b.avgRating !== a.avgRating) {
-            return b.avgRating - a.avgRating
-          }
-          return b.totalBookings - a.totalBookings
-        })
-        .slice(0, 12) // Top 12 companies
-        .map(c => c.id)
-
-      if (topCompanyIds.length === 0) {
-        setTopCompanies([])
-        return
-      }
-
-      // Fetch company profiles
-      const { data: profilesData, error: profilesError } = await supabase
+      const { data: profiles, error: profilesError } = await supabase
         .from("host_profiles")
-        .select("id, company_name, full_name, rating, verified, phone, address, city, state, avatar_url, logo_path")
-        .in("id", topCompanyIds)
-        .order("rating", { ascending: false })
+        .select("id, company_name, full_name, rating, phone, address, avatar_url, logo_path")
+        .in("id", hostIds)
 
       if (profilesError) {
-        console.error("Error fetching company profiles:", profilesError)
+        console.error("Error fetching profiles:", profilesError)
         setTopCompanies([])
         return
       }
 
-      // Merge with stats
-      const companiesWithStats = (profilesData || []).map(profile => {
-        const stats = companyStats[profile.id] || {}
+      console.log("Fetched profiles:", profiles)
+
+      // Simple merge: attach first service image/price to profile for display
+      const merged = (profiles || []).map(profile => {
+        const svc = (services || []).find(s => s.provider_id === profile.id) || {}
         return {
           ...profile,
-          totalServices: stats.totalServices || 0,
-          totalBookings: stats.totalBookings || 0,
-          avgRating: stats.avgRating || profile.rating || 0
+          sampleImage: Array.isArray(svc.images) && svc.images.length > 0 ? svc.images[0] : null,
+          samplePrice: svc.price_per_hour || svc.price || null,
+          sampleService: svc.service_name || null,
         }
-      }).sort((a, b) => {
-        // Sort by average rating, then by bookings
-        if (b.avgRating !== a.avgRating) {
-          return b.avgRating - a.avgRating
-        }
-        return b.totalBookings - a.totalBookings
       })
 
-      setTopCompanies(companiesWithStats)
+      setTopCompanies(merged)
     } catch (error) {
       console.error("Error fetching top companies:", error)
       setTopCompanies([])
@@ -443,81 +393,15 @@ const ServiceSelection = () => {
     }
   }
 
-  const handleViewDetails = async (provider) => {
-    // Filter to show only this specific provider's services
-    const providerId = provider.provider_id || provider.host_id
+  const handleViewDetails = (provider) => {
+    // Navigate to the company services page so users can see all categories and pricing
+    const providerId = provider?.provider_id || provider?.host_profiles?.id
     if (!providerId) {
-      // If no provider ID, just show this one service
-      setProviders([provider])
-      setSelectedCategory(null) // Clear category selection
+      console.warn("No provider ID found for View Details action", provider)
       return
     }
 
-    setLoading(true)
-    try {
-      // Fetch all services from this specific provider
-      // Try both provider_id and host_id columns
-      let servicesData = null
-      let servicesError = null
-      
-      // Try provider_id first
-      const { data: data1, error: error1 } = await supabase
-        .from("host_services")
-        .select("*")
-        .eq("is_active", true)
-        .eq("provider_id", providerId)
-        .order("created_at", { ascending: false })
-      
-      if (!error1 && data1 && data1.length > 0) {
-        servicesData = data1
-      } else {
-        // Try host_id if provider_id doesn't work
-        const { data: data2, error: error2 } = await supabase
-          .from("host_services")
-          .select("*")
-          .eq("is_active", true)
-          .eq("host_id", providerId)
-          .order("created_at", { ascending: false })
-        
-        servicesData = data2
-        servicesError = error2
-      }
-      
-      if (servicesError) {
-        console.error("Error fetching provider services:", servicesError)
-        // Fallback: just show the clicked service
-        setProviders([provider])
-        return
-      }
-
-      if (!servicesData || servicesData.length === 0) {
-        setProviders([provider])
-        return
-      }
-
-      // Fetch the host profile
-      const { data: profileData } = await supabase
-        .from("host_profiles")
-        .select("id, company_name, full_name, rating, verified, phone, address, city, state, avatar_url, logo_path")
-        .eq("id", providerId)
-        .single()
-
-      // Merge profiles with services
-      const merged = servicesData.map(service => ({
-        ...service,
-        host_profiles: profileData || provider.host_profiles || null
-      }))
-
-      setProviders(merged)
-      setSelectedCategory(null) // Clear category selection
-      setSearchQuery("") // Clear search
-      setSearchParams({}) // Clear URL params
-    } catch (error) {
-      console.error("Error in handleViewDetails:", error)
-      setProviders([provider])
-    } finally {
-      setLoading(false)
-    }
+    navigate(`/user-portal/company/${providerId}`)
   }
 
   // SCREEN 1: Category Selection or Search Results
@@ -587,7 +471,9 @@ const ServiceSelection = () => {
                     </div>
                     <div className="flex items-center gap-1 mb-2">
                       <span className="material-symbols-outlined text-yellow-400 text-sm">star</span>
-                      <span className="text-sm font-semibold">{(provider.rating || provider.host_profiles?.rating || 0).toFixed(1)}</span>
+                      <span className="text-sm font-semibold">
+                        {Number(provider.rating ?? provider.host_profiles?.rating ?? 0).toFixed(1)}
+                      </span>
                       <span className="text-xs text-gray-500">({provider.total_bookings || 0})</span>
                     </div>
                     {provider.description && (
@@ -709,13 +595,8 @@ const ServiceSelection = () => {
                     key={company.id}
                     whileHover={{ y: -4, scale: 1.02 }}
                     onClick={() => {
-                      // Filter to show only this company's services
-                      const companyName = company.company_name || company.full_name
-                      if (companyName) {
-                        setSearchQuery(companyName)
-                        setSearchParams({ search: companyName })
-                        fetchAllProviders(companyName)
-                      }
+                      // Navigate to company services page
+                      navigate(`/user-portal/company/${company.id}`)
                     }}
                     className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 hover:shadow-xl transition-all cursor-pointer group"
                   >
@@ -744,7 +625,9 @@ const ServiceSelection = () => {
                       
                       <div className="flex items-center justify-center gap-1 mb-2">
                         <span className="material-symbols-outlined text-yellow-400 text-sm">star</span>
-                        <span className="text-sm font-semibold">{company.avgRating.toFixed(1)}</span>
+                        <span className="text-sm font-semibold">
+                          {Number(company.avgRating ?? company.rating ?? 0).toFixed(1)}
+                        </span>
                       </div>
 
                       {company.verified && (
@@ -834,7 +717,9 @@ const ServiceSelection = () => {
                       </div>
                       <div className="flex items-center gap-1 mb-2">
                         <span className="material-symbols-outlined text-yellow-400 text-sm">star</span>
-                        <span className="text-sm font-semibold">{(provider.rating || provider.host_profiles?.rating || 0).toFixed(1)}</span>
+                        <span className="text-sm font-semibold">
+                          {Number(provider.rating ?? provider.host_profiles?.rating ?? 0).toFixed(1)}
+                        </span>
                         <span className="text-xs text-gray-500">({provider.total_bookings || 0})</span>
                       </div>
                       {provider.description && (
@@ -1105,7 +990,9 @@ const ServiceSelection = () => {
                       <div className="flex items-center gap-4 mb-3">
                         <div className="flex items-center gap-1">
                           <span className="material-symbols-outlined text-yellow-400">star</span>
-                          <span className="font-semibold">{(provider.rating || provider.host_profiles?.rating || 0).toFixed(1)}</span>
+                          <span className="font-semibold">
+                            {Number(provider.rating ?? provider.host_profiles?.rating ?? 0).toFixed(1)}
+                          </span>
                           <span className="text-sm text-gray-500">({provider.total_bookings || 0} bookings)</span>
                         </div>
                         <div className="flex gap-2 flex-wrap">
@@ -1182,6 +1069,7 @@ const ServiceSelection = () => {
 
                       {/* View Details Button */}
                       <button
+                        onClick={() => handleViewDetails(provider)}
                         className="px-6 py-2.5 rounded-full text-white font-semibold hover:opacity-90 transition-opacity"
                         style={{ backgroundColor: GOLDEN_YELLOW }}
                       >
@@ -1208,6 +1096,7 @@ const UserPortal = () => {
       <Route path="dashboard" element={<UserDashboard />} />
       <Route path="account" element={<UserAccount />} />
       <Route path="services" element={<ServiceSelection />} />
+      <Route path="company/:companyId" element={<CompanyServices />} />
       <Route path="*" element={<ServiceSelection />} />
     </Routes>
   )

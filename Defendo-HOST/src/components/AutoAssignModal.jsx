@@ -18,7 +18,7 @@ const AutoAssignModal = ({ isOpen, onClose, booking }) => {
         const { data, error } = await supabase
           .from('employees')
           .select('id, name, role, status, photo_url, experience_years, location')
-          .eq('host_id', user.id)
+          .eq('provider_id', user.id)
           .order('created_at', { ascending: false })
         if (error) throw error
         const mapped = (data || []).map(r => ({

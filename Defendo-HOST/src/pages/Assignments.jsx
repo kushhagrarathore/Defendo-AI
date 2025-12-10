@@ -22,7 +22,7 @@ const Assignments = () => {
         const { data, error } = await supabase
           .from('employees')
           .select('id, name, role, phone, photo_url, experience_years, location')
-          .eq('host_id', user.id)
+          .eq('provider_id', user.id)
           .eq('status', 'Available')
           .order('created_at', { ascending: false })
         if (error) throw error
@@ -50,7 +50,7 @@ const Assignments = () => {
           .from('bookings')
           .select('id, user_id, service_type, date, location, status, start_time, end_time, service_status, assigned_employee_id, duration_hours')
           .eq('provider_id', user.id)
-          .in('status', ['pending', 'assigned', 'in_progress'])
+          .in('status', ['pending', 'confirmed', 'in_progress'])
           .order('created_at', { ascending: false })
         if (error) throw error
         const mapped = (data || []).map(b => ({
@@ -117,8 +117,8 @@ const Assignments = () => {
         supabase
           .from('employees')
           .select('id, name, role, phone, photo_url, experience_years, location, status')
-          .eq('host_id', user.id)
-          .eq('status', 'available')
+          .eq('provider_id', user.id)
+          .eq('status', 'Available')
           .order('created_at', { ascending: false }),
         supabase
           .from('bookings')
@@ -156,52 +156,8 @@ const Assignments = () => {
   const assignEmployeeToBooking = async (employeeId, bookingId) => {
     if (!employeeId || !bookingId) return
     try {
-      // 1) Update booking with assigned employee and service status
-      const { error: bookingErr } = await supabase
-        .from('bookings')
-        .update({
-          assigned_employee_id: employeeId,
-          service_status: 'assigned',
-          status: 'assigned',
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', bookingId)
-      if (bookingErr) throw bookingErr
-
-      // 2) Update employee status to assigned
-      const { error: empErr } = await supabase
-        .from('employees')
-        .update({ status: 'Assigned' })
-        .eq('id', employeeId)
-      if (empErr) throw empErr
-
-      // 3) Insert assignment record
-      const { error: gaErr } = await supabase
-        .from('guard_assignments')
-        .insert({ guard_id: employeeId, booking_id: bookingId, status: 'active' })
-      if (gaErr) throw gaErr
-
-      // 4) Notify the user who created the booking
-      const { data: booking } = await supabase
-        .from('bookings')
-        .select('id, user_id')
-        .eq('id', bookingId)
-        .single()
-      const { data: employee } = await supabase
-        .from('employees')
-        .select('name, role, phone')
-        .eq('id', employeeId)
-        .single()
-      if (booking?.user_id && employee) {
-        await supabase
-          .from('notifications')
-          .insert({
-            user_id: booking.user_id,
-            type: 'booking_update',
-            title: 'Employee Assigned',
-            message: `Employee ${employee.name} has been assigned to your booking.`
-          })
-      }
+      const { error } = await db.assignEmployeeToBooking({ bookingId, employeeId })
+      if (error) throw error
 
       // Refresh lists and clear active booking
       await refreshLists()
@@ -227,7 +183,7 @@ const Assignments = () => {
           .from('bookings')
           .select('id, user_id, service_type, date, location, status, start_time, end_time, service_status, assigned_employee_id, duration_hours')
           .eq('provider_id', user.id)
-          .in('status', ['pending','assigned','in_progress'])
+          .in('status', ['pending','confirmed','in_progress'])
           .order('created_at', { ascending: false })
         const mapped = (data || []).map(b => ({
           id: b.id,
@@ -291,9 +247,9 @@ const Assignments = () => {
       <div className="max-w-7xl mx-auto p-6 md:p-8">
         <h1 className="text-3xl md:text-4xl font-semibold text-slate-900 mb-6">Assignment Board</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.08)] p-4 bg-white">
+          <div className="rounded-2xl border border-slate-200 bg-white/70 backdrop-blur p-4">
             <h2 className="text-lg font-semibold mb-3 text-slate-900">Available Employees</h2>
-            <div className="min-h-[400px] rounded-xl border border-dashed border-slate-200 p-3">
+            <div className="min-h-[400px] rounded-xl border border-dashed border-slate-200 p-3 bg-white/60">
               {loading && <div className="text-slate-500 p-4">Loading…</div>}
               {!loading && error && <div className="text-rose-600 p-4">{error}</div>}
               {!loading && !error && available.length === 0 && (
@@ -301,7 +257,7 @@ const Assignments = () => {
               )}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {available.map(emp => (
-                  <div key={emp.id} className={`flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-2xl ${activeBookingId ? 'ring-1 ring-sky-200' : ''}`}>
+                  <div key={emp.id} className={`flex items-center gap-3 p-3 bg-slate-50 border border-slate-200 rounded-2xl`}>
                     <div className="w-10 h-10 rounded-full bg-white overflow-hidden flex items-center justify-center">
                       {emp.photo ? (
                         <img src={emp.photo} alt={emp.name} className="w-full h-full object-cover" />
@@ -322,15 +278,15 @@ const Assignments = () => {
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-slate-200 shadow-[0_10px_40px_rgba(15,23,42,0.08)] p-4 bg-white">
+          <div className="rounded-2xl border border-slate-200 bg-white/70 backdrop-blur p-4">
             <h2 className="text-lg font-semibold mb-3 text-slate-900">Active Bookings</h2>
-            <div className="min-h-[400px] rounded-xl border border-dashed border-slate-200 p-3">
+            <div className="min-h-[400px] rounded-xl border border-dashed border-slate-200 p-3 bg-white/60">
               {bookings.length === 0 && (
                 <div className="text-slate-500 p-4">No active bookings</div>
               )}
               <div className="grid grid-cols-1 gap-3">
                 {bookings.map(b => (
-                  <div key={b.id} className={`p-3 bg-slate-50 border border-slate-200 rounded-2xl ${activeBookingId === b.id ? 'ring-2 ring-sky-200' : ''}`}>
+                  <div key={b.id} className={`p-3 bg-slate-50 border border-slate-200 rounded-2xl`}>
                     <div className="flex items-center justify-between">
                       <div className="text-slate-900 font-semibold">Booking #{String(b.id).slice(0,8)}</div>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${b.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{b.status}</span>

@@ -23,7 +23,7 @@ export default function KycNotification() {
             event: 'UPDATE',
             schema: 'public',
             table: 'host_kyc',
-            filter: `host_id=eq.${userId}`
+          filter: `provider_id=eq.${userId}`
           },
           async (payload) => {
             if (payload.new.status === 'approved') {
@@ -38,7 +38,7 @@ export default function KycNotification() {
               const { data: allDocs } = await supabase
                 .from('host_kyc')
                 .select('status')
-                .eq('host_id', userId);
+        .eq('provider_id', userId);
               if (allDocs && allDocs.length > 0) {
                 const statuses = allDocs.map(d => d.status);
                 const hasRejected = statuses.includes('rejected');

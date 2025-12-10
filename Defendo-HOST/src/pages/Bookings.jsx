@@ -8,57 +8,67 @@ import PrimaryButton from '../components/ui/PrimaryButton'
 const BookingDetailModal = ({ booking, onClose }) => {
   if (!booking) return null
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 animate-fade-in">
-      <div className="w-full max-w-2xl bg-[#111714] border border-[#29382f] rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-[#29382f]">
-          <h3 className="text-lg font-semibold">Booking #{booking.id}</h3>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-[#1a241e]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm animate-fade-in px-4">
+      <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-2xl">
+        <div className="flex items-center justify-between p-4 border-b border-slate-200">
+          <h3 className="text-lg font-semibold text-slate-900">Booking #{booking.id}</h3>
+          <button onClick={onClose} className="p-2 rounded-lg text-slate-600">
             <span className="material-symbols-outlined">close</span>
           </button>
         </div>
         <div className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-800">
             <div>
-              <p className="text-white/60 text-sm">Service</p>
-              <p className="font-medium">{booking.service_type}</p>
+              <p className="text-slate-500 text-sm">Service</p>
+              <p className="font-semibold capitalize">{booking.service_type || '—'}</p>
             </div>
             <div>
-              <p className="text-white/60 text-sm">Status</p>
-              <p className="font-medium capitalize">{booking.status}</p>
+              <p className="text-slate-500 text-sm">Status</p>
+              <p className="font-semibold capitalize">{booking.status || '—'}</p>
             </div>
             <div>
-              <p className="text-white/60 text-sm">Date & Time</p>
-              <p className="font-medium">{booking.date ? new Date(booking.date).toLocaleString() : '—'}</p>
+              <p className="text-slate-500 text-sm">Date & Time</p>
+              <p className="font-semibold">
+                {booking.date ? new Date(booking.date).toLocaleString() : '—'}
+              </p>
             </div>
             <div>
-              <p className="text-white/60 text-sm">Location</p>
-              <p className="font-medium">{(() => {
-                if (!booking.location) return '—'
-                if (typeof booking.location === 'string') return booking.location || '—'
-                const obj = booking.location || {}
-                return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
-              })()}</p>
+              <p className="text-slate-500 text-sm">Location</p>
+              <p className="font-semibold">
+                {(() => {
+                  if (!booking.location) return '—'
+                  if (typeof booking.location === 'string') return booking.location || '—'
+                  const obj = booking.location || {}
+                  return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+                })()}
+              </p>
             </div>
             <div>
-              <p className="text-white/60 text-sm">Started</p>
-              <p className="font-medium">{booking.start_time ? new Date(booking.start_time).toLocaleString() : '—'}</p>
+              <p className="text-slate-500 text-sm">Started</p>
+              <p className="font-semibold">
+                {booking.start_time ? new Date(booking.start_time).toLocaleString() : '—'}
+              </p>
             </div>
             <div>
-              <p className="text-white/60 text-sm">Ended</p>
-              <p className="font-medium">{booking.end_time ? new Date(booking.end_time).toLocaleString() : '—'}</p>
+              <p className="text-slate-500 text-sm">Ended</p>
+              <p className="font-semibold">
+                {booking.end_time ? new Date(booking.end_time).toLocaleString() : '—'}
+              </p>
             </div>
             <div>
-              <p className="text-white/60 text-sm">Price</p>
-              <p className="font-medium">₹{Number(booking.price || 0).toLocaleString('en-IN')}</p>
+              <p className="text-slate-500 text-sm">Price</p>
+              <p className="font-semibold">₹{Number(booking.price || 0).toLocaleString('en-IN')}</p>
             </div>
             <div>
-              <p className="text-white/60 text-sm">Payment</p>
-              <p className="font-medium capitalize">{booking.payment_status || '—'}</p>
+              <p className="text-slate-500 text-sm">Payment</p>
+              <p className="font-semibold capitalize">{booking.payment_status || '—'}</p>
             </div>
           </div>
           <div>
-            <p className="text-white/60 text-sm mb-1">Notes</p>
-            <p className="whitespace-pre-wrap bg-[#0b100e] border border-[#29382f] rounded-xl p-4">{booking.user_notes || '—'}</p>
+            <p className="text-slate-500 text-sm mb-1">Notes</p>
+            <p className="whitespace-pre-wrap bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800">
+              {booking.user_notes || '—'}
+            </p>
           </div>
         </div>
       </div>
@@ -75,6 +85,7 @@ const Bookings = () => {
   const [statusFilter, setStatusFilter] = useState('all')
   const [selected, setSelected] = useState(null)
   const [copiedId, setCopiedId] = useState(null)
+  const [otpInputs, setOtpInputs] = useState({})
 
   // Accent badge styles
   const getStatusBadgeClass = (status) => {
@@ -94,29 +105,30 @@ const Bookings = () => {
     return 'bg-white/5 text-white/70 border-white/10'
   }
 
-  useEffect(() => {
-    const load = async () => {
-      if (!user?.id) return
-      setLoading(true)
-      setError(null)
-      const { data, error } = await db.getHostBookings(user.id)
-      if (error) setError(error.message)
-      let rows = data || []
-      // Enrich with user full_name from profiles
-      const userIds = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)))
-      if (userIds.length) {
-        const { data: profiles, error: pErr } = await supabase
-          .from('profiles')
-          .select('id, full_name')
-          .in('id', userIds)
-        if (!pErr && profiles) {
-          const map = new Map(profiles.map(p => [p.id, p.full_name]))
-          rows = rows.map(r => ({ ...r, user_name: map.get(r.user_id) || 'Customer' }))
-        }
+  const load = async () => {
+    if (!user?.id) return
+    setLoading(true)
+    setError(null)
+    const { data, error } = await db.getHostBookings(user.id)
+    if (error) setError(error.message)
+    let rows = data || []
+    // Enrich with user full_name from profiles
+    const userIds = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)))
+    if (userIds.length) {
+      const { data: profiles, error: pErr } = await supabase
+        .from('profiles')
+        .select('id, full_name')
+        .in('id', userIds)
+      if (!pErr && profiles) {
+        const map = new Map(profiles.map(p => [p.id, p.full_name]))
+        rows = rows.map(r => ({ ...r, user_name: map.get(r.user_id) || 'Customer' }))
       }
-      setBookings(rows)
-      setLoading(false)
     }
+    setBookings(rows)
+    setLoading(false)
+  }
+
+  useEffect(() => {
     load()
   }, [user?.id])
 
@@ -144,6 +156,32 @@ const Bookings = () => {
       setCopiedId(id)
       setTimeout(() => setCopiedId(null), 1200)
     } catch (_) {}
+  }
+
+  const handleStartWithOtp = async (bookingId) => {
+    const entered = (otpInputs[bookingId] || '').trim()
+    if (entered.length !== 6) {
+      alert('Enter the 6-digit OTP')
+      return
+    }
+    const res = await db.startServiceWithOtp(bookingId, entered)
+    if (res.ok) {
+      alert('✅ Service started')
+      setOtpInputs(prev => ({ ...prev, [bookingId]: '' }))
+      load()
+    } else {
+      alert(res?.error?.message || '❌ Incorrect OTP. Please try again.')
+    }
+  }
+
+  const handleComplete = async (bookingId) => {
+    const { error } = await db.completeService(bookingId)
+    if (error) {
+      alert(error.message || 'Failed to complete service')
+    } else {
+      alert('✅ Service marked completed')
+      load()
+    }
   }
 
   return (
@@ -225,11 +263,11 @@ const Bookings = () => {
                 key={b.id} 
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="group relative overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-lg hover:shadow-2xl hover:shadow-blue-200/20 transition-all duration-300 cursor-pointer"
+                className="group relative overflow-hidden rounded-3xl bg-white border border-slate-200/80 shadow-lg transition-all duration-300 cursor-pointer"
                 whileHover={{ y: -4, scale: 1.01 }}
               >
                 {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary-color)]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary-color)]/5 to-transparent opacity-0 transition-opacity duration-300 pointer-events-none"></div>
                 
                 {/* Status Badge */}
                 <div className="absolute top-5 right-5 z-10">
@@ -248,7 +286,7 @@ const Bookings = () => {
                       <div>
                         <div className="font-bold text-lg capitalize text-slate-900">{b.service_type || 'Service'}</div>
                         <button
-                          className="text-xs text-slate-500 hover:text-slate-700 transition-colors font-medium"
+                    className="text-xs text-slate-500 transition-colors font-medium"
                           title="Click to copy full ID"
                           onClick={(e) => {
                             e.stopPropagation()
@@ -316,16 +354,56 @@ const Bookings = () => {
                       {b.payment_status || '—'}
                     </span>
 
-                    <button 
-                      className="ml-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 text-white hover:from-slate-800 hover:to-slate-700 transition-all text-sm font-semibold shadow-lg hover:shadow-xl" 
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelected(b)
-                      }}
-                    >
-                      <span className="material-symbols-outlined text-sm">visibility</span>
-                      View Details
-                    </button>
+                    <div className="ml-auto flex flex-wrap items-center gap-2">
+                      {(b.status === 'pending' || b.status === 'confirmed' || b.status === 'assigned') && (
+                        <div className="flex items-center gap-2">
+                          <input
+                            className="px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-800 w-28 text-sm"
+                            placeholder="Enter OTP"
+                            value={otpInputs[b.id] || ''}
+                            onClick={e => e.stopPropagation()}
+                            onChange={e => {
+                              const val = e.target.value.replace(/\D/g, '').slice(0, 6)
+                              setOtpInputs(prev => ({ ...prev, [b.id]: val }))
+                            }}
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              handleStartWithOtp(b.id)
+                            }}
+                            className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold"
+                          >
+                            <span className="material-symbols-outlined text-sm">play_arrow</span>
+                            Start
+                          </button>
+                        </div>
+                      )}
+
+                      {(b.status === 'in_progress' || b.service_status === 'in_progress' || b.status === 'confirmed') && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleComplete(b.id)
+                          }}
+                          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900 text-white text-sm font-semibold"
+                        >
+                          <span className="material-symbols-outlined text-sm">stop</span>
+                          End
+                        </button>
+                      )}
+
+                      <button 
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 text-white transition-all text-sm font-semibold shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelected(b)
+                        }}
+                      >
+                        <span className="material-symbols-outlined text-sm">visibility</span>
+                        View Details
+                      </button>
+                    </div>
                   </div>
                 </div>
               </motion.div>

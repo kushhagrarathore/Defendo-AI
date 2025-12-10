@@ -34,7 +34,7 @@ const Employees = () => {
         const { data, error: err } = await supabase
           .from('employees')
           .select('id, name, role, phone, status, photo_url, experience_years, location')
-          .eq('host_id', user.id)
+          .eq('provider_id', user.id)
           .order('created_at', { ascending: false })
         if (err) throw err
         const mapped = (data || []).map(r => ({
@@ -72,7 +72,7 @@ const Employees = () => {
     try {
       setLoading(true)
       const insertRow = {
-        host_id: user.id,
+        provider_id: user.id,
         name: addForm.name,
         role: addForm.role,
         phone: addForm.phone,
@@ -114,7 +114,7 @@ const Employees = () => {
         .from('employees')
         .delete()
         .eq('id', id)
-        .eq('host_id', user.id)
+        .eq('provider_id', user.id)
       if (err) throw err
       setEmployees(prev => prev.filter(e => e.id !== id))
     } catch (e) {
@@ -232,7 +232,7 @@ const Employees = () => {
       })
 
       const rows = filteredPreview.map(r => ({
-        host_id: user.id,
+        provider_id: user.id,
         name: r.name,
         role: r.role,
         phone: r.phone,
@@ -254,7 +254,7 @@ const Employees = () => {
         const { error: delErr } = await supabase
           .from('employees')
           .delete()
-          .eq('host_id', user.id)
+          .eq('provider_id', user.id)
         if (delErr) throw delErr
       }
 
@@ -266,11 +266,11 @@ const Employees = () => {
         .insert(rows)
         .select('id, name, role, phone, status, photo_url, experience_years, location')
       if (err) throw err
-      // Fetch the refreshed list for this host_id to ensure full sync
+      // Fetch the refreshed list for this provider_id to ensure full sync
       const { data: refreshed, error: fetchErr } = await supabase
         .from('employees')
         .select('id, name, role, phone, status, photo_url, experience_years, location')
-        .eq('host_id', user.id)
+        .eq('provider_id', user.id)
         .order('created_at', { ascending: false })
       if (fetchErr) throw fetchErr
       const mapped = (refreshed || []).map(d => ({

@@ -44,7 +44,7 @@ export default function KycStatusCard({ userId }) {
       const { data: kycRecords, error } = await supabase
         .from('host_kyc')
         .select('*')
-        .eq('host_id', userId)
+        .eq('provider_id', userId)
         .order('submitted_at', { ascending: false });
 
       if (error) {

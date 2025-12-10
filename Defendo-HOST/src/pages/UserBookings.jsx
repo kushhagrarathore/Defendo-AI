@@ -26,11 +26,12 @@ const UserBookings = () => {
         .from("bookings")
         .select(`
           *,
-          host_profiles(
+          assigned_employee:assigned_employee_id (
             id,
-            company_name,
-            full_name,
-            phone
+            name,
+            role,
+            phone,
+            photo_url
           )
         `)
         .eq("user_id", user.id)
@@ -43,7 +44,35 @@ const UserBookings = () => {
       const { data, error } = await query
 
       if (error) throw error
-      setBookings(data || [])
+
+      let rows = data || []
+
+      // Enrich with guard details if missing
+      const guardIds = Array.from(
+        new Set(
+          rows
+            .map((b) => b.assigned_employee_id)
+            .filter(Boolean)
+        )
+      )
+
+      let guardMap = new Map()
+      if (guardIds.length > 0) {
+        const { data: guards, error: gErr } = await supabase
+          .from("employees")
+          .select("id, name, role, phone, photo_url")
+          .in("id", guardIds)
+        if (!gErr && guards) {
+          guardMap = new Map(guards.map((g) => [g.id, g]))
+        }
+      }
+
+      rows = rows.map((b) => ({
+        ...b,
+        assigned_employee: b.assigned_employee || guardMap.get(b.assigned_employee_id) || null,
+      }))
+
+      setBookings(rows)
     } catch (error) {
       console.error("Error fetching bookings:", error)
     } finally {
@@ -57,6 +86,8 @@ const UserBookings = () => {
         return "bg-amber-100 text-amber-700 border-amber-200"
       case "confirmed":
         return "bg-blue-100 text-blue-700 border-blue-200"
+      case "in_progress":
+        return "bg-indigo-100 text-indigo-700 border-indigo-200"
       case "completed":
         return "bg-green-100 text-green-700 border-green-200"
       case "cancelled":
@@ -72,6 +103,8 @@ const UserBookings = () => {
         return "hourglass_empty"
       case "confirmed":
         return "check_circle"
+      case "in_progress":
+        return "running_with_errors"
       case "completed":
         return "done_all"
       case "cancelled":
@@ -102,6 +135,7 @@ const UserBookings = () => {
     { value: "all", label: "All Bookings" },
     { value: "pending", label: "Pending" },
     { value: "confirmed", label: "Confirmed" },
+    { value: "in_progress", label: "In Progress" },
     { value: "completed", label: "Completed" },
     { value: "cancelled", label: "Cancelled" },
   ]
@@ -239,6 +273,48 @@ const UserBookings = () => {
                           <span className="font-medium">Notes: </span>
                           {booking.user_notes}
                         </p>
+                      </div>
+                    )}
+
+                    {booking.otp_code && (
+                      <div className="mt-3 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between">
+                        <div>
+                          <p className="text-xs uppercase tracking-wide text-amber-700 font-semibold">Service OTP</p>
+                          <p className="text-lg font-bold text-amber-800">{booking.otp_code}</p>
+                          <p className="text-xs text-amber-700/80">Share this with the guard to start the service.</p>
+                        </div>
+                        <button
+                          onClick={() => navigator.clipboard.writeText(booking.otp_code)}
+                          className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 transition-colors"
+                        >
+                          Copy
+                        </button>
+                      </div>
+                    )}
+
+                    {(booking.assigned_employee || booking.assigned_employee_id) && (
+                      <div className="mt-3 p-3 rounded-xl bg-green-50 border border-green-200 flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-white border border-green-100 flex items-center justify-center text-green-700 font-semibold">
+                          {(booking.assigned_employee?.name || "G")?.[0]?.toUpperCase() || "G"}
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-semibold text-green-800">Guard Assigned</p>
+                          <p className="text-sm text-green-700">
+                            {booking.assigned_employee?.name || "Guard assigned"}
+                          </p>
+                          <p className="text-xs text-green-700/80">
+                            {booking.assigned_employee?.role || "Guard"}
+                            {booking.assigned_employee?.phone ? ` · ${booking.assigned_employee.phone}` : ""}
+                          </p>
+                        </div>
+                        {booking.otp_code && (
+                          <button
+                            onClick={() => navigator.clipboard.writeText(booking.otp_code)}
+                            className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 transition-colors"
+                          >
+                            Copy OTP
+                          </button>
+                        )}
                       </div>
                     )}
                   </div>

@@ -77,7 +77,7 @@ const DashboardHome = () => {
             .gte('created_at', startOfMonth.toISOString())
             .eq('status','completed')
             .eq('payment_status','paid'),
-          supabase.from('bookings').select('id, service_type, status, created_at, price, host_id:provider_id')
+          supabase.from('bookings').select('id, service_type, status, created_at, price, provider_id')
             .eq('provider_id', user.id)
             .order('created_at', { ascending: false })
             .limit(5),
