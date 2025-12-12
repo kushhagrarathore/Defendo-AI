@@ -320,7 +320,7 @@ const CompanyServices = () => {
             optionLabel: chosenOption?.label || bookingService.service_name || "Service",
             bookingId: data?.id || null,
           })
-          setBookingMessage("Booking request sent! We’ll notify you once the provider confirms.")
+        setBookingMessage("Booking request sent! We’ll notify you once the provider confirms.")
       }
     } catch (err) {
       console.error("Booking exception:", err)
@@ -678,14 +678,14 @@ const CompanyServices = () => {
 
             {!bookingSuccess ? (
               <>
-                <h3 className="text-2xl font-bold mb-1" style={{ color: BLACK_TEXT }}>
-                  Book {bookingService.service_name || "Service"}
-                </h3>
-                <p className="text-sm text-gray-600 mb-4">
-                  Select date and time to request a booking.
-                </p>
+            <h3 className="text-2xl font-bold mb-1" style={{ color: BLACK_TEXT }}>
+              Book {bookingService.service_name || "Service"}
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Select date and time to request a booking.
+            </p>
 
-                <div className="space-y-4">
+            <div className="space-y-4">
                   <div>
                     <label className="text-sm font-medium text-gray-700">Service Option</label>
                     <select
@@ -711,66 +711,66 @@ const CompanyServices = () => {
                       className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
                     />
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Date</label>
-                    <input
-                      type="date"
-                      value={bookingForm.date}
-                      onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
-                      className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">Start Time</label>
-                      <input
-                        type="time"
-                        value={bookingForm.startTime}
-                        onChange={(e) => setBookingForm({ ...bookingForm, startTime: e.target.value })}
-                        className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-sm font-medium text-gray-700">End Time</label>
-                      <input
-                        type="time"
-                        value={bookingForm.endTime}
-                        onChange={(e) => setBookingForm({ ...bookingForm, endTime: e.target.value })}
-                        className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
-                      />
-                    </div>
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Location</label>
-                    <input
-                      type="text"
-                      placeholder="Address or city"
-                      value={bookingForm.location}
-                      onChange={(e) => setBookingForm({ ...bookingForm, location: e.target.value })}
-                      className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700">Notes</label>
-                    <textarea
-                      rows={3}
-                      placeholder="Any special instructions?"
-                      value={bookingForm.notes}
-                      onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
-                      className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
-                    />
-                  </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Date</label>
+                <input
+                  type="date"
+                  value={bookingForm.date}
+                  onChange={(e) => setBookingForm({ ...bookingForm, date: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">Start Time</label>
+                  <input
+                    type="time"
+                    value={bookingForm.startTime}
+                    onChange={(e) => setBookingForm({ ...bookingForm, startTime: e.target.value })}
+                    className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">End Time</label>
+                  <input
+                    type="time"
+                    value={bookingForm.endTime}
+                    onChange={(e) => setBookingForm({ ...bookingForm, endTime: e.target.value })}
+                    className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Location</label>
+                <input
+                  type="text"
+                  placeholder="Address or city"
+                  value={bookingForm.location}
+                  onChange={(e) => setBookingForm({ ...bookingForm, location: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-gray-700">Notes</label>
+                <textarea
+                  rows={3}
+                  placeholder="Any special instructions?"
+                  value={bookingForm.notes}
+                  onChange={(e) => setBookingForm({ ...bookingForm, notes: e.target.value })}
+                  className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-yellow-400/30 focus:border-yellow-400"
+                />
+              </div>
 
-                  {bookingError && (
-                    <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
-                      {bookingError}
-                    </div>
-                  )}
-                  {bookingMessage && (
-                    <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
-                      {bookingMessage}
-                    </div>
-                  )}
+              {bookingError && (
+                <div className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+                  {bookingError}
+                </div>
+              )}
+              {bookingMessage && (
+                <div className="text-sm text-green-700 bg-green-50 border border-green-200 rounded-xl px-3 py-2">
+                  {bookingMessage}
+                </div>
+              )}
 
                   {/* Price Summary */}
                   {(() => {
@@ -795,23 +795,23 @@ const CompanyServices = () => {
                     )
                   })()}
 
-                  <div className="flex gap-3 pt-2">
-                    <button
-                      onClick={submitBooking}
-                      disabled={bookingLoading}
-                      className="flex-1 py-3 rounded-xl text-white font-semibold hover:shadow-lg transition-all disabled:opacity-60"
-                      style={{ backgroundColor: GOLDEN_YELLOW }}
-                    >
-                      {bookingLoading ? "Booking..." : "Submit Booking"}
-                    </button>
-                    <button
-                      onClick={closeBookingModal}
-                      className="px-4 py-3 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all"
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={submitBooking}
+                  disabled={bookingLoading}
+                  className="flex-1 py-3 rounded-xl text-white font-semibold hover:shadow-lg transition-all disabled:opacity-60"
+                  style={{ backgroundColor: GOLDEN_YELLOW }}
+                >
+                  {bookingLoading ? "Booking..." : "Submit Booking"}
+                </button>
+                <button
+                  onClick={closeBookingModal}
+                  className="px-4 py-3 rounded-xl border border-gray-300 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
               </>
             ) : (
               <div className="text-center space-y-4 py-4">

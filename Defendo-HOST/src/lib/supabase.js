@@ -603,10 +603,16 @@ export const db = {
       return { error: { message: 'Missing booking or employee.' } }
     }
 
+    const { data: sessionData } = await supabase.auth.getUser()
+    const currentUserId = sessionData?.user?.id || null
+
     // Fetch employee + booking in parallel
     const [{ data: employee, error: empErr }, { data: booking, error: bookErr }] = await Promise.all([
       supabase.from('employees').select('id, name, role, phone, photo_url').eq('id', employeeId).single(),
-      supabase.from('bookings').select('id, user_id, provider_id').eq('id', bookingId).single()
+      supabase.from('bookings')
+        .select('id, user_id, provider_id, service_type, status, date, start_time, end_time, location, price, payment_status, service_status, assigned_employee_id, otp_code')
+        .eq('id', bookingId)
+        .single()
     ])
     if (empErr) return { error: empErr }
     if (bookErr) return { error: bookErr }
@@ -618,8 +624,15 @@ export const db = {
       updated_at: new Date().toISOString()
     }
 
+    // Constrain update to provider_id to satisfy RLS
+    const providerFilter = booking?.provider_id || currentUserId || null
+
     const [{ error: bookingUpdateErr }, { error: empUpdateErr }] = await Promise.all([
-      supabase.from('bookings').update(updates).eq('id', bookingId),
+      (() => {
+        let q = supabase.from('bookings').update(updates).eq('id', bookingId)
+        if (providerFilter) q = q.eq('provider_id', providerFilter)
+        return q
+      })(),
       supabase.from('employees').update({ status: 'Assigned' }).eq('id', employeeId)
     ])
     if (bookingUpdateErr) return { error: bookingUpdateErr }
@@ -711,13 +724,16 @@ export const db = {
 
   // Verify OTP and start service (updates service_status and start_time)
   startServiceWithOtp: async (bookingId, enteredOtp) => {
+    const { data: sessionData } = await supabase.auth.getUser()
+    const currentUserId = sessionData?.user?.id || null
+
     // Fetch stored OTP (if column exists)
     let otpRow
     let fetchErr
     try {
       const { data, error } = await supabase
         .from('bookings')
-        .select('otp_code')
+        .select('id, user_id, provider_id, otp_code')
         .eq('id', bookingId)
         .single()
       otpRow = data
@@ -736,14 +752,17 @@ export const db = {
     }
     // Update service status and start_time (if service_status exists); always set start_time
     const updatePayload = {
-      start_time: new Date().toISOString()
+      start_time: new Date().toISOString(),
+      status: 'in_progress',
+      service_status: 'in_progress'
     }
-    // Attempt to set service_status when present
-    updatePayload.service_status = 'in_progress'
-    let { error: updateError } = await supabase
-      .from('bookings')
-      .update(updatePayload)
-      .eq('id', bookingId)
+
+    let bookingUpdate = supabase.from('bookings').update(updatePayload).eq('id', bookingId)
+    if (otpRow?.provider_id || currentUserId) {
+      bookingUpdate = bookingUpdate.eq('provider_id', otpRow?.provider_id || currentUserId)
+    }
+
+    let { error: updateError } = await bookingUpdate
     if (updateError && (updateError.code === '42703' || String(updateError.message || '').toLowerCase().includes('column'))) {
       const fallback = { start_time: updatePayload.start_time }
       ;({ error: updateError } = await supabase
@@ -752,6 +771,22 @@ export const db = {
         .eq('id', bookingId))
     }
     if (updateError) return { ok: false, error: updateError }
+
+    // Notify user that service started
+    try {
+      if (otpRow?.user_id) {
+        await supabase.from('notifications').insert({
+          user_id: otpRow.user_id,
+          type: 'booking_update',
+          title: 'Service Started',
+          message: 'Your guard has started the service.',
+          metadata: { booking_id: bookingId }
+        })
+      }
+    } catch (_) {
+      // Do not block on notification failure
+    }
+
     return { ok: true }
   },
 

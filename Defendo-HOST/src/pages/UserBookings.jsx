@@ -12,6 +12,7 @@ const UserBookings = () => {
   const [bookings, setBookings] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState("all") // all, pending, confirmed, completed, cancelled
+  const [selectedBooking, setSelectedBooking] = useState(null)
 
   useEffect(() => {
     if (user?.id) {
@@ -67,9 +68,39 @@ const UserBookings = () => {
         }
       }
 
+      // Enrich with provider/company names
+      const providerIds = Array.from(
+        new Set(
+          rows
+            .map((b) => b.provider_id)
+            .filter(Boolean)
+        )
+      )
+
+      let providerMap = new Map()
+      if (providerIds.length > 0) {
+        const { data: providers, error: pErr } = await supabase
+          .from("host_profiles")
+          .select("id, company_name, full_name")
+          .in("id", providerIds)
+        if (!pErr && providers) {
+          providerMap = new Map(
+            providers.map((p) => [
+              p.id,
+              p.company_name || p.full_name || "Provider"
+            ])
+          )
+        }
+      }
+
       rows = rows.map((b) => ({
         ...b,
         assigned_employee: b.assigned_employee || guardMap.get(b.assigned_employee_id) || null,
+        provider_name:
+          b.host_profiles?.company_name ||
+          b.host_profiles?.full_name ||
+          providerMap.get(b.provider_id) ||
+          "Provider",
       }))
 
       setBookings(rows)
@@ -140,18 +171,138 @@ const UserBookings = () => {
     { value: "cancelled", label: "Cancelled" },
   ]
 
+  const DetailModal = ({ booking, onClose }) => {
+    if (!booking) return null
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm px-4">
+        <div className="w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+            <div>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                Booking #{String(booking.id).slice(0, 8).toUpperCase()}
+              </p>
+              <h3 className="text-xl font-bold text-slate-900">
+                {booking.service_type
+                  ? booking.service_type.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())
+                  : "Security Service"}
+              </h3>
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+          </div>
+
+          <div className="p-6 space-y-4">
+            <div className="grid md:grid-cols-2 gap-4 text-sm text-slate-700">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <p className="text-xs font-semibold text-slate-500 uppercase">Company</p>
+                <p className="text-slate-900 font-semibold">
+                  {booking.host_profiles?.company_name ||
+                    booking.host_profiles?.full_name ||
+                    booking.provider_name ||
+                    "Provider"}
+                </p>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <p className="text-xs font-semibold text-slate-500 uppercase">Status</p>
+                <div className={`inline-flex items-center gap-2 px-3 py-1 mt-1 rounded-full border text-xs font-semibold capitalize ${getStatusColor(booking.status)}`}>
+                  <span className="material-symbols-outlined text-sm">{getStatusIcon(booking.status)}</span>
+                  {booking.status || "—"}
+                </div>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <p className="text-xs font-semibold text-slate-500 uppercase">Date</p>
+                <p className="text-slate-900 font-semibold">{formatDate(booking.date || booking.booking_date)}</p>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <p className="text-xs font-semibold text-slate-500 uppercase">Time</p>
+                <p className="text-slate-900 font-semibold">
+                  {formatTime(booking.start_time)} - {formatTime(booking.end_time)}
+                </p>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 md:col-span-2">
+                <p className="text-xs font-semibold text-slate-500 uppercase">Location</p>
+                <p className="text-slate-900 font-semibold">
+                  {(() => {
+                    if (!booking.location) return "Location not specified"
+                    if (typeof booking.location === "string") return booking.location
+                    const obj = booking.location || {}
+                    return obj.address || [obj.city, obj.state].filter(Boolean).join(", ") || "Location not specified"
+                  })()}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-4 text-sm text-slate-700">
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <p className="text-xs font-semibold text-slate-500 uppercase">Total Price</p>
+                <p className="text-2xl font-extrabold text-slate-900">₹{Number(booking.price || 0).toLocaleString("en-IN")}</p>
+                <p className="text-xs text-slate-500">
+                  {booking.duration_hours ? `${booking.duration_hours} hours` : "Service"}
+                </p>
+              </div>
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <p className="text-xs font-semibold text-slate-500 uppercase">Payment</p>
+                <p className="text-slate-900 font-semibold capitalize">{booking.payment_status || "—"}</p>
+              </div>
+            </div>
+
+            {booking.otp_code && (
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
+                <p className="text-xs uppercase tracking-wide text-amber-700 font-semibold">Service OTP</p>
+                <p className="text-2xl font-extrabold text-amber-800">{booking.otp_code}</p>
+                <p className="text-xs text-amber-700/80">Share this with the guard to start the service.</p>
+              </div>
+            )}
+
+            {(booking.assigned_employee || booking.assigned_employee_id) && (
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-white border border-emerald-100 flex items-center justify-center text-emerald-700 font-semibold">
+                  {(booking.assigned_employee?.name || "G")?.[0]?.toUpperCase() || "G"}
+                </div>
+                <div className="flex-1">
+                  <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">Guard Assigned</p>
+                  <p className="text-sm text-emerald-900 font-semibold">
+                    {booking.assigned_employee?.name || "Guard assigned"}
+                  </p>
+                  <p className="text-xs text-emerald-700/80">
+                    {booking.assigned_employee?.role || "Guard"}
+                    {booking.assigned_employee?.phone ? ` · ${booking.assigned_employee.phone}` : ""}
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {booking.user_notes && (
+              <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                <p className="text-xs font-semibold text-slate-500 uppercase mb-1">Notes</p>
+                <p className="text-sm text-slate-800 whitespace-pre-wrap">{booking.user_notes}</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <UserLayout>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto py-6">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold mb-2" style={{ color: BLACK_TEXT }}>
-            My Bookings
-          </h1>
-          <p className="text-gray-600">View and manage all your security service bookings</p>
+          <div className="inline-flex items-center gap-3 px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-100 to-white border border-amber-200 shadow-sm">
+            <span className="material-symbols-outlined text-amber-600">event_available</span>
+            <div>
+              <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900">My Bookings</h1>
+              <p className="text-sm text-slate-600">Track your services, guards, OTP, and status in one view.</p>
+            </div>
+          </div>
         </motion.div>
 
         {/* Filter Tabs */}
@@ -209,15 +360,16 @@ const UserBookings = () => {
             </a>
           </motion.div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {bookings.map((booking, index) => (
               <motion.div
                 key={booking.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-white rounded-3xl p-6 border border-gray-200 shadow-sm hover:shadow-lg transition-all"
+                className="relative overflow-hidden bg-white rounded-3xl p-6 border border-gray-200 shadow-lg transition-all"
               >
+                <div className="absolute inset-x-0 top-0 h-2 bg-gradient-to-r from-amber-400/70 via-orange-300/60 to-yellow-300/60" />
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
@@ -245,9 +397,10 @@ const UserBookings = () => {
                     <div className="grid sm:grid-cols-2 gap-3 text-sm text-gray-600">
                       <div className="flex items-center gap-2">
                         <span className="material-symbols-outlined text-base">business</span>
-                        <span>
+                        <span className="font-semibold text-slate-800">
                           {booking.host_profiles?.company_name ||
                             booking.host_profiles?.full_name ||
+                            booking.provider_name ||
                             "Provider"}
                         </span>
                       </div>
@@ -268,8 +421,8 @@ const UserBookings = () => {
                     </div>
 
                     {booking.user_notes && (
-                      <div className="mt-3 p-3 rounded-xl bg-gray-50 border border-gray-200">
-                        <p className="text-sm text-gray-700">
+                      <div className="mt-3 p-3 rounded-xl bg-slate-50 border border-slate-200">
+                        <p className="text-sm text-slate-700">
                           <span className="font-medium">Notes: </span>
                           {booking.user_notes}
                         </p>
@@ -277,44 +430,28 @@ const UserBookings = () => {
                     )}
 
                     {booking.otp_code && (
-                      <div className="mt-3 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-between">
-                        <div>
-                          <p className="text-xs uppercase tracking-wide text-amber-700 font-semibold">Service OTP</p>
-                          <p className="text-lg font-bold text-amber-800">{booking.otp_code}</p>
-                          <p className="text-xs text-amber-700/80">Share this with the guard to start the service.</p>
-                        </div>
-                        <button
-                          onClick={() => navigator.clipboard.writeText(booking.otp_code)}
-                          className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 transition-colors"
-                        >
-                          Copy
-                        </button>
+                      <div className="mt-3 p-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
+                        <p className="text-xs uppercase tracking-wide text-amber-700 font-semibold">Service OTP</p>
+                        <p className="text-2xl font-extrabold text-amber-800">{booking.otp_code}</p>
+                        <p className="text-xs text-amber-700/80">Share this with the guard to start the service.</p>
                       </div>
                     )}
 
                     {(booking.assigned_employee || booking.assigned_employee_id) && (
-                      <div className="mt-3 p-3 rounded-xl bg-green-50 border border-green-200 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-white border border-green-100 flex items-center justify-center text-green-700 font-semibold">
+                      <div className="mt-3 p-4 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 flex items-center gap-3 shadow-[0_6px_18px_rgba(16,185,129,0.15)]">
+                        <div className="w-12 h-12 rounded-full bg-white border border-emerald-100 flex items-center justify-center text-emerald-700 font-semibold">
                           {(booking.assigned_employee?.name || "G")?.[0]?.toUpperCase() || "G"}
                         </div>
                         <div className="flex-1">
-                          <p className="text-sm font-semibold text-green-800">Guard Assigned</p>
-                          <p className="text-sm text-green-700">
+                          <p className="text-xs font-semibold text-emerald-700 uppercase tracking-wide">Guard Assigned</p>
+                          <p className="text-sm text-emerald-900 font-semibold">
                             {booking.assigned_employee?.name || "Guard assigned"}
                           </p>
-                          <p className="text-xs text-green-700/80">
+                          <p className="text-xs text-emerald-700/80">
                             {booking.assigned_employee?.role || "Guard"}
                             {booking.assigned_employee?.phone ? ` · ${booking.assigned_employee.phone}` : ""}
                           </p>
                         </div>
-                        {booking.otp_code && (
-                          <button
-                            onClick={() => navigator.clipboard.writeText(booking.otp_code)}
-                            className="px-3 py-1.5 rounded-lg bg-amber-600 text-white text-xs font-semibold hover:bg-amber-700 transition-colors"
-                          >
-                            Copy OTP
-                          </button>
-                        )}
                       </div>
                     )}
                   </div>
@@ -341,6 +478,7 @@ const UserBookings = () => {
                       <button
                         className="px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all"
                         style={{ backgroundColor: GOLDEN_YELLOW }}
+                        onClick={() => setSelectedBooking(booking)}
                       >
                         View Details
                       </button>
@@ -352,6 +490,7 @@ const UserBookings = () => {
           </div>
         )}
       </div>
+      <DetailModal booking={selectedBooking} onClose={() => setSelectedBooking(null)} />
     </UserLayout>
   )
 }

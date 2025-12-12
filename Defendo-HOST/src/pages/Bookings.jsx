@@ -36,10 +36,10 @@ const BookingDetailModal = ({ booking, onClose }) => {
               <p className="text-slate-500 text-sm">Location</p>
               <p className="font-semibold">
                 {(() => {
-                  if (!booking.location) return '—'
-                  if (typeof booking.location === 'string') return booking.location || '—'
-                  const obj = booking.location || {}
-                  return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
+                if (!booking.location) return '—'
+                if (typeof booking.location === 'string') return booking.location || '—'
+                const obj = booking.location || {}
+                return obj.address || [obj.city, obj.state].filter(Boolean).join(', ') || '—'
                 })()}
               </p>
             </div>
@@ -105,28 +105,28 @@ const Bookings = () => {
     return 'bg-white/5 text-white/70 border-white/10'
   }
 
-  const load = async () => {
-    if (!user?.id) return
-    setLoading(true)
-    setError(null)
-    const { data, error } = await db.getHostBookings(user.id)
-    if (error) setError(error.message)
-    let rows = data || []
-    // Enrich with user full_name from profiles
-    const userIds = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)))
-    if (userIds.length) {
-      const { data: profiles, error: pErr } = await supabase
-        .from('profiles')
-        .select('id, full_name')
-        .in('id', userIds)
-      if (!pErr && profiles) {
-        const map = new Map(profiles.map(p => [p.id, p.full_name]))
-        rows = rows.map(r => ({ ...r, user_name: map.get(r.user_id) || 'Customer' }))
+    const load = async () => {
+      if (!user?.id) return
+      setLoading(true)
+      setError(null)
+      const { data, error } = await db.getHostBookings(user.id)
+      if (error) setError(error.message)
+      let rows = data || []
+      // Enrich with user full_name from profiles
+      const userIds = Array.from(new Set(rows.map(r => r.user_id).filter(Boolean)))
+      if (userIds.length) {
+        const { data: profiles, error: pErr } = await supabase
+          .from('profiles')
+          .select('id, full_name')
+          .in('id', userIds)
+        if (!pErr && profiles) {
+          const map = new Map(profiles.map(p => [p.id, p.full_name]))
+          rows = rows.map(r => ({ ...r, user_name: map.get(r.user_id) || 'Customer' }))
+        }
       }
+      setBookings(rows)
+      setLoading(false)
     }
-    setBookings(rows)
-    setLoading(false)
-  }
 
   useEffect(() => {
     load()
@@ -393,16 +393,16 @@ const Bookings = () => {
                         </button>
                       )}
 
-                      <button 
+                    <button 
                         className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 text-white transition-all text-sm font-semibold shadow-lg"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setSelected(b)
-                        }}
-                      >
-                        <span className="material-symbols-outlined text-sm">visibility</span>
-                        View Details
-                      </button>
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        setSelected(b)
+                      }}
+                    >
+                      <span className="material-symbols-outlined text-sm">visibility</span>
+                      View Details
+                    </button>
                     </div>
                   </div>
                 </div>

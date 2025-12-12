@@ -4,66 +4,14 @@ import { motion } from "framer-motion"
 import UserHeader from "../components/UserHeader"
 
 const serviceCategories = [
-  {
-    id: "night-guard",
-    title: "Night Guard",
-    icon: "nightlight",
-    description: "24/7 night security coverage"
-  },
-  {
-    id: "day-guard",
-    title: "Day Guard",
-    icon: "wb_sunny",
-    description: "Daytime security services"
-  },
-  {
-    id: "male-guard",
-    title: "Male Guard",
-    icon: "person",
-    description: "Male security personnel"
-  },
-  {
-    id: "female-guard",
-    title: "Female Guard",
-    icon: "person",
-    description: "Female security personnel"
-  },
-  {
-    id: "bouncer",
-    title: "Bouncer",
-    icon: "security",
-    description: "Event and venue security"
-  },
-  {
-    id: "event-security",
-    title: "Event Security",
-    icon: "event",
-    description: "Comprehensive event protection"
-  },
-  {
-    id: "emergency-response",
-    title: "Emergency Response",
-    icon: "emergency",
-    description: "Rapid response security teams"
-  },
-  {
-    id: "corporate-security",
-    title: "Corporate Security",
-    icon: "business",
-    description: "Office and corporate protection"
-  },
-  {
-    id: "industrial-security",
-    title: "Industrial Security",
-    icon: "factory",
-    description: "Industrial facility security"
-  },
-  {
-    id: "personal-bodyguard",
-    title: "Personal Bodyguard",
-    icon: "shield_person",
-    description: "Personal protection services"
-  }
+  { id: "male-guard", title: "Male Guard", image: "/categories card/male gaurd.png", description: "Male security personnel" },
+  { id: "female-guard", title: "Female Guard", image: "/categories card/female gaurd.png", description: "Female security personnel" },
+  { id: "male-bouncer", title: "Male Bouncer", image: "/categories card/male bouncer.png", description: "Event and venue security (male)" },
+  { id: "female-bouncer", title: "Female Bouncer", image: "/categories card/female bouncer.png", description: "Event and venue security (female)" },
+  { id: "personal-bodyguard", title: "Personal Body Guard", image: "/categories card/Personal bodygaurd.png", description: "Personal protection services" },
+  { id: "gun-man", title: "Gun Man", image: "/categories card/Gunman.png", description: "Armed security personnel" },
+  { id: "event-security", title: "Event / Corporate Security", image: "/categories card/event security.png", description: "Events, offices, and corporate spaces" },
+  { id: "emergency-response", title: "Emergency Response", image: "/categories card/event security.png", description: "Rapid response security teams" }
 ]
 
 const ServiceCategorySelection = () => {
@@ -105,40 +53,40 @@ const ServiceCategorySelection = () => {
               transition={{ delay: index * 0.05 }}
               onClick={() => handleCategoryClick(category.id)}
               className={`
-                relative bg-white rounded-2xl p-6 cursor-pointer
-                border-2 transition-all duration-300
+                relative overflow-hidden cursor-pointer
+                bg-white rounded-2xl p-4
+                border border-gray-200 transition-all duration-300
+                shadow-sm
                 ${selectedCategory === category.id 
-                  ? 'border-[#DAA520] shadow-lg shadow-[#DAA520]/20' 
-                  : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                  ? 'ring-2 ring-amber-300/60 shadow-md' 
+                  : 'hover:shadow-lg'
                 }
               `}
-              whileHover={{ y: -4, scale: 1.02 }}
+              whileHover={{ y: -3, scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
             >
-              {/* Icon */}
-              <div className={`
-                w-16 h-16 rounded-xl flex items-center justify-center mb-4
-                ${selectedCategory === category.id 
-                  ? 'bg-[#DAA520]' 
-                  : 'bg-[#F7F7F7]'
-                }
-                transition-colors duration-300
-              `}>
-                <span className={`
-                  material-symbols-outlined text-3xl
-                  ${selectedCategory === category.id ? 'text-white' : 'text-[#1A1A1A]'}
-                `}>
-                  {category.icon}
-                </span>
+              {/* Image */}
+              <div className="w-full h-[150px] rounded-xl bg-gray-100 flex items-center justify-center mb-3 overflow-hidden">
+                {category.image ? (
+                  <img
+                    src={category.image}
+                    alt={category.title}
+                    className="h-full w-full object-cover"
+                    style={{ filter: 'saturate(1.05) brightness(1.02)' }}
+                    onError={(e) => { e.target.style.display = 'none' }}
+                  />
+                ) : (
+                  <span className="material-symbols-outlined text-4xl text-gray-500">shield_person</span>
+                )}
               </div>
 
               {/* Title */}
-              <h3 className="text-xl font-semibold text-[#1A1A1A] mb-2">
+              <h3 className="text-xl font-semibold text-center text-[#1A1A1A] mb-1">
                 {category.title}
               </h3>
 
               {/* Description */}
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-gray-600 text-center">
                 {category.description}
               </p>
 
@@ -147,9 +95,9 @@ const ServiceCategorySelection = () => {
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#DAA520] flex items-center justify-center"
+                  className="absolute top-4 right-4 w-6 h-6 rounded-full bg-[#DAA520] flex items-center justify-center shadow-md"
                 >
-                  <span className="material-symbols-outlined text-white text-sm">
+                  <span className="material-symbols-outlined text-white text-xs">
                     check
                   </span>
                 </motion.div>
@@ -183,6 +131,12 @@ const ServiceCategorySelection = () => {
 }
 
 export default ServiceCategorySelection
+
+
+
+
+
+
 
 
 

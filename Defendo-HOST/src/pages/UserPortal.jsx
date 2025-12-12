@@ -15,18 +15,16 @@ const GOLDEN_YELLOW = "#DAA520"
 const SOFT_GREY = "#F7F7F7"
 const BLACK_TEXT = "#1A1A1A"
 
-// Service categories with icons
+// Service categories with images (stored in public/categories card)
 const serviceCategories = [
-  { id: "night-guard", name: "Night Guard", icon: "🌙" },
-  { id: "day-guard", name: "Day Guard", icon: "🌤️" },
-  { id: "male-guard", name: "Male Guard", icon: "👨‍💼" },
-  { id: "female-guard", name: "Female Guard", icon: "👩‍💼" },
-  { id: "bouncer", name: "Bouncer", icon: "🛡️" },
-  { id: "event-security", name: "Event Security", icon: "🎪" },
-  { id: "emergency-response", name: "Emergency Response", icon: "🚨" },
-  { id: "corporate-security", name: "Corporate Security", icon: "🏢" },
-  { id: "industrial-security", name: "Industrial Security", icon: "🏭" },
-  { id: "personal-bodyguard", name: "Personal Bodyguard", icon: "🤵" },
+  { id: "male-guard", name: "Male Guard", image: "/categories card/male gaurd.png" },
+  { id: "female-guard", name: "Female Guard", image: "/categories card/female gaurd.png" },
+  { id: "male-bouncer", name: "Male Bouncer", image: "/categories card/male bouncer.png" },
+  { id: "female-bouncer", name: "Female Bouncer", image: "/categories card/female bouncer.png" },
+  { id: "personal-bodyguard", name: "Personal Body Guard", image: "/categories card/Personal bodygaurd.png" },
+  { id: "gun-man", name: "Gun Man", image: "/categories card/Gunman.png" },
+  { id: "event-security", name: "Event / Corporate Security", image: "/categories card/event security.png" },
+  { id: "emergency-response", name: "Emergency Response", image: "/categories card/event security.png" },
 ]
 
 // Service Selection Component (Screen 1 & 2)
@@ -533,39 +531,45 @@ const ServiceSelection = () => {
           </div>
 
           {/* Category Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {serviceCategories.map((category) => {
               const isSelected = selectedCategory?.id === category.id
               return (
                 <motion.button
                   key={category.id}
                   onClick={() => setSelectedCategory(category)}
-                  whileHover={{ y: -8, scale: 1.02 }}
+                  whileHover={{ y: -4, scale: 1.01 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`group relative p-8 bg-white rounded-3xl border-2 transition-all duration-300 ${
+                  className={`group relative overflow-hidden text-left bg-white rounded-2xl border border-gray-200 transition-all duration-300 shadow-sm ${
                     isSelected
-                      ? "border-yellow-400 shadow-xl"
-                      : "border-transparent hover:border-yellow-400 shadow-sm hover:shadow-xl"
+                      ? "ring-2 ring-amber-300/60 shadow-md"
+                      : "hover:shadow-lg"
                   }`}
-                  style={{
-                    boxShadow: isSelected
-                      ? "0 8px 24px rgba(218, 165, 32, 0.2)"
-                      : "0 2px 8px rgba(0,0,0,0.06)",
-                  }}
+                  style={{ minHeight: "160px", padding: "12px" }}
                 >
-                  <div className="text-5xl mb-4">{category.icon}</div>
-                  <h3 className="text-lg font-semibold" style={{ color: BLACK_TEXT }}>
+                  <div className="relative mb-3 flex items-center justify-center h-[180px] w-full rounded-xl overflow-hidden bg-gray-100">
+                    {category.image ? (
+                      <img
+                        src={category.image}
+                        alt={category.name}
+                        className="h-full w-full object-cover"
+                        style={{ filter: "saturate(1.05) brightness(1.02)" }}
+                        onError={(e) => { e.target.style.display = "none" }}
+                      />
+                    ) : (
+                      <div className="h-full w-full bg-gray-100 flex items-center justify-center text-4xl text-gray-500">
+                        🛡️
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-lg font-semibold text-center" style={{ color: BLACK_TEXT }}>
                     {category.name}
                   </h3>
                   {isSelected && (
-                    <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-yellow-400 flex items-center justify-center">
-                      <span className="material-symbols-outlined text-white text-sm">check</span>
+                    <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center shadow-md">
+                      <span className="material-symbols-outlined text-white text-xs">check</span>
                     </div>
                   )}
-                  <div
-                    className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-5 transition-opacity"
-                    style={{ backgroundColor: GOLDEN_YELLOW }}
-                  />
                 </motion.button>
               )
             })}
